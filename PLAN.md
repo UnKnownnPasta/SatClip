@@ -2,7 +2,7 @@
 
 ## Build milestones
 
-- [ ] **M1. Architecture.**
+- [x] **M1. Architecture.** (run 2)
   - `docs/ARCHITECTURE.md` with mermaid diagrams and the scalability design: stateless API, task queue with tile-wise workers, STAC search plus COG windowed reads, caching, horizontal scaling, offline or on-prem deployment.
   - Repo scaffold: Python FastAPI backend, frontend, shared config, docker-compose.
 - [ ] **M2. Data layer.**
@@ -42,18 +42,18 @@ Each run adds 25 papers, choosing the categories with the largest remaining gap.
 | rs-vlm | RS vision-language models and assistants | 25 | 9 |
 | rs-benchmark | RS VQA, captioning, grounding datasets and benchmarks | 20 | 7 |
 | eo-foundation | Scene classification and EO foundation models (SatMAE, Prithvi, SkySense, SSL4EO, CLIP-style) | 18 | 2 |
-| change-detection | Optical and SAR change detection | 16 | 0 |
+| change-detection | Optical and SAR change detection | 16 | 8 |
 | sar-optical-fusion | SAR-optical fusion, SAR analytics, cloud removal | 15 | 4 |
 | object-detection | Object detection in RS | 10 | 0 |
-| trust-calibration | Hallucination, calibration, uncertainty, selective prediction and abstention | 16 | 0 |
+| trust-calibration | Hallucination, calibration, uncertainty, selective prediction and abstention | 16 | 8 |
 | eo-agents | Retrieval-augmented and tool-using agents for EO | 12 | 2 |
-| data-infrastructure | STAC, COG, Copernicus, tiling, job queues | 10 | 0 |
+| data-infrastructure | STAC, COG, Copernicus, tiling, job queues | 10 | 4 |
 | efficient-inference | LoRA, quantization, edge and offline inference | 12 | 0 |
-| indian-context | ISRO, Bhuvan, monsoon, disaster management, agriculture | 14 | 0 |
+| indian-context | ISRO, Bhuvan, monsoon, disaster management, agriculture | 14 | 5 |
 | human-factors | UX of GIS, conversational analytics, decision support | 12 | 0 |
 | historical | Foundations before 2020 | 10 | 1 |
 | upcoming | 2026 preprints, challenges, announced datasets | 10 | 0 |
-| **Total** | | **200** | **25** |
+| **Total** | | **200** | **50** |
 
 ### Suggested next batches
 

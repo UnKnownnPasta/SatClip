@@ -13,6 +13,20 @@ You might ask: *"Was Barpeta flooded after 2 July compared to mid June?"* SatCli
 
 When the evidence is not good enough, it says "insufficient evidence" and tells you when the next useful satellite pass is.
 
+## Run it
+
+```bash
+# no Docker, in-process queue
+cd backend && pip install -e ".[dev]" && uvicorn satclip.api.main:app --reload
+# open http://localhost:8000 ; tests: python -m pytest -q
+
+# full stack with Redis and scalable workers
+docker compose up --build        # UI on http://localhost:8080, API on :8000
+docker compose up --scale worker=8
+```
+
+Until M3 lands, real questions return an honest "insufficient evidence" card because the instruments are not implemented yet.
+
 ## Who it is for
 
 The people who must answer "where and how bad" questions without GIS skills:
@@ -28,13 +42,13 @@ See [SOLUTION.md](SOLUTION.md) for the full thesis and evidence.
 
 | Part | Where | Status |
 |---|---|---|
-| Solution thesis | [SOLUTION.md](SOLUTION.md) | v1 |
-| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v1 |
-| Research archive (target about 200 papers) | [archive/](archive/README.md) | 25 papers |
+| Solution thesis | [SOLUTION.md](SOLUTION.md) | v1.1 (run 2) |
+| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v2 |
+| Research archive (target about 200 papers) | [archive/](archive/README.md) | 50 papers |
 | Problem evidence brief | [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md) | v1 |
 | Idea deck summary | [docs/reference/deck-notes.md](docs/reference/deck-notes.md) | done |
-| Architecture | `docs/ARCHITECTURE.md` | M1, planned |
-| Prototype (FastAPI backend and claymorphism frontend) | `backend/`, `frontend/` | M1 to M4, planned |
+| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | M1 done |
+| Prototype (FastAPI backend and claymorphism frontend) | [backend/](backend/), [frontend/](frontend/), [config/satclip.yaml](config/satclip.yaml), [docker-compose.yml](docker-compose.yml) | M1 skeleton working; data layer M2, instruments M3, full UI M4 |
 | Training code (LoRA, Colab notebook, evaluation, calibration) | `training/` | M5, planned |
 | Pitch deck (.pptx) | `deck/` | M7, planned |
 | Plan and progress | [PLAN.md](PLAN.md), [STATE.md](STATE.md) | live |

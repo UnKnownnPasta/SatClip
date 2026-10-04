@@ -47,7 +47,7 @@ The problem is structural, not a temporary gap waiting for a better model.
 2. **The skills gap is large and slow to close.** India's own task force counted roughly 25,000 to 50,000 trained geospatial users against a need of about 500,000 more [E21, E22]. It also said decision-makers in particular need basic orientation [E23]. Training programmes are large but cannot turn every officer into an analyst [E27]. NRSC researchers themselves have proposed a chatbot for non-GIS users of Bhuvan [E29], which confirms the need from inside ISRO.
 3. **The monsoon returns every year, and so do the clouds.**
    - Cloud cover is above 60% over most of India from June to September [E30].
-   - In the Western Ghats it reaches about 90% in July and August, and optical water maps miss about a quarter of surface water there [E31].
+   - In the Western Ghats it reaches about 90% in July and August, and optical water maps miss about a quarter of surface water there [E31, A045].
    - NRSC itself prefers radar for floods [E32].
 
    Any optical-only tool fails exactly when it is needed most.
@@ -99,7 +99,7 @@ The deck put a fine-tuned vision-language model at the centre, generating the an
 
 | Deck task | What SatClip does | Instrument (prototype, CPU) |
 |---|---|---|
-| Change detection (headline) | Measures what changed, where, between two dates, with an area figure and mask | Sentinel-1 log-ratio and water threshold [A022]; optical index differencing; cloud mask decides the sensor [A019] |
+| Change detection (headline) | Measures what changed, where, between two dates, with an area figure and mask | Sentinel-1 log-ratio with an automatic two-class threshold whose fitted posterior gives the confidence [A036], calibrated on Kuro Siwo [A041] and Sen1Floods11 [A022]; optical change vector analysis or index differencing calibrated on OSCD [A034, A035]; cloud mask decides the sensor [A019] |
 | Scene classification | Labels land cover for the area, with calibrated probabilities | RemoteCLIP or GeoRSCLIP zero-shot [A008, A009], plus a BigEarthNet-trained S1/S2 classifier [A017] |
 | VQA | Answers only questions that break down into measurable instruments (presence, extent, area, change, trend). Anything else is declined. | Router plus instruments; never free-form generation of numbers |
 | Captioning | A short description, clearly labelled as a description, not a measurement | Retrieval-based or small captioner; a VLM later [A004, A025] |
@@ -166,8 +166,9 @@ SatClip's contribution is the combination, packaged for a non-expert: an evidenc
 2. **Observed versus inferred.** Pixels filled in by cloud-removal models are never presented as observed [A019, A020]. The card marks them, or the system switches to SAR.
 3. **Calibration.**
    - Each instrument's raw score is mapped to a probability using a held-out labelled set, starting from public data such as Sen1Floods11 [A022] and SEN12MS-CR [A019], and moving to Indian labelled events as they are collected.
+   - The mapping is temperature or Platt scaling, checked with expected calibration error and reliability diagrams [A026]; zero-shot CLIP scores need it too [A031]. Category answers and per-pixel masks can use conformal sets, abstaining when a set contains contradictory labels [A028, A032].
    - Calibration error is reported, not assumed.
-4. **Abstention.** Below a threshold, or with cloud and no SAR, or for an out-of-scope question, the answer is "insufficient evidence". It also names the next useful pass, for example "next Sentinel-1 pass over this AOI: 9 July". The threshold is chosen on a risk-coverage curve and published.
+4. **Abstention.** Below a threshold, or with cloud and no SAR, or for an out-of-scope question, the answer is "insufficient evidence". It also names the next useful pass, for example "next Sentinel-1 pass over this AOI: 9 July". The threshold is chosen on a risk-coverage curve for a target error rate [A027] and published together with the resulting coverage, because strict risk targets can leave very few questions answered [A030].
 5. **Auditability.** Each answer has a receipt: query, parsed intent, scene IDs, instrument name and version, parameters, and the output hash. Re-running the receipt reproduces the answer.
 6. **Honest evaluation.**
    - We run blind (image-free) baselines to expose language bias [A011].
@@ -202,13 +203,15 @@ SatClip's contribution is the combination, packaged for a non-expert: an evidenc
 
 | # | Risk | Mitigation |
 |---|---|---|
-| 1 | **Indian conditions break the instruments.** Flooded paddy looks like flood water; permanent water and seasonal wetlands confuse change maps [A015, A022]. | Use a pre-event baseline and a permanent-water reference layer, and calibrate per zone. |
+| 1 | **Indian conditions break the instruments.** Flooded paddy looks like flood water [A043, A044]; permanent water and seasonal wetlands confuse change maps [A015, A022]. | Use a pre-event baseline and a permanent-water reference layer (removed first, as the NRSC flood atlas does [A046]); compute the Otsu threshold per tile and abstain on tiles with no clear water/land split [A042]; use Kerala 2018 [A042] and Bihar 2020 [A043] as named regression events; calibrate per zone. |
 | 2 | **Not enough labelled Indian data for calibration.** Sen1Floods11 has no Indian event [A022]. | Build a small hand-labelled Indian test set early. Use public NRSC map sheets as weak labels where licensing allows. Publish calibration error openly. |
 | 3 | **The question parser misreads intent or place.** | Show "I understood your question as..." on every card. Use a fixed, small intent set. Resolve place names against gazetteers. |
 | 4 | **Public endpoint limits or outages** (CDSE authentication, rate limits). | Use three catalogues with failover, aggressive caching and a local mirror option. |
 | 5 | **Users over-trust a confidence number.** | Use plain-language confidence bands. Make abstention visible and normal. Show the map, not just the number. Run UX testing with real officers (human-factors research is pending in the archive). |
 | 6 | **A large platform ships a similar assistant in India.** Google Earth AI is US-gated today [E49]. | Openness, offline deployment, SAR-first monsoon handling and receipts are hard for a closed service to match on government infrastructure. |
 | 7 | **Scope creep back to a chatbot.** | Every new capability must arrive as an instrument plus a calibration set plus a test. |
+| 8 | **Coverage collapses at a strict risk target.** In VQA, abstention at 1% risk left under 8% of questions answered [A030]. If SatClip abstains on most real questions, users stop asking. | Publish coverage at 1%, 5% and 10% risk per instrument; pick the operating point with users; prefer instruments with a physical signal (SAR water) where coverage stays high. |
+| 9 | **The explanation layer hallucinates around correct numbers.** RS VLMs give hallucination-free answers only about 36% to 69% of the time, including wrong sensor and resolution claims [A033]; LVLMs over-claim co-occurring objects [A029]. | A deterministic check that every number, date, sensor and resolution in any generated sentence matches the evidence card; templated text when the check fails. |
 
 ---
 

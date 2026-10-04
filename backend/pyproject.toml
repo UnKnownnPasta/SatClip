@@ -1,0 +1,22 @@
+[project]
+name = "satclip"
+version = "0.1.0"
+description = "SatClip: plain-language questions about land, answered with evidence cards from Sentinel imagery"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.27",
+  "pydantic>=2.5",
+  "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+redis = ["redis>=5.0"]
+geo = ["pystac-client>=0.7", "rasterio>=1.3", "numpy>=1.26"]
+dev = ["pytest>=8.0", "httpx>=0.27"]
+
+[tool.setuptools.packages.find]
+include = ["satclip*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

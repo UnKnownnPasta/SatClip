@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SatClip</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#ask">Skip to question</a>
+  <header class="top clay">
+    <span class="logo" aria-hidden="true"></span>
+    <div>
+      <h1>SatClip</h1>
+      <p class="tag">Ask about any place. Get an answer with its evidence.</p>
+    </div>
+  </header>
+
+  <main>
+    <form id="ask" class="clay panel" autocomplete="off">
+      <label for="q" class="label">Your question</label>
+      <textarea id="q" rows="2" required minlength="3"
+        placeholder="How much of Barpeta was under water on 2026-07-05?"></textarea>
+      <div class="chips" role="group" aria-label="Example questions">
+        <button type="button" class="chip clay-sm" data-q="How much of Barpeta was under water on 2026-07-05?">Flood extent</button>
+        <button type="button" class="chip clay-sm" data-q="Did the flood spread in Barpeta between 2026-06-15 and 2026-07-05?">Flood change</button>
+        <button type="button" class="chip clay-sm" data-q="Did the crop decline in Darbhanga between 2026-06-01 and 2026-09-01?">Crop change</button>
+      </div>
+      <button type="submit" class="go clay-btn">Ask</button>
+    </form>
+
+    <section id="understood" class="clay panel hidden" aria-live="polite">
+      <h2 class="label">I understood your question as</h2>
+      <p id="understood-text"></p>
+      <div class="progress clay-inset" aria-hidden="true"><span id="bar"></span></div>
+      <p id="progress-text" class="muted"></p>
+    </section>
+
+    <section id="card" class="clay panel hidden" aria-live="polite">
+      <h2 class="label" id="card-title">Answer</h2>
+      <p id="answer" class="answer"></p>
+      <div id="evidence" class="chips"></div>
+      <p id="next" class="next hidden"></p>
+      <p class="muted"><a id="receipt" href="#" target="_blank" rel="noopener">View receipt</a> (re-run this answer)</p>
+    </section>
+  </main>
+
+  <footer class="muted foot">Team Stardust, SIH 2026 (SIH26167). Data: Copernicus Sentinel via public STAC catalogues.</footer>
+  <script src="app.js"></script>
+</body>
+</html>

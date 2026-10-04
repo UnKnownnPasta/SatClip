@@ -1,6 +1,6 @@
 # What is new in SatClip, and what would have to be true
 
-This document is an honest comparison against the closest existing systems. It is checked against the archive as it grows: version 1 covers 25 papers plus the competitor evidence in [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md). A final pass against the whole archive is milestone M8.
+This document is an honest comparison against the closest existing systems. It is checked against the archive as it grows: version 2 (run 2) covers 50 papers plus the competitor evidence in [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md). A final pass against the whole archive is milestone M8.
 
 Citation keys: `[A001]` is an archive entry and `[E49]` is an evidence-brief claim.
 
@@ -59,12 +59,20 @@ The claim is novelty of **combination and packaging for a specific user**, which
 
 | # | Condition | How we check it | Status |
 |---|---|---|---|
-| 1 | No published RS assistant already returns per-answer scene provenance plus calibrated confidence plus abstention | Keep searching the archive, especially trust-calibration, eo-agents and upcoming work (runs 2 onward) | Holds for 25 papers; to re-check |
+| 1 | No published RS assistant already returns per-answer scene provenance plus calibrated confidence plus abstention | Keep searching the archive, especially trust-calibration, eo-agents and upcoming work (runs 2 onward) | Holds for 50 papers. The newest RS hallucination benchmark (Feb 2026) still evaluates free-text VLM answers with no abstention or provenance [A033]; to re-check |
 | 2 | Instrument answers are accurate enough on Indian scenes to be useful at a reasonable coverage | M3 and M6: risk-coverage curves on a labelled Indian set | Not yet tested |
 | 3 | Calibration fitted on public data transfers to India, or Indian labels can be gathered | M5 calibration fitting; report expected calibration error per zone | Not yet tested |
 | 4 | Non-GIS users understand evidence cards and abstentions faster than maps or chat answers | M4 UX design; a small usability test with students or officers if possible | Not yet tested |
 | 5 | Public STAC endpoints plus COG reads are fast enough for "minutes, not hours" on CPU | M2 and M6: measured latency per district-sized AOI | Not yet tested |
 | 6 | Google Earth AI, Earth Copilot or the NRSC chatbot do not already ship this bundle in India | Re-check product pages each run | Holds as of 2026-10-04 [E49, E50, E56] |
+
+### Run 2 evidence that strengthens or tests the claim
+
+- **Calibration and abstention are mature in general ML but absent from RS assistants.** Temperature scaling [A026], selective classification with a guaranteed risk [A027], conformal sets [A028] and VQA abstention [A030] are well established. Conformal prediction has reached per-pixel RS classification [A032]. None of the archived RS assistants use any of them. SatClip's contribution is applying them per instrument and showing them to a non-expert, not inventing them.
+- **The hallucination gap is now measured for RS VLMs.** RSHallu reports hallucination-free rates of roughly 36% to 69% for RS multimodal models [A033]. This strengthens the case for keeping generated text out of the number path.
+- **Learned change models are no clear upgrade over a transparent instrument.** On Kuro Siwo, dedicated change-detection networks did not beat segmentation models given the full pre/post stack [A041], and learned optical change models swing widely across datasets [A038]. This supports transparent, calibrated instruments.
+- **Official Indian practice already uses thresholding.** The NRSC flood atlas detects SAR water by variable thresholding [A046], and Indian case studies use Otsu on Sentinel-1 [A042]. SatClip's instruments are therefore familiar to official users; the new part is per-question, on-demand delivery with confidence and a receipt.
+- **New risk to the claim:** strict risk targets can collapse coverage [A030]. The claim must be stated with its measured coverage, not just its risk.
 
 ## 4. Closest threats to the claim (watch list)
 

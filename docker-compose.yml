@@ -1,0 +1,30 @@
+# Full stack: docker compose up --build   then open http://localhost:8080
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  api:
+    build: {context: ., dockerfile: backend/Dockerfile}
+    environment:
+      SATCLIP_QUEUE__BACKEND: redis
+      SATCLIP_QUEUE__REDIS_URL: redis://redis:6379/0
+    depends_on: [redis]
+    ports: ["8000:8000"]
+
+  worker:
+    build: {context: ., dockerfile: backend/Dockerfile}
+    command: ["python", "-m", "satclip.worker"]
+    environment:
+      SATCLIP_QUEUE__BACKEND: redis
+      SATCLIP_QUEUE__REDIS_URL: redis://redis:6379/0
+    depends_on: [redis]
+    deploy: {replicas: 2}   # scale with: docker compose up --scale worker=8
+
+  frontend:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on: [api]
+    ports: ["8080:80"]
