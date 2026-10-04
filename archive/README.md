@@ -35,16 +35,42 @@ A verified, annotated archive of research that shapes SatClip. One file per pape
 
 <!-- CATALOG:START -->
 
-Total papers: **25**
+Total papers: **50**
 
 | Category | Count |
 |---|---|
+| change-detection | 8 |
+| data-infrastructure | 4 |
 | eo-agents | 2 |
 | eo-foundation | 2 |
 | historical | 1 |
+| indian-context | 5 |
 | rs-benchmark | 7 |
 | rs-vlm | 9 |
 | sar-optical-fusion | 4 |
+| trust-calibration | 8 |
+
+### change-detection
+
+| ID | Paper | Year | Era | Takeaway for SatClip |
+|---|---|---|---|---|
+| 034 | [A Theoretical Framework for Unsupervised Change Detection Based on Change Vector Analysis in the Polar Domain](papers/034-cva-polar.md) ([source](https://doi.org/10.1109/TGRS.2006.885408)) | 2007 | historical | Formal basis for optical change vector analysis: magnitude says whether something changed, direction says what kind; use it as the transparent Sentinel-2 change instrument instead of a black-box network |
+| 035 | [Urban Change Detection for Multispectral Earth Observation Using Convolutional Neural Networks](papers/035-oscd.md) ([source](https://arxiv.org/abs/1810.08468)) | 2018 | historical | OSCD is the small but standard Sentinel-2 urban change benchmark (24 pairs, 13 bands, pixel labels); use it to calibrate optical change thresholds, not to train large models |
+| 036 | [An unsupervised approach based on the generalized Gaussian model to automatic change detection in multitemporal SAR images](papers/036-sar-logratio-gg.md) ([source](https://doi.org/10.1109/TGRS.2004.842441)) | 2005 | historical | Canonical SAR change recipe (despeckle, log-ratio, automatic threshold from a fitted two-class model); adopt it nearly as-is for Sentinel-1 change with the fitted model doubling as a confidence source |
+| 037 | [A Spatial-Temporal Attention-Based Method and a New Dataset for Remote Sensing Image Change Detection](papers/037-levir-cd-stanet.md) ([source](https://www.mdpi.com/2072-4292/12/10/1662)) | 2020 | recent | LEVIR-CD (637 pairs, 0.5 m, Texas buildings) became the default CD benchmark; useful for language templates and model comparison but not for calibrating 10 m Sentinel instruments |
+| 038 | [Remote Sensing Image Change Detection with Transformers](papers/038-bit-transformer-cd.md) ([source](https://arxiv.org/abs/2103.00208)) | 2021 | recent | Strong, small (about 3.5M params) learned CD baseline at 89.3 F1 on LEVIR-CD but only 69.3 on DSIFN; a cross-check at most, never the source of SatClip's number |
+| 039 | [xBD: A Dataset for Assessing Building Damage from Satellite Imagery](papers/039-xbd.md) ([source](https://arxiv.org/abs/1911.09296)) | 2019 | historical | Largest pre/post building damage set (850k polygons, 19 events, sub-0.8 m); its baseline damage F1 of about 0.27 shows per-building damage is out of reach for 10 m Sentinel, so SatClip should abstain on it |
+| 040 | [Remote Sensing Image Change Captioning With Dual-Branch Transformers: A New Method and a Large Scale Dataset](papers/040-levir-cc-rsiccformer.md) ([source](https://doi.org/10.1109/TGRS.2022.3218921)) | 2022 | recent | LEVIR-CC (10,077 pairs, 50,385 captions, half no-change) is the standard change-captioning set; good template data for SatClip's explanation layer, but captions carry no measured quantities |
+| 041 | [Kuro Siwo: 33 billion m² under the water. A global multi-temporal satellite dataset for rapid flood mapping](papers/041-kuro-siwo.md) ([source](https://arxiv.org/abs/2311.12056)) | 2024 | recent | Expert-labelled Sentinel-1 pre/post flood set (43 events, CC BY, separates flood from permanent water); the best calibration set for SatClip's SAR flood change instrument, though Asia is underrepresented |
+
+### data-infrastructure
+
+| ID | Paper | Year | Era | Takeaway for SatClip |
+|---|---|---|---|---|
+| 047 | [Google Earth Engine: Planetary-scale geospatial analysis for everyone](papers/047-google-earth-engine.md) ([source](https://doi.org/10.1016/j.rse.2017.06.031)) | 2017 | historical | The reference cloud EO platform: a hosted multi-sensor catalogue with lazy, tile-parallel evaluation; most Indian SAR flood papers run on it, but it is closed and code-centric, so SatClip should match its ergonomics on open STAC plus COG |
+| 048 | [The Australian Geoscience Data Cube - Foundations and lessons learned](papers/048-australian-geoscience-data-cube.md) ([source](https://doi.org/10.1016/j.rse.2017.03.015)) | 2017 | historical | Open Data Cube foundations: analysis-ready, provenance-tracked data plus a light index and open (Apache 2.0) code make time series trustworthy; SatClip should copy the provenance discipline, not the heavy ingest |
+| 049 | [OGC Cloud Optimized GeoTIFF Standard](papers/049-ogc-cloud-optimized-geotiff.md) ([source](https://docs.ogc.org/is/21-026/21-026.html)) | 2023 | recent | COG 1.0 formalises tiled GeoTIFFs with overviews and headers up front, served over HTTP range requests; this is what lets SatClip read only the district window from a Sentinel scene on a CPU worker |
+| 050 | [SpatioTemporal Asset Catalog (STAC) Specification](papers/050-stac-spec.md) ([source](https://stacspec.org/en)) | 2024 | recent | STAC is the common search language of public EO catalogues (Item, Catalog, Collection, API); SatClip should search with STAC API and record STAC Item IDs and hrefs in every receipt |
 
 ### eo-agents
 
@@ -65,6 +91,16 @@ Total papers: **25**
 | ID | Paper | Year | Era | Takeaway for SatClip |
 |---|---|---|---|---|
 | 016 | [Exploring Models and Data for Remote Sensing Image Caption Generation](papers/016-rsicd-captioning.md) ([source](https://arxiv.org/abs/1712.07835)) | 2018 | historical | Use its caption annotation rules as SatClip's caption style guide; do not trust BLEU or CIDEr without a grounding check |
+
+### indian-context
+
+| ID | Paper | Year | Era | Takeaway for SatClip |
+|---|---|---|---|---|
+| 042 | [Flood inundation mapping- Kerala 2018; Harnessing the power of SAR, automatic threshold detection method and Google Earth Engine](papers/042-kerala-2018-otsu-gee.md) ([source](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0237324)) | 2020 | recent | Otsu on Sentinel-1 VV (Lee 5x5) mapped the Kerala August 2018 flood at about 94.7% OA (kappa 0.87 to 0.88) against Sentinel-2; a ready Indian validation event and baseline for our SAR water instrument |
+| 043 | [Google Earth Engine-Based Identification of Flood Extent and Flood-Affected Paddy Rice Fields Using Sentinel-2 MSI and Sentinel-1 SAR Data in Bihar State, India](papers/043-bihar-2020-flood-paddy.md) ([source](https://doi.org/10.1007/s12524-021-01487-3)) | 2022 | recent | Bihar monsoon 2020: S1 plus S2 in GEE mapped about 7,019 sq km submerged and water standing on paddy for 50 to 65 days; a model for flood-on-crop questions, but method details sit behind a paywall |
+| 044 | [High resolution paddy rice maps in cloud-prone Bangladesh and Northeast India using Sentinel-1 data](papers/044-singha-paddy-ne-india.md) ([source](https://doi.org/10.1038/s41597-019-0036-3)) | 2019 | historical | Sentinel-1 VH time series plus random forest mapped 2017 paddy at 10 m in Northeast India and Bangladesh per season (Boro, Aus, Aman) at 94 to 98% OA; reuse as a crop mask and adopt VH time series for rice questions |
+| 045 | [Radar versus optical: The impact of cloud cover when mapping seasonal surface water for health applications in monsoon-affected India](papers/045-radar-vs-optical-monsoon.md) ([source](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0314033)) | 2025 | recent | In Western Ghats districts, July to August cloud cover averaged about 90%, leaving roughly a quarter of surface water unmapped in the optical JRC product; Sentinel-1 VV recovered it, so monsoon questions must default to SAR |
+| 046 | [Flood Affected Area Atlas of India - Satellite based study](papers/046-nrsc-flood-atlas.md) ([source](https://ndem.nrsc.gov.in/documents/downloads/allindia_flood_techdoc.pdf)) | 2023 | recent | The official Indian baseline: 25 years (1998 to 2022) of IRS and foreign optical/SAR flood layers, SAR water by variable thresholding, validated by state agencies; SatClip should complement it, not compete |
 
 ### rs-benchmark
 
@@ -100,5 +136,18 @@ Total papers: **25**
 | 019 | [Multisensor Data Fusion for Cloud Removal in Global and All-Season Sentinel-2 Imagery](papers/019-sen12ms-cr.md) ([source](https://arxiv.org/abs/2009.07683)) | 2021 | recent | SEN12MS-CR is the monsoon cloud-gap test set; use cloud masks to choose between optical, SAR and abstaining, never present filled pixels as observed |
 | 020 | [Cloud removal in Sentinel-2 imagery using a deep residual neural network and SAR-optical data fusion](papers/020-dsen2-cr.md) ([source](https://doi.org/10.1016/j.isprsjprs.2020.05.013)) | 2020 | recent | Baseline for SAR-guided cloud filling; flag reconstructed areas and skip indices there; too heavy for per-query CPU use |
 | 022 | [Sen1Floods11: A Georeferenced Dataset to Train and Test Deep Learning Flood Algorithms for Sentinel-1](papers/022-sen1floods11.md) ([source](https://openaccess.thecvf.com/content_CVPRW_2020/html/w11/Bonafilia_Sen1Floods11_A_Georeferenced_Dataset_to_Train_and_Test_Deep_Learning_CVPRW_2020_paper.html)) | 2020 | recent | Standard Sentinel-1 flood baseline (11 events, none in India); keep an Otsu VH threshold as a sanity check and build an Indian held-out test |
+
+### trust-calibration
+
+| ID | Paper | Year | Era | Takeaway for SatClip |
+|---|---|---|---|---|
+| 026 | [On Calibration of Modern Neural Networks](papers/026-calibration-modern-nets.md) ([source](https://arxiv.org/abs/1706.04599)) | 2017 | historical | Modern deep nets are overconfident; fit one temperature on held-out data to calibrate any score, report ECE and a reliability diagram, accuracy is unchanged |
+| 027 | [Selective Classification for Deep Neural Networks](papers/027-selective-classification.md) ([source](https://arxiv.org/abs/1705.08500)) | 2017 | historical | Pick the abstention threshold from a target risk with a statistical guarantee on held-out data; trading coverage for reliability (2% ImageNet top-5 error at about 60% coverage) |
+| 028 | [Uncertainty Sets for Image Classifiers using Conformal Prediction](papers/028-raps-conformal.md) ([source](https://arxiv.org/abs/2009.14193)) | 2021 | recent | RAPS wraps any classifier to output label sets with a finite-sample coverage guarantee (for example 90%), with sets often 5 to 10 times smaller than a Platt-scaling baseline |
+| 029 | [Evaluating Object Hallucination in Large Vision-Language Models](papers/029-pope.md) ([source](https://arxiv.org/abs/2305.10355)) | 2023 | recent | LVLMs often claim objects that are not there, especially frequent or co-occurring ones; POPE's yes/no probing with adversarial negatives is a cheap template for SatClip's hallucination tests |
+| 030 | [Reliable Visual Question Answering: Abstain Rather Than Answer Incorrectly](papers/030-reliable-vqa.md) ([source](https://arxiv.org/abs/2204.13631)) | 2022 | recent | Softmax-thresholded VQA models answer under 7.5% of questions at 1% risk; a learned multimodal selector raises coverage from 6.8% to 15.6%, and Effective Reliability penalises wrong answers more than abstentions |
+| 031 | [Enabling Calibration In The Zero-Shot Inference of Large Vision-Language Models](papers/031-clip-zero-shot-calibration.md) ([source](https://arxiv.org/abs/2303.12748)) | 2023 | recent | CLIP zero-shot scores are miscalibrated; one temperature learned per CLIP model on an auxiliary set transfers across prompts and datasets, so calibrate RemoteCLIP once and reuse |
+| 032 | [Spatial-Aware Conformal Prediction for Trustworthy Hyperspectral Image Classification](papers/032-sacp-hyperspectral-conformal.md) ([source](https://arxiv.org/abs/2409.01236)) | 2024 | recent | Conformal prediction works for per-pixel RS classification, and smoothing non-conformity scores over spatial neighbours gives smaller sets at the same guaranteed coverage; apply it to SatClip masks |
+| 033 | [RSHallu: Dual-Mode Hallucination Evaluation for Remote-Sensing Multimodal Large Language Models with Domain-Tailored Mitigation](papers/033-rshallu.md) ([source](https://arxiv.org/abs/2602.10799)) | 2026 | upcoming | RS VLMs answer hallucination-free only about 36% to 69% of the time on RSHalluEval, including errors about modality and resolution; strong evidence that SatClip's VLM must not produce measurements |
 
 <!-- CATALOG:END -->
