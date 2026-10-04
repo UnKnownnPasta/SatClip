@@ -2,7 +2,7 @@ FROM python:3.12-slim
 WORKDIR /app
 COPY backend/pyproject.toml backend/pyproject.toml
 COPY backend/satclip backend/satclip
-RUN pip install --no-cache-dir "./backend[redis]"
+RUN pip install --no-cache-dir "./backend[redis,geo]"
 COPY config config
 ENV SATCLIP_CONFIG=/app/config/satclip.yaml PYTHONUNBUFFERED=1
 WORKDIR /app/backend

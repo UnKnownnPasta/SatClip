@@ -201,6 +201,34 @@ flowchart TB
 
 The data layer tries catalogues in configured priority order (for example Earth Search, then Planetary Computer, then CDSE). A catalogue that times out or rate-limits is skipped for a cool-down period. The receipt records which catalogue served each item, so re-runs use the same source.
 
+### 6.6 Data layer as built (M2, `backend/satclip/data/`)
+
+```mermaid
+flowchart LR
+    T[Tile job: intent, bbox, windows] --> P[DataProvider.for_tile]
+    P --> C{search cell 1 deg<br/>cached?}
+    C -- no --> S[StacClient.search<br/>failover + cooldown]
+    S --> ES[Earth Search<br/>S2 COGs public]
+    S --> PC[Planetary Computer<br/>S1 RTC + S2, SAS signed]
+    S --> CD[CDSE<br/>search-only by default]
+    C -- yes --> N[normalize_item<br/>canonical band names]
+    S --> N
+    N --> SEL[select_scenes / pair_for_change<br/>monsoon SAR-first, cloud, coverage, orbit]
+    SEL --> R[read_window<br/>COG range reads, SCL tile cloud]
+    R --> I[Instrument M3]
+```
+
+| Module | Responsibility |
+|---|---|
+| `scene.py` | `Scene` record; maps each catalogue's band names (`green`, `B03`, `B03_10m`) to canonical names so instruments never see catalogue differences. |
+| `stac.py` | STAC API Item Search over httpx, POST with paging via `next` links, per-endpoint cooldown, request-hash cache, per-attempt log for receipts. Endpoints flagged `readable: false` (requester-pays or login-only hrefs) are skipped for pixel work. |
+| `select.py` | Sensor order (monsoon water questions go SAR-first; optical-only questions never swap sensors), coverage, readability, band and cloud checks, closest-to-window-centre choice, same-orbit SAR pairs for change. Every decision becomes a plain-language reason on the card. |
+| `cog.py` | Windowed reads of a lon/lat box in the raster's own CRS (no resampling of radiometry across projections), GDAL settings for range requests, Planetary Computer SAS signing with token cache, SCL tile cloud fraction. |
+| `provider.py` | The single entry point for instruments. Searches once per 1 degree *search cell*, so every tile of a district shares one cached catalogue call. |
+| `smoke.py` | `python -m satclip.data.smoke` live check against the public catalogues. |
+
+Known gap: only Planetary Computer serves openly readable Sentinel-1 pixels among the three default catalogues, so SAR has a single readable source unless a CDSE account (or a local mirror) is configured.
+
 ---
 
 ## 7. Deployment modes
@@ -273,7 +301,7 @@ docker-compose.yml     api, worker, redis, frontend
 | Piece | M1 (this milestone) | Later |
 |---|---|---|
 | API, models, queue, worker loop, tiling, receipts, aggregation | Working, tested, with a placeholder instrument | Real instruments in M3 |
-| Data layer | Interface and config only | STAC search, cloud filter, SAR fallback, COG reads in M2 |
+| Data layer | Interface and config only | Done in M2: STAC search with failover, cloud filter and SAR fallback, COG reads, search cells (section 6.6) |
 | Parser | Rule-based intents, ISO dates, bbox | Gazetteer place names (M3), LoRA VLM parser (M5) |
 | Frontend | Claymorphism shell wired to the API | Full UX, map, AOI picker, compare view in M4 |
 | Deployment | docker-compose with Redis | Load numbers in M6 |

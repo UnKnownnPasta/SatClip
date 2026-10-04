@@ -40,6 +40,27 @@ def create_app(cfg: Optional[dict[str, Any]] = None) -> FastAPI:
     def intents() -> dict:
         return {"intents": cfg.get("intents", {})}
 
+    @app.get("/v1/scenes")
+    def scenes(bbox: str, start: str, end: str, sensor: str = "S2", max_cloud: Optional[float] = None) -> dict:
+        """Catalogue search used by the AOI picker ("what imagery exists here?") and for debugging.
+        bbox is min_lon,min_lat,max_lon,max_lat; dates are YYYY-MM-DD."""
+        from datetime import date as _date
+        from ..data.stac import StacClient, StacError
+        try:
+            b = tuple(float(v) for v in bbox.split(","))
+            s, e = _date.fromisoformat(start), _date.fromisoformat(end)
+            assert len(b) == 4 and b[0] < b[2] and b[1] < b[3] and s <= e and sensor in ("S1", "S2")
+        except (ValueError, AssertionError):
+            raise HTTPException(422, "bbox must be 4 numbers min_lon,min_lat,max_lon,max_lat; dates YYYY-MM-DD; sensor S1 or S2")
+        if not hasattr(app.state, "stac"):
+            app.state.stac = StacClient.from_settings(cfg)
+        try:
+            found = app.state.stac.search(sensor, b, s, e, max_cloud=max_cloud)
+        except StacError as exc:
+            raise HTTPException(503, f"no catalogue reachable: {exc}")
+        return {"count": len(found), "catalogs": app.state.stac.health(),
+                "scenes": [{**sc.evidence(), "bbox": sc.bbox, "covers_request": sc.covers(b)} for sc in found]}
+
     @app.post("/v1/queries", status_code=202)
     def create_query(req: QueryRequest) -> dict:
         parsed = parse(req)

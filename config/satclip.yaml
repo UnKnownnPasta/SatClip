@@ -14,22 +14,30 @@ tiling:
 stac:
   timeout_s: 20
   cooldown_s: 120          # skip a failing catalogue for this long
-  endpoints:               # tried in order (failover)
+  search_cell_deg: 1.0     # searches are cached per 1 degree cell, shared by every tile inside it
+  page_size: 100
+  max_items: 200
+  endpoints:               # tried in order (failover); readable=false means search-only (hrefs need credentials)
     - name: earth-search
       url: https://earth-search.aws.element84.com/v1
-      s2_collection: sentinel-2-l2a
-      s1_collection: sentinel-1-grd
+      s2_collection: sentinel-2-l2a          # public COGs on AWS, no credentials
+      s1_collection: sentinel-1-grd          # requester-pays S3, so search-only
+      readable: {s1: false, s2: true}
     - name: planetary-computer
       url: https://planetarycomputer.microsoft.com/api/stac/v1
       s2_collection: sentinel-2-l2a
-      s1_collection: sentinel-1-rtc
+      s1_collection: sentinel-1-rtc          # terrain-corrected backscatter COGs
+      signing: planetary-computer            # anonymous SAS token appended to hrefs
+      readable: {s1: true, s2: true}
     - name: cdse
       url: https://stac.dataspace.copernicus.eu/v1
       s2_collection: sentinel-2-l2a
       s1_collection: sentinel-1-grd
+      readable: {s1: false, s2: false}       # downloads need a free CDSE account; used for metadata and as last resort
 
 scene:
   max_cloud_pct: 20        # per-scene cloud cover above which optical is skipped
+  max_tile_cloud_pct: 30   # per-tile cloud share (from SCL) above which the tile abstains
   max_days_from_request: 12
   sar_fallback: true
   monsoon_months: [6, 7, 8, 9]   # SAR is the default sensor for water questions in these months

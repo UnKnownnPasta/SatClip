@@ -1,0 +1,121 @@
+{
+ "type": "FeatureCollection",
+ "_note": "Abridged STAC ItemCollection. IDs, bboxes, datetimes, cloud cover, EPSG and asset hrefs were recorded from the live catalogue on 2026-10-04 (bbox 91.0,26.3,91.05,26.35, Barpeta, Assam). Only the fields SatClip reads are kept; geometry is the bbox polygon.",
+ "features": [
+  {
+   "type": "Feature",
+   "stac_version": "1.0.0",
+   "id": "S1A_IW_GRDH_1SDV_20240711T115715_20240711T115740_054713_06A943_rtc",
+   "collection": "sentinel-1-rtc",
+   "bbox": [
+    90.56935916129045,
+    25.070658019271434,
+    93.35408995631016,
+    26.99009774985065
+   ],
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       90.56935916129045,
+       25.070658019271434
+      ],
+      [
+       93.35408995631016,
+       25.070658019271434
+      ],
+      [
+       93.35408995631016,
+       26.99009774985065
+      ],
+      [
+       90.56935916129045,
+       26.99009774985065
+      ],
+      [
+       90.56935916129045,
+       25.070658019271434
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "datetime": "2024-07-11T11:57:28.343272Z",
+    "sat:orbit_state": "ascending",
+    "sar:polarizations": [
+     "VV",
+     "VH"
+    ],
+    "proj:epsg": 32646,
+    "platform": "SENTINEL-1A"
+   },
+   "assets": {
+    "vv": {
+     "href": "https://sentinel1euwestrtc.blob.core.windows.net/sentinel1-grd-rtc/GRD/2024/7/11/IW/DV/S1A_IW_GRDH_1SDV_20240711T115715_20240711T115740_054713_06A943_829E/measurement/iw-vv.rtc.tiff"
+    },
+    "vh": {
+     "href": "https://sentinel1euwestrtc.blob.core.windows.net/sentinel1-grd-rtc/GRD/2024/7/11/IW/DV/S1A_IW_GRDH_1SDV_20240711T115715_20240711T115740_054713_06A943_829E/measurement/iw-vh.rtc.tiff"
+    }
+   }
+  },
+  {
+   "type": "Feature",
+   "stac_version": "1.0.0",
+   "id": "S1A_IW_GRDH_1SDV_20240704T120532_20240704T120557_054611_06A5C6_rtc",
+   "collection": "sentinel-1-rtc",
+   "bbox": [
+    88.47779571200641,
+    25.249895626011508,
+    91.27170611690441,
+    27.1721800881497
+   ],
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       88.47779571200641,
+       25.249895626011508
+      ],
+      [
+       91.27170611690441,
+       25.249895626011508
+      ],
+      [
+       91.27170611690441,
+       27.1721800881497
+      ],
+      [
+       88.47779571200641,
+       27.1721800881497
+      ],
+      [
+       88.47779571200641,
+       25.249895626011508
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "datetime": "2024-07-04T12:05:45.189313Z",
+    "sat:orbit_state": "ascending",
+    "sar:polarizations": [
+     "VV",
+     "VH"
+    ],
+    "proj:epsg": 32645,
+    "platform": "SENTINEL-1A"
+   },
+   "assets": {
+    "vv": {
+     "href": "https://sentinel1euwestrtc.blob.core.windows.net/sentinel1-grd-rtc/GRD/2024/7/4/IW/DV/S1A_IW_GRDH_1SDV_20240704T120532_20240704T120557_054611_06A5C6_A968/measurement/iw-vv.rtc.tiff"
+    },
+    "vh": {
+     "href": "https://sentinel1euwestrtc.blob.core.windows.net/sentinel1-grd-rtc/GRD/2024/7/4/IW/DV/S1A_IW_GRDH_1SDV_20240704T120532_20240704T120557_054611_06A5C6_A968/measurement/iw-vh.rtc.tiff"
+    }
+   }
+  }
+ ],
+ "links": []
+}

@@ -74,8 +74,17 @@ The claim is novelty of **combination and packaging for a specific user**, which
 - **Official Indian practice already uses thresholding.** The NRSC flood atlas detects SAR water by variable thresholding [A046], and Indian case studies use Otsu on Sentinel-1 [A042]. SatClip's instruments are therefore familiar to official users; the new part is per-question, on-demand delivery with confidence and a receipt.
 - **New risk to the claim:** strict risk targets can collapse coverage [A030]. The claim must be stated with its measured coverage, not just its risk.
 
+### Run 3 evidence that strengthens or tests the claim
+
+- **Human-factors research backs the evidence card over the chat answer.** Explanations raise acceptance of AI answers whether right or wrong [A067]; confidence display helps reliance match reliability but does not by itself raise accuracy [A070]; trust should be calibrated, not maximised [A065]; responders are limited by trust and workflow fit more than by algorithms [A069]. Fluent RS assistants optimise the very thing these studies warn about. The card-first design is a direct application, not a novelty of method.
+- **The parser can be small.** Natural-language interfaces to data work by turning a question into an inspectable structured spec with ambiguity flags [A068]. SatClip's "I understood your question as" panel is the same pattern, which means a 256M to 2.2B open VLM [A063] with LoRA [A059, A060] is enough for the language layer.
+- **EO foundation models are a threat and an ally.** Prithvi-EO-2.0, CROMA, SSL4EO-S12, DOFA and Clay [A052, A054 to A057] are open and Sentinel-native, but none ships a calibrated, abstaining, receipt-backed answer for a non-expert. They are best registered as instruments behind the same card. SkySense [A053] shows the accuracy ceiling of multi-modal fusion, but with non-commercial weights at billion-parameter scale.
+- **Object counting stays out of scope.** Detection benchmarks are built on 0.3 m to 1 m imagery (DOTA, xView, DIOR [A071 to A073]); even there small objects are hard. Sentinel-1 ship detection (xView3-SAR [A075]) is the one object task native to our data and a candidate future instrument.
+- **Data-layer ease is real but must be engineered.** Of three public catalogues, only some serve openly readable Sentinel-1 pixels (Earth Search S1 GRD is requester-pays; CDSE downloads need an account). SatClip's M2 data layer records which catalogue answered and why a scene was chosen, so this complexity never reaches the user.
+
 ## 4. Closest threats to the claim (watch list)
 
 - **EarthDial** [A003] is the closest model: Sentinel-1 plus Sentinel-2 plus change, and open. If a follow-up adds confidence and abstention, our differentiation narrows to receipts, live data and ease of deployment.
 - **NRSC's multilingual Bhuvan chatbot** [E29] targets the same users inside ISRO. If deployed, SatClip should position as its open, evidence-first engine rather than a rival.
+- **Open EO foundation models with fine-tune recipes** [A052, A055, A057] could be wrapped by someone else into a non-expert assistant. Watch for a Prithvi or Clay based flood or crop chat tool with confidence output.
 - **Google Earth AI** [E49] has the data and the distribution. Its India availability must be tracked.

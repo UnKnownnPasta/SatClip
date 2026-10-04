@@ -35,16 +35,19 @@ A verified, annotated archive of research that shapes SatClip. One file per pape
 
 <!-- CATALOG:START -->
 
-Total papers: **50**
+Total papers: **75**
 
 | Category | Count |
 |---|---|
 | change-detection | 8 |
 | data-infrastructure | 4 |
+| efficient-inference | 6 |
 | eo-agents | 2 |
-| eo-foundation | 2 |
+| eo-foundation | 10 |
 | historical | 1 |
+| human-factors | 6 |
 | indian-context | 5 |
+| object-detection | 5 |
 | rs-benchmark | 7 |
 | rs-vlm | 9 |
 | sar-optical-fusion | 4 |
@@ -72,6 +75,17 @@ Total papers: **50**
 | 049 | [OGC Cloud Optimized GeoTIFF Standard](papers/049-ogc-cloud-optimized-geotiff.md) ([source](https://docs.ogc.org/is/21-026/21-026.html)) | 2023 | recent | COG 1.0 formalises tiled GeoTIFFs with overviews and headers up front, served over HTTP range requests; this is what lets SatClip read only the district window from a Sentinel scene on a CPU worker |
 | 050 | [SpatioTemporal Asset Catalog (STAC) Specification](papers/050-stac-spec.md) ([source](https://stacspec.org/en)) | 2024 | recent | STAC is the common search language of public EO catalogues (Item, Catalog, Collection, API); SatClip should search with STAC API and record STAC Item IDs and hrefs in every receipt |
 
+### efficient-inference
+
+| ID | Paper | Year | Era | Takeaway for SatClip |
+|---|---|---|---|---|
+| 059 | [LoRA: Low-Rank Adaptation of Large Language Models](papers/059-lora.md) ([source](https://arxiv.org/abs/2106.09685)) | 2021 | recent | The adapter method behind SatClip's VLM fine-tuning pipeline; merge adapters for zero-latency CPU inference and keep the base weights frozen and versioned |
+| 060 | [QLoRA: Efficient Finetuning of Quantized LLMs](papers/060-qlora.md) ([source](https://arxiv.org/abs/2305.14314)) | 2023 | recent | 4-bit base plus LoRA adapters makes VLM fine-tuning fit on one consumer or free-tier GPU; SatClip's LoRA pipeline should offer a QLoRA mode |
+| 061 | [AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration](papers/061-awq.md) ([source](https://arxiv.org/abs/2306.00978)) | 2024 | recent | Calibration-light 4-bit weight quantization that preserves accuracy and works for multimodal models; a strong way to shrink SatClip's VLM after LoRA merge |
+| 062 | [MobileCLIP: Fast Image-Text Models through Multi-Modal Reinforced Training](papers/062-mobileclip.md) ([source](https://arxiv.org/abs/2311.17049)) | 2024 | recent | Small, fast CLIP models via reinforced training; a CPU-friendly alternative encoder for SatClip's zero-shot land cover instrument if licence and accuracy on Sentinel-2 check out |
+| 063 | [SmolVLM: Redefining small and efficient multimodal models](papers/063-smolvlm.md) ([source](https://arxiv.org/abs/2504.05299)) | 2025 | recent | Fully open 256M to 2.2B VLMs built for edge devices; the most realistic CPU base for SatClip's question parser and explainer, fine-tuned with LoRA |
+| 064 | [Distilling the Knowledge in a Neural Network](papers/064-hinton-knowledge-distillation.md) ([source](https://arxiv.org/abs/1503.02531)) | 2015 | historical | Classic recipe for training a small student model on a large teacher's softened outputs; SatClip can use it to shrink a CLIP land-cover head or a question parser so it runs fast on CPU |
+
 ### eo-agents
 
 | ID | Paper | Year | Era | Takeaway for SatClip |
@@ -85,12 +99,31 @@ Total papers: **50**
 |---|---|---|---|---|
 | 008 | [RemoteCLIP: A Vision Language Foundation Model for Remote Sensing](papers/008-remoteclip.md) ([source](https://arxiv.org/abs/2306.11029)) | 2024 | recent | Default CPU zero-shot and retrieval backbone; validate on Indian Sentinel-2 and calibrate its similarity scores before abstention |
 | 009 | [RS5M and GeoRSCLIP: A Large Scale Vision-Language Dataset and A Large Vision-Language Model for Remote Sensing](papers/009-rs5m-georsclip.md) ([source](https://arxiv.org/abs/2306.11300)) | 2024 | recent | Bake off GeoRSCLIP against RemoteCLIP; its PEFT results back the LoRA plan, but keep eval captions human-written |
+| 051 | [SatMAE: Pre-training Transformers for Temporal and Multi-Spectral Satellite Imagery](papers/051-satmae.md) ([source](https://arxiv.org/abs/2207.08051)) | 2022 | recent | The founding MAE recipe for multispectral and temporal satellite data; treat it as background and baseline, not as a SatClip runtime component |
+| 052 | [Prithvi-EO-2.0: A Versatile Multi-Temporal Foundation Model for Earth Observation Applications](papers/052-prithvi-eo-2.md) ([source](https://arxiv.org/abs/2412.02732)) | 2024 | recent | Open NASA/IBM multi-temporal HLS model with flood and crop fine-tune recipes; best GPU candidate for a learned second opinion next to SatClip's optical instruments, not a CPU default |
+| 053 | [SkySense: A Multi-Modal Remote Sensing Foundation Model Towards Universal Interpretation for Earth Observation Imagery](papers/053-skysense.md) ([source](https://arxiv.org/abs/2312.10115)) | 2024 | recent | Billion-parameter optical plus SAR plus time model showing fusion helps; a ceiling to cite, but non-commercial weights and size rule it out for SatClip |
+| 054 | [SSL4EO-S12: A Large-Scale Multi-Modal, Multi-Temporal Dataset for Self-Supervised Learning in Earth Observation](papers/054-ssl4eo-s12.md) ([source](https://arxiv.org/abs/2211.07044)) | 2023 | recent | Open Sentinel-1/2 pretraining corpus with small ResNet50 and ViT-S weights in TorchGeo; the most CPU-friendly source of Sentinel-native features for SatClip experiments |
+| 055 | [CROMA: Remote Sensing Representations with Contrastive Radar-Optical Masked Autoencoders](papers/055-croma.md) ([source](https://arxiv.org/abs/2311.00566)) | 2023 | recent | MIT-licensed radar plus optical encoder trained on Sentinel-1/2; best candidate for a learned SAR feature cross-check next to SatClip's Otsu water instrument |
+| 056 | [Neural Plasticity-Inspired Multimodal Foundation Model for Earth Observation](papers/056-dofa.md) ([source](https://arxiv.org/abs/2403.15356)) | 2024 | recent | One encoder for any band set via wavelength conditioning (DOFA); lets SatClip use a single learned backbone for both Sentinel-1 and Sentinel-2 in experiments |
+| 057 | [Clay Foundation Model](papers/057-clay-foundation-model.md) ([source](https://clay-foundation.github.io/model/)) | 2024 | recent | Apache-licensed multi-sensor embedding model with precomputed embeddings; useful for similarity search and change hints in SatClip, never as the source of reported numbers |
+| 058 | [SpectralGPT: Spectral Remote Sensing Foundation Model](papers/058-spectralgpt.md) ([source](https://arxiv.org/abs/2311.07113)) | 2024 | recent | 3D spatial-spectral MAE for Sentinel-2 with change detection results; reference for spectral-aware features, but GPL licence and size keep it out of SatClip core |
 
 ### historical
 
 | ID | Paper | Year | Era | Takeaway for SatClip |
 |---|---|---|---|---|
 | 016 | [Exploring Models and Data for Remote Sensing Image Caption Generation](papers/016-rsicd-captioning.md) ([source](https://arxiv.org/abs/1712.07835)) | 2018 | historical | Use its caption annotation rules as SatClip's caption style guide; do not trust BLEU or CIDEr without a grounding check |
+
+### human-factors
+
+| ID | Paper | Year | Era | Takeaway for SatClip |
+|---|---|---|---|---|
+| 065 | [Trust in Automation: Designing for Appropriate Reliance](papers/065-lee-see-trust-in-automation.md) ([source](https://doi.org/10.1518/hfes.46.1.50_30392)) | 2004 | historical | Foundational review arguing that trust should match automation capability (calibrated trust), not be maximised; SatClip should design the evidence card to expose when and why instruments are reliable |
+| 066 | [Guidelines for Human-AI Interaction](papers/066-amershi-human-ai-guidelines.md) ([source](https://doi.org/10.1145/3290605.3300233)) | 2019 | historical | 18 validated design guidelines for AI products; SatClip should use them as a checklist for its chat UI and evidence card, especially setting expectations, scoping when unsure and supporting correction |
+| 067 | [Does the Whole Exceed its Parts? The Effect of AI Explanations on Complementary Team Performance](papers/067-bansal-explanations-team-performance.md) ([source](https://arxiv.org/abs/2006.14779)) | 2021 | recent | Explanations made people accept AI answers more often whether right or wrong, adding nothing over showing confidence alone; SatClip's VLM explanations must not make wrong numbers more persuasive |
+| 068 | [NL4DV: A Toolkit for Generating Analytic Specifications for Data Visualization from Natural Language Queries](papers/068-nl4dv-natural-language-vis.md) ([source](https://doi.org/10.1109/TVCG.2020.3030378)) | 2021 | recent | Python toolkit that turns a natural-language data question into a structured JSON of attributes, tasks and charts, with explicit ambiguity flags; SatClip's question parser should emit a similar inspectable spec |
+| 069 | [Earth observation tools and services to increase the effectiveness of humanitarian assistance](papers/069-lang-eo-humanitarian-services.md) ([source](https://doi.org/10.1080/22797254.2019.1684208)) | 2019 | historical | Field report on delivering EO information to MSF and other NGOs, stressing that trust, reliability and workflow fit, not algorithms, limit uptake; SatClip should design around delivery and trust for non-expert responders |
+| 070 | [Effect of Confidence and Explanation on Accuracy and Trust Calibration in AI-Assisted Decision Making](papers/070-zhang-confidence-trust-calibration.md) ([source](https://doi.org/10.1145/3351095.3372852)) | 2020 | recent | Showing a confidence score helped people rely on AI more when it was confident, but did not raise joint accuracy, and SHAP explanations did not help calibration; SatClip should show calibrated confidence and treat it as a reliance aid, not an accuracy fix |
 
 ### indian-context
 
@@ -101,6 +134,16 @@ Total papers: **50**
 | 044 | [High resolution paddy rice maps in cloud-prone Bangladesh and Northeast India using Sentinel-1 data](papers/044-singha-paddy-ne-india.md) ([source](https://doi.org/10.1038/s41597-019-0036-3)) | 2019 | historical | Sentinel-1 VH time series plus random forest mapped 2017 paddy at 10 m in Northeast India and Bangladesh per season (Boro, Aus, Aman) at 94 to 98% OA; reuse as a crop mask and adopt VH time series for rice questions |
 | 045 | [Radar versus optical: The impact of cloud cover when mapping seasonal surface water for health applications in monsoon-affected India](papers/045-radar-vs-optical-monsoon.md) ([source](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0314033)) | 2025 | recent | In Western Ghats districts, July to August cloud cover averaged about 90%, leaving roughly a quarter of surface water unmapped in the optical JRC product; Sentinel-1 VV recovered it, so monsoon questions must default to SAR |
 | 046 | [Flood Affected Area Atlas of India - Satellite based study](papers/046-nrsc-flood-atlas.md) ([source](https://ndem.nrsc.gov.in/documents/downloads/allindia_flood_techdoc.pdf)) | 2023 | recent | The official Indian baseline: 25 years (1998 to 2022) of IRS and foreign optical/SAR flood layers, SAR water by variable thresholding, validated by state agencies; SatClip should complement it, not compete |
+
+### object-detection
+
+| ID | Paper | Year | Era | Takeaway for SatClip |
+|---|---|---|---|---|
+| 071 | [DOTA: A Large-scale Dataset for Object Detection in Aerial Images](papers/071-dota-aerial-detection.md) ([source](https://arxiv.org/abs/1711.10398)) | 2018 | historical | The standard oriented-box benchmark for aerial object detection (15 classes, very high resolution); useful context but its objects are mostly below Sentinel-2's 10 m pixel, so SatClip should not promise object counts |
+| 072 | [xView: Objects in Context in Overhead Imagery](papers/072-xview-overhead-objects.md) ([source](https://arxiv.org/abs/1802.07856)) | 2018 | historical | Over 1 million objects in 60 classes from 0.3 m WorldView-3 imagery, with a weak SSD baseline; shows how hard fine-grained small-object detection is even at 0.3 m, reinforcing that SatClip should not count objects in Sentinel data |
+| 073 | [Object Detection in Optical Remote Sensing Images: A Survey and A New Benchmark](papers/073-dior-optical-rs-detection.md) ([source](https://arxiv.org/abs/1909.00133)) | 2020 | recent | Survey plus the DIOR benchmark (23,463 images, 20 classes, 0.5 to 30 m); a reference for mixed-resolution detection, but SatClip should cite it only to justify scoping out object-level questions |
+| 074 | [Oriented R-CNN for Object Detection](papers/074-oriented-rcnn.md) ([source](https://arxiv.org/abs/2108.05699)) | 2021 | recent | Simple, fast two-stage rotated-box detector (75.87% mAP on DOTA, 96.50% on HRSC2016, 15.1 FPS on a GPU); a strong baseline if SatClip ever adds ship detection, but its GPU speed does not translate to our CPU budget |
+| 075 | [xView3-SAR: Detecting Dark Fishing Activity Using Synthetic Aperture Radar Imagery](papers/075-xview3-sar-dark-vessels.md) ([source](https://arxiv.org/abs/2206.00897)) | 2022 | recent | Large Sentinel-1 VV/VH ship detection benchmark (991 scenes, 243,018 labelled objects); the closest object-detection work to SatClip's own data, useful for SAR preprocessing and as a model for honest, partially reliable labels |
 
 ### rs-benchmark
 

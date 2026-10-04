@@ -115,6 +115,10 @@ The LoRA-tuned open VLM from the deck stays in the plan (M5) and does three jobs
 
 It is evaluated against the instruments and is never the source of a number. EarthDial is the leading base candidate [A003]. It was chosen because it already handles Sentinel-1 and Sentinel-2.
 
+Run 3 adds a second, CPU-first track. Fully open small VLMs in the 256M to 2.2B range (SmolVLM [A063]) are the realistic base for the parser and explainer on a laptop or a state server. LoRA keeps base weights frozen and versioned, and merged adapters add no inference latency [A059]; QLoRA lets the fine-tune fit on one free-tier GPU [A060]; 4-bit weight quantization shrinks the merged model further [A061]. Because the VLM only parses and explains, a small model is enough: it never has to see the whole scene or produce a measurement.
+
+Open EO foundation models (Prithvi-EO-2.0 [A052], CROMA [A055], SSL4EO-S12 [A054], DOFA [A056], Clay [A057]) are the right tool for a *learned second opinion* next to an instrument, for example a CROMA-based SAR water head checked against the Otsu mask. They are not the default path, because they still need labelled fine-tuning per task and most are GPU-sized. Where the second opinion disagrees with the instrument, the card lowers its confidence or abstains.
+
 ---
 
 ## 4. Why it is easier (the innovation)
@@ -169,8 +173,9 @@ SatClip's contribution is the combination, packaged for a non-expert: an evidenc
    - The mapping is temperature or Platt scaling, checked with expected calibration error and reliability diagrams [A026]; zero-shot CLIP scores need it too [A031]. Category answers and per-pixel masks can use conformal sets, abstaining when a set contains contradictory labels [A028, A032].
    - Calibration error is reported, not assumed.
 4. **Abstention.** Below a threshold, or with cloud and no SAR, or for an out-of-scope question, the answer is "insufficient evidence". It also names the next useful pass, for example "next Sentinel-1 pass over this AOI: 9 July". The threshold is chosen on a risk-coverage curve for a target error rate [A027] and published together with the resulting coverage, because strict risk targets can leave very few questions answered [A030].
-5. **Auditability.** Each answer has a receipt: query, parsed intent, scene IDs, instrument name and version, parameters, and the output hash. Re-running the receipt reproduces the answer.
-6. **Honest evaluation.**
+5. **Explanations never add persuasion.** In human-AI studies, explanations made people accept AI answers more often whether the answer was right or wrong [A067], and showing a confidence score improved how well people's reliance matched the AI's reliability without, by itself, raising joint accuracy [A070]. Trust should match capability, not be maximised [A065]. So the card leads with the map, the scenes and a plain confidence band; generated prose is short, optional and checked against the card (risk 9).
+6. **Auditability.** Each answer has a receipt: query, parsed intent, scene IDs, instrument name and version, parameters, and the output hash. Re-running the receipt reproduces the answer.
+7. **Honest evaluation.**
    - We run blind (image-free) baselines to expose language bias [A011].
    - We compare against NRSC products for past Indian floods where they exist.
    - We report error rates per region and per sensor.
@@ -207,11 +212,12 @@ SatClip's contribution is the combination, packaged for a non-expert: an evidenc
 | 2 | **Not enough labelled Indian data for calibration.** Sen1Floods11 has no Indian event [A022]. | Build a small hand-labelled Indian test set early. Use public NRSC map sheets as weak labels where licensing allows. Publish calibration error openly. |
 | 3 | **The question parser misreads intent or place.** | Show "I understood your question as..." on every card. Use a fixed, small intent set. Resolve place names against gazetteers. |
 | 4 | **Public endpoint limits or outages** (CDSE authentication, rate limits). | Use three catalogues with failover, aggressive caching and a local mirror option. |
-| 5 | **Users over-trust a confidence number.** | Use plain-language confidence bands. Make abstention visible and normal. Show the map, not just the number. Run UX testing with real officers (human-factors research is pending in the archive). |
+| 5 | **Users over-trust a confidence number or a fluent explanation.** Explanations raise acceptance of wrong answers too [A067]; confidence display calibrates reliance but does not by itself raise accuracy [A070]; field experience says trust and workflow fit, not algorithms, limit EO uptake by responders [A069]. | Use plain-language confidence bands. Make abstention visible and normal. Show the map, not just the number. Keep explanations short and secondary. Use the human-AI guidelines [A066] as a UI checklist, and run UX testing with real officers. |
 | 6 | **A large platform ships a similar assistant in India.** Google Earth AI is US-gated today [E49]. | Openness, offline deployment, SAR-first monsoon handling and receipts are hard for a closed service to match on government infrastructure. |
 | 7 | **Scope creep back to a chatbot.** | Every new capability must arrive as an instrument plus a calibration set plus a test. |
 | 8 | **Coverage collapses at a strict risk target.** In VQA, abstention at 1% risk left under 8% of questions answered [A030]. If SatClip abstains on most real questions, users stop asking. | Publish coverage at 1%, 5% and 10% risk per instrument; pick the operating point with users; prefer instruments with a physical signal (SAR water) where coverage stays high. |
 | 9 | **The explanation layer hallucinates around correct numbers.** RS VLMs give hallucination-free answers only about 36% to 69% of the time, including wrong sensor and resolution claims [A033]; LVLMs over-claim co-occurring objects [A029]. | A deterministic check that every number, date, sensor and resolution in any generated sentence matches the evidence card; templated text when the check fails. |
+| 10 | **Foundation models overtake instruments.** Open EO foundation models with flood and crop fine-tunes exist [A052, A055]. If they become clearly more accurate on Indian events, a threshold instrument looks dated. | Keep the instrument interface model-agnostic: a fine-tuned foundation model can register as an instrument, as long as it is calibrated, versioned and carries a receipt. The evidence card, not the algorithm, is the product. |
 
 ---
 
