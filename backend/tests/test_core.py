@@ -106,3 +106,8 @@ def test_area_limit(cfg):
     c = TestClient(create_app(cfg))
     r = c.post("/v1/queries", json={"text": "water on 2026-07-05", "bbox": [90.0, 26.0, 91.0, 27.0]})
     assert r.status_code == 413
+
+
+def test_tiles_do_not_spill_over_float_edges():
+    t = tiles_for_bbox((85.90, 26.05, 86.05, 26.20), 0.05)
+    assert len(t) == 9 and min(b[0] for _, b in t) == pytest.approx(85.90)

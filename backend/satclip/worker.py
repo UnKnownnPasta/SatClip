@@ -8,7 +8,8 @@ from .models import TileJob, TileResult, TileStatus
 
 def process(job: TileJob, cache: Cache) -> TileResult:
     version, fn = get(job.instrument)
-    key = cache_key(job.tile_id, f"{job.instrument}@{version}", [w.model_dump(mode="json") for w in job.windows])
+    key = cache_key(job.tile_id, f"{job.instrument}@{version}", [w.model_dump(mode="json") for w in job.windows],
+                    {"region": job.region} if job.region else None)
     hit = cache.get(key)
     if hit:
         res = TileResult(**hit)

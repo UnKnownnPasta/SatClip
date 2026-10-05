@@ -35,23 +35,24 @@ A verified, annotated archive of research that shapes SatClip. One file per pape
 
 <!-- CATALOG:START -->
 
-Total papers: **75**
+Total papers: **100**
 
 | Category | Count |
 |---|---|
 | change-detection | 8 |
 | data-infrastructure | 4 |
 | efficient-inference | 6 |
-| eo-agents | 2 |
+| eo-agents | 8 |
 | eo-foundation | 10 |
 | historical | 1 |
 | human-factors | 6 |
 | indian-context | 5 |
 | object-detection | 5 |
 | rs-benchmark | 7 |
-| rs-vlm | 9 |
-| sar-optical-fusion | 4 |
+| rs-vlm | 16 |
+| sar-optical-fusion | 10 |
 | trust-calibration | 8 |
+| upcoming | 6 |
 
 ### change-detection
 
@@ -92,6 +93,12 @@ Total papers: **75**
 |---|---|---|---|---|
 | 023 | [Remote Sensing ChatGPT: Solving Remote Sensing Tasks with ChatGPT and Visual Models](papers/023-remote-sensing-chatgpt.md) ([source](https://arxiv.org/abs/2401.09083)) | 2024 | recent | Simple LLM plan-and-call-tools loop with no quantitative evaluation; copy the loop with an open CPU LLM and add confidence propagation and abstention |
 | 024 | [GeoLLM-Engine: A Realistic Environment for Building Geospatial Copilots](papers/024-geollm-engine.md) ([source](https://arxiv.org/abs/2404.15500)) | 2024 | recent | GPT-4 agent success fell as tool chains grew longer; keep SatClip plans short and fixed and track tool-call correctness |
+| 089 | [Change-Agent: Towards Interactive Comprehensive Remote Sensing Change Interpretation and Analysis](papers/089-change-agent.md) ([source](https://arxiv.org/abs/2403.19646)) | 2024 | recent | Closest prior art to SatClip's 'instrument as eyes, LLM as brain' split for change questions, but the LLM writes free Python and nothing is calibrated, receipted or allowed to abstain |
+| 090 | [GeoGPT: Understanding and Processing Geospatial Tasks through An Autonomous GPT](papers/090-geogpt.md) ([source](https://arxiv.org/abs/2307.07930)) | 2023 | recent | Early GIS tool agent that openly reports run-to-run instability and hallucinated file and tool arguments; its tool-side input validation is a cheap guard SatClip should copy for every instrument |
+| 091 | [Autonomous GIS: the next-generation AI-powered GIS](papers/091-autonomous-gis-llm-geo.md) ([source](https://arxiv.org/abs/2305.06453)) | 2023 | recent | Influential vision of an LLM that generates, verifies and runs its own GIS workflows; SatClip deliberately takes the opposite, non-generative path and should cite this as the alternative it rejects for reliability |
+| 092 | [ThinkGeo: Evaluating Tool-Augmented Agents for Remote Sensing Tasks](papers/092-thinkgeo.md) ([source](https://arxiv.org/abs/2505.23752)) | 2025 | recent | RS tool-agent benchmark where even GPT-4o gets tool arguments right only about a third of the time and final answers right under 10% end to end; the strongest published case for SatClip's fixed instruments and exact tool-call scoring |
+| 093 | [GeoBenchX: Benchmarking LLMs in Agent Solving Multistep Geospatial Tasks](papers/093-geobenchx.md) ([source](https://arxiv.org/abs/2503.18129)) | 2025 | recent | Only geo-agent benchmark here that scores refusal on deliberately unsolvable tasks; shows models trade answering for refusing, which supports SatClip's explicit abstention and gives a test design to copy |
+| 094 | [Earth-Agent: Unlocking the Full Landscape of Earth Observation with Agents](papers/094-earth-agent.md) ([source](https://arxiv.org/abs/2509.23141)) | 2025 | recent | Most capable EO tool agent to date (104 MCP tools, spectral indices, GEE products) and the closest competitor to SatClip's instrument idea, yet GPT-5 matches tool parameters only about 26% of the time and there is no calibration, abstention or receipt |
 
 ### eo-foundation
 
@@ -170,6 +177,13 @@ Total papers: **75**
 | 007 | [TEOChat: A Large Vision-Language Assistant for Temporal Earth Observation Data](papers/007-teochat.md) ([source](https://arxiv.org/abs/2410.06234)) | 2025 | recent | Use its temporal task taxonomy for before/after queries; too heavy for CPU and has no SAR or calibration, which SatClip adds |
 | 021 | [SARChat-Bench-2M: A Multi-Task Vision-Language Benchmark for SAR Image Interpretation](papers/021-sarchat.md) ([source](https://arxiv.org/abs/2502.08168)) | 2025 | recent | About 2M SAR image-text pairs and released checkpoints give a SAR baseline, but imagery is mostly high-res targets, so test on Indian Sentinel-1 |
 | 025 | [RS-LLaVA: A Large Vision-Language Model for Joint Captioning and Question Answering in Remote Sensing Imagery](papers/025-rs-llava.md) ([source](https://www.mdpi.com/2072-4292/16/9/1477)) | 2024 | recent | LoRA recipe and released 7B checkpoint are a fine-tune starting point; its ungrounded, confidence-free output is the gap SatClip fills |
+| 076 | [GeoPixel: Pixel Grounding Large Multimodal Model in Remote Sensing](papers/076-geopixel.md) ([source](https://arxiv.org/abs/2501.13925)) | 2025 | recent | First RS chat model that emits masks inside its answer; useful pattern for linking each claim to a region, but masks are about 52 mIoU so SatClip's region mask must still come from instruments |
+| 077 | [GeoGround: A Unified Large Vision-Language Model for Remote Sensing Visual Grounding](papers/077-geoground.md) ([source](https://arxiv.org/abs/2411.11904)) | 2024 | recent | Shows masks can be emitted as compact text by a plain LLaVA, so even a small VLM could point at regions; but its masks are coarse and need SAM to be competitive, so keep instrument masks as the truth |
+| 078 | [VHM: Versatile and Honest Vision Language Model for Remote Sensing Image Analysis](papers/078-vhm.md) ([source](https://arxiv.org/abs/2403.20213)) | 2025 | recent | Closest prior art to SatClip's abstention: trains an RS VLM to reject questions about absent objects; but honesty is learned refusal on four question types, not calibrated confidence over measurements |
+| 079 | [EarthMind: Leveraging Cross-Sensor Data for Advanced Earth Observation Interpretation with a Unified Multimodal LLM](papers/079-earthmind.md) ([source](https://arxiv.org/abs/2506.01667)) | 2025 | recent | Strongest evidence that plain VLMs ignore SAR when given SAR plus optical; supports SatClip's choice to read SAR with instruments, and EarthMind-Bench is a ready SAR-only test set |
+| 080 | [Falcon: A Remote Sensing Vision-Language Foundation Model (Technical Report)](papers/080-falcon.md) ([source](https://arxiv.org/abs/2503.11070)) | 2025 | recent | A 0.7B RS model that does grounding, segmentation and bitemporal change detection is the most CPU-plausible RS VLM to date; worth testing as SatClip's parser/explainer or as a cross-check, never as the measuring instrument |
+| 081 | [Geo-R1: Improving Few-Shot Geospatial Referring Expression Understanding with Reinforcement Fine-Tuning](papers/081-geo-r1.md) ([source](https://arxiv.org/abs/2509.21976)) | 2026 | recent | RL with verifiable rewards lets a 3B VLM learn RS grounding from about 10 examples per class, including SAR; a cheap route to adapt SatClip's parser to Indian place and crop phrases, but its SAR accuracy (25%) confirms the VLM should not measure |
+| 082 | [FUSAR-GPT: A Spatiotemporal Feature-Embedded and Two-Stage Decoupled Visual Language Model for SAR Imagery](papers/082-fusar-gpt.md) ([source](https://arxiv.org/abs/2602.19190)) | 2026 | recent | Injecting location-keyed AlphaEarth embeddings lifts a 7B SAR VLM by 7 to 12 points, a hint that SatClip could add a precomputed geospatial prior; but its own counting accuracy is about 53% on a small test set, so SAR answers still need instruments |
 
 ### sar-optical-fusion
 
@@ -179,6 +193,12 @@ Total papers: **75**
 | 019 | [Multisensor Data Fusion for Cloud Removal in Global and All-Season Sentinel-2 Imagery](papers/019-sen12ms-cr.md) ([source](https://arxiv.org/abs/2009.07683)) | 2021 | recent | SEN12MS-CR is the monsoon cloud-gap test set; use cloud masks to choose between optical, SAR and abstaining, never present filled pixels as observed |
 | 020 | [Cloud removal in Sentinel-2 imagery using a deep residual neural network and SAR-optical data fusion](papers/020-dsen2-cr.md) ([source](https://doi.org/10.1016/j.isprsjprs.2020.05.013)) | 2020 | recent | Baseline for SAR-guided cloud filling; flag reconstructed areas and skip indices there; too heavy for per-query CPU use |
 | 022 | [Sen1Floods11: A Georeferenced Dataset to Train and Test Deep Learning Flood Algorithms for Sentinel-1](papers/022-sen1floods11.md) ([source](https://openaccess.thecvf.com/content_CVPRW_2020/html/w11/Bonafilia_Sen1Floods11_A_Georeferenced_Dataset_to_Train_and_Test_Deep_Learning_CVPRW_2020_paper.html)) | 2020 | recent | Standard Sentinel-1 flood baseline (11 events, none in India); keep an Otsu VH threshold as a sanity check and build an Indian held-out test |
+| 083 | [Sentinel-1-based flood mapping: a fully automated processing chain](papers/083-twele-s1-flood-chain.md) ([source](https://doi.org/10.1080/01431161.2016.1192304)) | 2016 | historical | Blueprint for sar_water_otsu: pick bimodal, darker-than-average tiles, threshold them, then refine with slope, size and HAND fuzzy rules; VV is slightly better than VH in calm wind |
+| 084 | [Towards operational near real-time flood detection using a split-based automatic thresholding procedure on high resolution TerraSAR-X data](papers/084-martinis-split-based-thresholding.md) ([source](https://doi.org/10.5194/nhess-9-303-2009)) | 2009 | historical | Origin of tile-wise SAR flood thresholding: only threshold tiles whose variability and darkness indicate both water and land, then pool their histograms |
+| 085 | [A fully automated TerraSAR-X based flood service](papers/085-martinis-tsx-flood-service.md) ([source](https://doi.org/10.1016/j.isprsjprs.2014.07.014)) | 2015 | historical | Proof that unsupervised tile thresholding plus fuzzy refinement survives 175 real flood scenes worldwide, including tropical Thailand; the robustness tricks matter more than the threshold rule |
+| 086 | [A hierarchical split-based approach for parametric thresholding of SAR images: Flood inundation as a test case](papers/086-chini-hsba-thresholding.md) ([source](https://doi.org/10.1109/TGRS.2017.2737664)) | 2017 | historical | Use Ashman D > 2 plus a 10% minority-class rule as SatClip's explicit bimodality check, searching tiles of variable size rather than a fixed grid |
+| 087 | [SEN12MS-CR-TS: A Remote Sensing Data Set for Multi-modal Multi-temporal Cloud Removal](papers/087-sen12ms-cr-ts.md) ([source](https://arxiv.org/abs/2201.09613)) | 2022 | recent | A year of co-registered S1/S2 time series with real clouds: shows that several cloudy dates plus SAR beat one date, and that very cloudy (>90%) cases stay hard |
+| 088 | [UnCRtainTS: Uncertainty Quantification for Cloud Removal in Optical Satellite Time Series](papers/088-uncrtaints.md) ([source](https://openaccess.thecvf.com/content/CVPR2023W/EarthVision/html/Ebel_UnCRtainTS_Uncertainty_Quantification_for_Cloud_Removal_in_Optical_Satellite_Time_CVPRW_2023_paper.html)) | 2023 | recent | Calibrated per-pixel variance lets you discard the most uncertain half of outputs and nearly halve error; the same rank-and-reject logic is SatClip's abstain rule |
 
 ### trust-calibration
 
@@ -192,5 +212,16 @@ Total papers: **75**
 | 031 | [Enabling Calibration In The Zero-Shot Inference of Large Vision-Language Models](papers/031-clip-zero-shot-calibration.md) ([source](https://arxiv.org/abs/2303.12748)) | 2023 | recent | CLIP zero-shot scores are miscalibrated; one temperature learned per CLIP model on an auxiliary set transfers across prompts and datasets, so calibrate RemoteCLIP once and reuse |
 | 032 | [Spatial-Aware Conformal Prediction for Trustworthy Hyperspectral Image Classification](papers/032-sacp-hyperspectral-conformal.md) ([source](https://arxiv.org/abs/2409.01236)) | 2024 | recent | Conformal prediction works for per-pixel RS classification, and smoothing non-conformity scores over spatial neighbours gives smaller sets at the same guaranteed coverage; apply it to SatClip masks |
 | 033 | [RSHallu: Dual-Mode Hallucination Evaluation for Remote-Sensing Multimodal Large Language Models with Domain-Tailored Mitigation](papers/033-rshallu.md) ([source](https://arxiv.org/abs/2602.10799)) | 2026 | upcoming | RS VLMs answer hallucination-free only about 36% to 69% of the time on RSHalluEval, including errors about modality and resolution; strong evidence that SatClip's VLM must not produce measurements |
+
+### upcoming
+
+| ID | Paper | Year | Era | Takeaway for SatClip |
+|---|---|---|---|---|
+| 095 | [Earth AI: Unlocking Geospatial Insights with Foundation Models and Cross-Modal Reasoning](papers/095-google-earth-ai.md) ([source](https://arxiv.org/abs/2510.18318)) | 2025 | upcoming | The closest big-tech threat: a Gemini agent that chains Google's imagery, population and flood models into answers, but with no abstention, no per-answer scene receipts and an RGB-high-res imagery focus; SatClip must win on transparent instruments, refusal and auditability |
+| 096 | [AlphaEarth Foundations: An embedding field model for accurate and efficient global mapping from sparse label data](papers/096-alphaearth-foundations.md) ([source](https://arxiv.org/abs/2507.22291)) | 2025 | upcoming | Precomputed annual 10 m embeddings for every land pixel make cheap land-cover and change features available to anyone, a strong optional baseline for SatClip, but annual, opaque and not usable for a specific flood date |
+| 097 | [TerraMind: Large-Scale Generative Multimodality for Earth Observation](papers/097-terramind.md) ([source](https://arxiv.org/abs/2504.11171)) | 2025 | recent | Open Apache-2.0 any-to-any model over Sentinel-1/2, DEM, LULC and NDVI with strong water mapping; a candidate fine-tuned instrument or cross-check for SatClip, but its generated 'imagined' modalities must never feed evidence-card numbers |
+| 098 | [NASA-ISRO Synthetic Aperture Radar (NISAR) mission and data products](papers/098-nisar-mission.md) ([source](https://nisar-docs.asf.alaska.edu/availability-overview/)) | 2025 | upcoming | Free L-band and S-band SAR with a 12-day repeat, provisional calibrated products since July 2026 and S-band samples on ISRO Bhoonidhi; L-band sees flooding under crop canopy, an obvious next instrument for SatClip once access and format are wired in |
+| 099 | [2026 IEEE GRSS Data Fusion Contest: SAR Temporal Storytelling](papers/099-grss-dfc-2026-sar-temporal-storytelling.md) ([source](https://www.grss-ieee.org/resources/news/in-focus-inside-the-2026-ieee-grss-data-fusion-contest/)) | 2026 | upcoming | The field's flagship 2026 contest asked teams to turn SAR time series into readable stories of change, validating SatClip's framing; but entries were open-ended research on commercial X-band, not abstaining, receipted answers on free data |
+| 100 | [Copernicus Sentinel-1D launch and restored two-satellite Sentinel-1 constellation (Sentinel-1C and 1D)](papers/100-sentinel-1d-constellation.md) ([source](https://www.esa.int/Newsroom/Press_Releases/Copernicus_Sentinel-1D_reaches_orbit_on_Ariane_6)) | 2025 | upcoming | Sentinel-1C (Dec 2024) plus 1D (Nov 2025) restore two-satellite C-band SAR, about 6-day revisit at the equator, which directly raises how often SatClip can answer a flood question with a fresh scene instead of abstaining |
 
 <!-- CATALOG:END -->

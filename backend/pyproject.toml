@@ -10,15 +10,23 @@ dependencies = [
   "pyyaml>=6.0",
   "httpx>=0.27",
   "numpy>=1.26",
+  "scipy>=1.11",
+  "shapely>=2.0",
+  "pillow>=10.0",
 ]
 
 [project.optional-dependencies]
 redis = ["redis>=5.0"]
 geo = ["rasterio>=1.3"]
+# Optional learned instrument (zero_shot_landcover). CPU wheels: pip install torch --index-url https://download.pytorch.org/whl/cpu
+ml = ["torch>=2.2", "torchvision>=0.17", "open_clip_torch>=2.24", "huggingface_hub>=0.20"]
 dev = ["pytest>=8.0", "fakeredis>=2.20"]
 
 [tool.setuptools.packages.find]
 include = ["satclip*"]
+
+[tool.setuptools.package-data]
+satclip = ["resources/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

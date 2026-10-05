@@ -8,11 +8,12 @@
 - [x] **M2. Data layer.** (run 3)
   - STAC search over Copernicus Data Space, Element84 Earth Search and Microsoft Planetary Computer for Sentinel-1/2 by AOI and dates.
   - Cloud filtering with SAR fallback, scene metadata, tiling.
-- [ ] **M3. AI engine.**
+- [x] **M3. AI engine.** (run 4)
   - Task router for the supported query types.
   - CPU-friendly open models and instruments: RemoteCLIP or similar for zero-shot classification and retrieval, a small captioner, spectral index and SAR log-ratio change detection.
   - Every answer grounded to scene ID, date and region mask, with a calibrated confidence and abstention below threshold.
   - Evidence card and receipt as defined in SOLUTION.md.
+  - As built: `sar_water_otsu`, `sar_logratio_change`, `ndvi_difference`, `index_caption` (template description from indices instead of a generative captioner) and the experimental `zero_shot_landcover` (RemoteCLIP); district gazetteer; per-tile overlays; model-based confidence with placeholder calibration files (fitting is M5). See ARCHITECTURE.md 6.7.
 - [ ] **M4. Frontend.**
   - Claymorphism UI, mobile-first.
   - Plain-language query box, AOI picking and two-date compare.
@@ -39,21 +40,21 @@ Each run adds 25 papers, choosing the categories with the largest remaining gap.
 
 | Category key | Scope | Target | Current |
 |---|---|---|---|
-| rs-vlm | RS vision-language models and assistants | 25 | 9 |
+| rs-vlm | RS vision-language models and assistants | 25 | 16 |
 | rs-benchmark | RS VQA, captioning, grounding datasets and benchmarks | 20 | 7 |
 | eo-foundation | Scene classification and EO foundation models (SatMAE, Prithvi, SkySense, SSL4EO, CLIP-style) | 18 | 10 |
 | change-detection | Optical and SAR change detection | 16 | 8 |
-| sar-optical-fusion | SAR-optical fusion, SAR analytics, cloud removal | 15 | 4 |
+| sar-optical-fusion | SAR-optical fusion, SAR analytics, cloud removal | 15 | 10 |
 | object-detection | Object detection in RS | 10 | 5 |
 | trust-calibration | Hallucination, calibration, uncertainty, selective prediction and abstention | 16 | 8 |
-| eo-agents | Retrieval-augmented and tool-using agents for EO | 12 | 2 |
+| eo-agents | Retrieval-augmented and tool-using agents for EO | 12 | 8 |
 | data-infrastructure | STAC, COG, Copernicus, tiling, job queues | 10 | 4 |
 | efficient-inference | LoRA, quantization, edge and offline inference | 12 | 6 |
 | indian-context | ISRO, Bhuvan, monsoon, disaster management, agriculture | 14 | 5 |
 | human-factors | UX of GIS, conversational analytics, decision support | 12 | 6 |
 | historical | Foundations before 2020 | 10 | 1 |
-| upcoming | 2026 preprints, challenges, announced datasets | 10 | 0 |
-| **Total** | | **200** | **75** |
+| upcoming | 2026 preprints, challenges, announced datasets | 10 | 6 |
+| **Total** | | **200** | **100** |
 
 ### Suggested next batches
 
@@ -62,4 +63,6 @@ Each run adds 25 papers, choosing the categories with the largest remaining gap.
 | 2 | trust-calibration (about 8: conformal prediction, selective classification, VLM hallucination such as POPE, calibration of CLIP), change-detection (about 8), indian-context (about 5), data-infrastructure (about 4) |
 | 3 | eo-foundation (about 8), efficient-inference (about 6), human-factors (about 6), object-detection (about 5) |
 | 4 | rs-vlm (about 7, newer 2025 to 2026 models), sar-optical-fusion (about 6), eo-agents (about 6), upcoming (about 6) |
-| 5 onward | Fill the remaining gaps (rs-benchmark, historical, indian-context, data-infrastructure); upcoming work; anything that challenges NOVELTY.md |
+| 5 | indian-context (about 7), historical (about 7), rs-benchmark (about 6), data-infrastructure (about 5) |
+| 6 | trust-calibration (about 8), human-factors (about 6), change-detection (about 6), efficient-inference (about 5) |
+| 7 onward | Remaining gaps (eo-foundation, object-detection, eo-agents, rs-vlm, upcoming); newly published work; anything that challenges NOVELTY.md |

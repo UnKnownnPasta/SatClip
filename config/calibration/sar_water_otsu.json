@@ -1,0 +1,16 @@
+{
+ "instrument": "sar_water_otsu",
+ "method": "isotonic",
+ "points": [
+  [
+   0.0,
+   0.0
+  ],
+  [
+   1.0,
+   1.0
+  ]
+ ],
+ "fitted": false,
+ "note": "Placeholder until M5 fits it on labelled data (Sen1Floods11 / Kuro Siwo for water, field labels for NDVI). Identity map: the card shows the instrument's model-based estimate and labels it as not yet fitted."
+}

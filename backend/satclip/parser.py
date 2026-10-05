@@ -1,4 +1,4 @@
-"""Rule-based question parser (M1). A LoRA-tuned VLM can replace the intent step in M5,
+"""Rule-based question parser (M1, district gazetteer since M3). A LoRA-tuned VLM can replace the intent step in M5,
 but the output contract (ParsedQuery) stays the same and is always echoed to the user.
 """
 from __future__ import annotations
@@ -7,6 +7,7 @@ import re
 from datetime import date, timedelta
 from typing import Optional
 
+from . import gazetteer
 from .models import BBox, DateWindow, Intent, ParsedQuery, QueryRequest
 
 # Order matters: change intents are checked before extent intents.
@@ -19,14 +20,6 @@ _RULES: list[tuple[Intent, tuple[str, ...]]] = [
     (Intent.land_cover, ("land cover", "land use", "what is this", "mostly", "classify", "type of area")),
     (Intent.describe, ("describe", "caption", "what does", "summary of the scene")),
 ]
-
-# Coarse demo gazetteer (approximate district bounding boxes). Replaced by a proper
-# gazetteer lookup (Bhuvan / OSM boundaries) in M3. Values: min_lon, min_lat, max_lon, max_lat.
-GAZETTEER: dict[str, BBox] = {
-    "barpeta": (90.80, 26.15, 91.35, 26.80),
-    "ernakulam": (76.15, 9.75, 76.95, 10.30),
-    "darbhanga": (85.70, 25.80, 86.40, 26.40),
-}
 
 _ISO = re.compile(r"\b(20\d{2})-(\d{2})-(\d{2})\b")
 _BBOX = re.compile(r"bbox[:=\s]*\(?\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)")
@@ -53,15 +46,15 @@ def _windows_from_text(text: str) -> list[DateWindow]:
     return out
 
 
-def _bbox_from_text(text: str) -> tuple[Optional[BBox], Optional[str]]:
+def _bbox_from_text(text: str) -> tuple[Optional[BBox], Optional[str], Optional[str], list[str]]:
+    """Return (bbox, place name, region key, ambiguous candidates)."""
     m = _BBOX.search(text)
     if m:
-        return tuple(float(v) for v in m.groups()), None  # type: ignore[return-value]
-    low = text.lower()
-    for name, bbox in GAZETTEER.items():
-        if name in low:
-            return bbox, name.title()
-    return None, None
+        return tuple(float(v) for v in m.groups()), None, None, []  # type: ignore[return-value]
+    d, options = gazetteer.find(text)
+    if d:
+        return tuple(d["bbox"]), f"{d['name']}, {d['state']}", gazetteer.key(d), []  # type: ignore[return-value]
+    return None, None, None, [f"{o['name']}, {o['state']}" for o in options]
 
 
 def _valid_bbox(b: BBox) -> bool:
@@ -70,14 +63,17 @@ def _valid_bbox(b: BBox) -> bool:
 
 def parse(req: QueryRequest) -> ParsedQuery:
     intent = classify_intent(req.text)
-    bbox, place = (tuple(req.bbox), None) if req.bbox else _bbox_from_text(req.text)
+    if req.bbox:
+        bbox, place, region, options = tuple(req.bbox), None, None, []
+    else:
+        bbox, place, region, options = _bbox_from_text(req.text)
     windows = list(req.windows) if req.windows else _windows_from_text(req.text)
     problems: list[str] = []
 
     if intent == Intent.unsupported:
         problems.append("out_of_scope")
     if bbox is None:
-        problems.append("missing_area")
+        problems.append("ambiguous_area" if options else "missing_area")
     elif not _valid_bbox(bbox):  # type: ignore[arg-type]
         problems.append("invalid_area")
     need = 2 if intent in _CHANGE else 1
@@ -91,4 +87,5 @@ def parse(req: QueryRequest) -> ParsedQuery:
     understood = (f"{label} in {where}, {when}" if intent != Intent.unsupported
                   else "a question outside what SatClip can measure")
     return ParsedQuery(text=req.text, intent=intent, bbox=bbox, place_name=place, windows=windows,
+                       region=region, candidates=options,
                        understood_as=understood, problems=problems)

@@ -273,3 +273,15 @@ def test_scenes_endpoint_validates_and_searches(monkeypatch):
     assert tc.get("/v1/scenes", params={"bbox": "1,2,3", "start": "2024-11-01", "end": "2024-11-20"}).status_code == 422
     r = tc.get("/v1/scenes", params={"bbox": "91.0,26.3,91.05,26.35", "start": "2024-11-05", "end": "2024-11-20"})
     assert r.status_code == 200 and r.json()["count"] == 3 and r.json()["scenes"][0]["covers_request"]
+
+
+def test_reflectance_offsets_per_catalogue():
+    es = copy.deepcopy(S2["features"][0])
+    es["properties"]["earthsearch:boa_offset_applied"] = True
+    es["assets"]["red"]["raster:bands"] = [{"scale": 0.0001, "offset": -0.1}]
+    assert normalize_item(es).scale_offset("red") == (0.0001, 0.0)  # already harmonised: do not offset twice
+    pc = copy.deepcopy(S2["features"][0])
+    pc["properties"]["s2:processing_baseline"] = "05.11"
+    assert normalize_item(pc).scale_offset("nir") == (1e-4, -0.1)
+    pc["properties"]["s2:processing_baseline"] = "03.01"
+    assert normalize_item(pc).scale_offset("nir") == (1e-4, 0.0)

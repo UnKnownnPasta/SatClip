@@ -229,6 +229,41 @@ flowchart LR
 
 Known gap: only Planetary Computer serves openly readable Sentinel-1 pixels among the three default catalogues, so SAR has a single readable source unless a CDSE account (or a local mirror) is configured.
 
+### 6.7 AI engine as built (M3, `backend/satclip/instruments/`)
+
+```mermaid
+flowchart LR
+    Q[Question] --> PZ[parser + district gazetteer<br/>735 outlines, ODbL]
+    PZ --> RT{intent router<br/>config/satclip.yaml}
+    RT -- water_extent --> W1[sar_water_otsu]
+    RT -- water_change --> W2[sar_logratio_change]
+    RT -- vegetation_change --> V1[ndvi_difference]
+    RT -- land_cover --> L1[zero_shot_landcover<br/>RemoteCLIP, experimental]
+    RT -- describe --> D1[index_caption]
+    RT -- anything else --> X[decline with an example]
+    W1 & W2 & V1 & L1 & D1 --> TR[TileResult: value, sd, scenes,<br/>fit parameters, mask PNG]
+    TR --> AG[aggregate: total, propagated sd,<br/>calibration map, abstain rule]
+    AG --> CARD[Evidence card + receipt]
+```
+
+| Instrument | Sensor | Method | Fixed parameters (source) |
+|---|---|---|---|
+| `sar_water_otsu` | S1 RTC VV (S2 NDWI outside monsoon or as fallback) | Split-based selection of bimodal 1 km blocks (half-overlapping), Kittler-Illingworth minimum-error threshold on the pooled blocks; refit on the 3 x 3 tile neighbourhood at 40 m if the tile alone has no bimodal evidence; speckle blobs under 10 px removed | Ashman D >= 3 on class moments and 3 dB class gap, minority >= 10% (A084, A086); fit above -14 dB gamma0 rejected, default -17 dB gamma0 (A083, shifted +1 dB from sigma0) |
+| `sar_logratio_change` | S1 same orbit and track (S2 NDWI pair otherwise) | Water threshold fitted on the after scene and applied to both dates, plus a backscatter drop of at least 3 dB (log-ratio) | 3 dB drop (A036) |
+| `ndvi_difference` | S2 pair | NDVI on pixels clear on both dates (SCL 4 to 7), decline where NDVI fell by 0.15 or more on pixels vegetated before (NDVI >= 0.3) | 0.15 drop, 0.3 vegetated |
+| `index_caption` | S2 | Shares of water (NDWI > 0), dense vegetation (NDVI >= 0.5), sparse (0.2 to 0.5), other | Index cut-offs |
+| `zero_shot_landcover` | S2 true colour | RemoteCLIP ViT-B/32 over 4 x 4 sub-patches, softmax with a calibration temperature | Prompts per class; T = 1.5 placeholder (A031) |
+
+**Confidence model.** Each area instrument estimates how far its area would move if its threshold were wrong by a stated error (1 dB for SAR, 0.05 for NDVI and NDWI). The share of pixels within that error of the threshold gives the area's relative standard deviation `sd_rel = near / (2 x class share)`, and the probability that the area is within plus or minus 20% is `erf(0.2 / (sd_rel x sqrt 2))`. An evidence factor (0.75 to 1.0) discounts default thresholds and cloud. The card's confidence comes from the propagated total: tile standard deviations are summed (full correlation, the conservative case, since tiles share a scene and method). The instrument's calibration file (`config/calibration/`) then maps the score to a probability. Until M5 fits those files on labelled data they are identity maps marked `fitted: false`, and every card prints "placeholder (not yet fitted on labelled data)".
+
+**Region clipping.** A named district is resolved against the gazetteer; only tiles touching the outline are queued, and each instrument rasterises the outline into the scene's own grid so pixels outside the district are never counted.
+
+**Overlays.** Each tile writes a small RGBA PNG reprojected to the tile's lon/lat box (`GET /v1/masks/{name}`), so the map can show exactly which pixels were counted. In docker-compose the `masks` volume is shared by workers and the API.
+
+**Measured on live data (2026-10-05, sandbox CPU, 4 worker threads).** Barpeta district, 11 July 2024 Sentinel-1 pass: 117 tiles, 2,335 sq km measured in 30.6 s end to end, from question to evidence card. A 12-tile box takes 4 to 9 s.
+
+**Defects found on live data and fixed in this milestone.** (1) Otsu placed the threshold at -10.8 dB on a clearly bimodal Barpeta histogram (water mode near -18 dB, land near -7 dB), because land is far more variable than water; Kittler-Illingworth finds the valley near -14 dB. (2) Earth Search Sentinel-2 items carry `earthsearch:boa_offset_applied: true` while `raster:bands` still lists offset -0.1; applying it again made most reflectances negative. (3) A floating-point edge in tiling added a column of tiles outside the requested box.
+
 ---
 
 ## 7. Deployment modes
@@ -300,8 +335,8 @@ docker-compose.yml     api, worker, redis, frontend
 
 | Piece | M1 (this milestone) | Later |
 |---|---|---|
-| API, models, queue, worker loop, tiling, receipts, aggregation | Working, tested, with a placeholder instrument | Real instruments in M3 |
+| API, models, queue, worker loop, tiling, receipts, aggregation | Working, tested, with a placeholder instrument | Done in M3: five real instruments, propagated confidence, overlays (section 6.7) |
 | Data layer | Interface and config only | Done in M2: STAC search with failover, cloud filter and SAR fallback, COG reads, search cells (section 6.6) |
-| Parser | Rule-based intents, ISO dates, bbox | Gazetteer place names (M3), LoRA VLM parser (M5) |
+| Parser | Rule-based intents, ISO dates, bbox | District gazetteer done in M3 (735 outlines); LoRA VLM parser (M5) |
 | Frontend | Claymorphism shell wired to the API | Full UX, map, AOI picker, compare view in M4 |
 | Deployment | docker-compose with Redis | Load numbers in M6 |

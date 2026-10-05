@@ -4,4 +4,6 @@ __pycache__/
 *.egg-info/
 .venv/
 *.tif
-data/
+/data/
+/runtime/
+backend/runtime/

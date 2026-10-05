@@ -100,9 +100,9 @@ The deck put a fine-tuned vision-language model at the centre, generating the an
 | Deck task | What SatClip does | Instrument (prototype, CPU) |
 |---|---|---|
 | Change detection (headline) | Measures what changed, where, between two dates, with an area figure and mask | Sentinel-1 log-ratio with an automatic two-class threshold whose fitted posterior gives the confidence [A036], calibrated on Kuro Siwo [A041] and Sen1Floods11 [A022]; optical change vector analysis or index differencing calibrated on OSCD [A034, A035]; cloud mask decides the sensor [A019] |
-| Scene classification | Labels land cover for the area, with calibrated probabilities | RemoteCLIP or GeoRSCLIP zero-shot [A008, A009], plus a BigEarthNet-trained S1/S2 classifier [A017] |
+| Scene classification | Labels land cover for the area, with calibrated probabilities | Built in run 4 as an **experimental** instrument: RemoteCLIP zero-shot [A008] over sub-patches. On live Darbhanga data it mislabelled cropland and the card abstained (confidence 0.35). Next candidates: a BigEarthNet-trained S1/S2 classifier [A017], TerraMind [A097] or AlphaEarth embeddings [A096] with a small labelled head |
 | VQA | Answers only questions that break down into measurable instruments (presence, extent, area, change, trend). Anything else is declined. | Router plus instruments; never free-form generation of numbers |
-| Captioning | A short description, clearly labelled as a description, not a measurement | Retrieval-based or small captioner; a VLM later [A004, A025] |
+| Captioning | A short description, clearly labelled as a description, not a measurement | Built in run 4 as `index_caption`: shares of water, dense and sparse vegetation and other surfaces from NDWI and NDVI, written from a template, so it cannot hallucinate. A VLM caption later [A004, A025, A080], checked against these shares |
 | Object detection | Limited to what 10 m data supports (large water bodies, ships in SAR, large structures). Very high resolution counting is out of scope. | Deferred to M3 evaluation; flagged honestly |
 
 ### Where the fine-tuned VLM fits
@@ -139,12 +139,13 @@ The innovation is **ease**. SatClip does not have a better model. It has a short
 4. **Easier to extend.**
    - A new question type is a new instrument plus a calibration set, not a new model.
    - Tool-using EO agents lose reliability as tool chains get longer [A024]. SatClip keeps plans short and fixed: one question type, one instrument recipe.
+   - Run 4 measured how large that loss is. Free-form agents pick the right tool parameters only about 26% (Earth-Agent with GPT-5 [A094]) to 35% (ThinkGeo with GPT-4o [A092]) of the time, and ThinkGeo's end-to-end answers are right under 10% of the time. A fixed router to versioned instruments with set parameters cannot make that error.
 
 Compared with existing approaches:
 
 - **RS VLMs** (GeoChat, EarthGPT, EarthDial, TEOChat [A001, A002, A003, A007]) answer from model weights. Their answers carry no scene ID, date, calibrated confidence or abstention.
-- **Agent frameworks** [A023, A024] chain tools but neither carry confidence through nor abstain.
-- **Commercial assistants** (Google Earth AI, Earth Copilot, ArcGIS assistants) are gated by region, licence or invitation [E49 to E51].
+- **Agent frameworks** [A023, A024, A089, A094] chain tools, including real spectral instruments, but neither carry confidence through nor abstain, and none uses SAR when clouds block optical.
+- **Commercial assistants** (Google Earth AI [A095], Earth Copilot, ArcGIS assistants) are gated by region, licence or invitation [E49 to E51]. Google's published Earth AI system describes no refusal behaviour and attaches no scene IDs to agent answers [A095].
 
 SatClip's contribution is the combination, packaged for a non-expert: an evidence card with abstention, built on free data and running on CPU or offline. See [NOVELTY.md](NOVELTY.md) for the honest comparison.
 
@@ -172,6 +173,7 @@ SatClip's contribution is the combination, packaged for a non-expert: an evidenc
    - Each instrument's raw score is mapped to a probability using a held-out labelled set, starting from public data such as Sen1Floods11 [A022] and SEN12MS-CR [A019], and moving to Indian labelled events as they are collected.
    - The mapping is temperature or Platt scaling, checked with expected calibration error and reliability diagrams [A026]; zero-shot CLIP scores need it too [A031]. Category answers and per-pixel masks can use conformal sets, abstaining when a set contains contradictory labels [A028, A032].
    - Calibration error is reported, not assumed.
+   - **As built (run 4):** before any labelled fit, each area instrument computes a model-based confidence: the probability that its area is within plus or minus 20% if its threshold is off by a stated error (1 dB for SAR, 0.05 for NDVI), from the share of pixels near the threshold. Tile errors are summed for the district total, assuming full correlation (the conservative case). The calibration files are identity maps marked "not yet fitted", and every card prints that status. M5 replaces them with isotonic fits on labelled data.
 4. **Abstention.** Below a threshold, or with cloud and no SAR, or for an out-of-scope question, the answer is "insufficient evidence". It also names the next useful pass, for example "next Sentinel-1 pass over this AOI: 9 July". The threshold is chosen on a risk-coverage curve for a target error rate [A027] and published together with the resulting coverage, because strict risk targets can leave very few questions answered [A030].
 5. **Explanations never add persuasion.** In human-AI studies, explanations made people accept AI answers more often whether the answer was right or wrong [A067], and showing a confidence score improved how well people's reliance matched the AI's reliability without, by itself, raising joint accuracy [A070]. Trust should match capability, not be maximised [A065]. So the card leads with the map, the scenes and a plain confidence band; generated prose is short, optional and checked against the card (risk 9).
 6. **Auditability.** Each answer has a receipt: query, parsed intent, scene IDs, instrument name and version, parameters, and the output hash. Re-running the receipt reproduces the answer.
@@ -213,11 +215,13 @@ SatClip's contribution is the combination, packaged for a non-expert: an evidenc
 | 3 | **The question parser misreads intent or place.** | Show "I understood your question as..." on every card. Use a fixed, small intent set. Resolve place names against gazetteers. |
 | 4 | **Public endpoint limits or outages** (CDSE authentication, rate limits). | Use three catalogues with failover, aggressive caching and a local mirror option. |
 | 5 | **Users over-trust a confidence number or a fluent explanation.** Explanations raise acceptance of wrong answers too [A067]; confidence display calibrates reliance but does not by itself raise accuracy [A070]; field experience says trust and workflow fit, not algorithms, limit EO uptake by responders [A069]. | Use plain-language confidence bands. Make abstention visible and normal. Show the map, not just the number. Keep explanations short and secondary. Use the human-AI guidelines [A066] as a UI checklist, and run UX testing with real officers. |
-| 6 | **A large platform ships a similar assistant in India.** Google Earth AI is US-gated today [E49]. | Openness, offline deployment, SAR-first monsoon handling and receipts are hard for a closed service to match on government infrastructure. |
+| 6 | **A large platform ships a similar assistant in India.** Google Earth AI is US-gated today [E49] and, as published, chains models under a Gemini agent without refusal or per-answer scene receipts [A095]. | Openness, offline deployment, SAR-first monsoon handling and receipts are hard for a closed service to match on government infrastructure. |
 | 7 | **Scope creep back to a chatbot.** | Every new capability must arrive as an instrument plus a calibration set plus a test. |
 | 8 | **Coverage collapses at a strict risk target.** In VQA, abstention at 1% risk left under 8% of questions answered [A030]. If SatClip abstains on most real questions, users stop asking. | Publish coverage at 1%, 5% and 10% risk per instrument; pick the operating point with users; prefer instruments with a physical signal (SAR water) where coverage stays high. |
 | 9 | **The explanation layer hallucinates around correct numbers.** RS VLMs give hallucination-free answers only about 36% to 69% of the time, including wrong sensor and resolution claims [A033]; LVLMs over-claim co-occurring objects [A029]. | A deterministic check that every number, date, sensor and resolution in any generated sentence matches the evidence card; templated text when the check fails. |
 | 10 | **Foundation models overtake instruments.** Open EO foundation models with flood and crop fine-tunes exist [A052, A055]. If they become clearly more accurate on Indian events, a threshold instrument looks dated. | Keep the instrument interface model-agnostic: a fine-tuned foundation model can register as an instrument, as long as it is calibrated, versioned and carries a receipt. The evidence card, not the algorithm, is the product. |
+| 11 | **The confidence model is unvalidated until M5.** The run 4 confidence is a reasoned error model, not a fit on labels; on live Barpeta data it gives 0.6 to 0.7 for a clearly bimodal flood scene. It may be too strict or too lenient. | Label it on every card; fit isotonic maps on Sen1Floods11 and Kuro Siwo [A022, A041] in M5; publish reliability diagrams and coverage. |
+| 12 | **Permanent water and flooded paddy inflate "under water" numbers.** Barpeta on 11 July 2024 measured 681 sq km of water (29%), which includes the Brahmaputra channel, wetlands (beels) and flooded paddy. | Subtract a permanent-water reference (for example JRC Global Surface Water) and show "new since baseline" by default for flood questions; the change instrument already reports water before and after. |
 
 ---
 

@@ -5,13 +5,14 @@ Run:  uvicorn satclip.api.main:app --reload   (from backend/)
 from __future__ import annotations
 
 import asyncio
+import re
 import json
 from pathlib import Path
 from typing import Any, Optional
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from .. import __version__
@@ -19,6 +20,7 @@ from ..aggregate import card_for_problems
 from ..config import settings
 from ..jobqueue import make_queue, new_job_id
 from ..models import Job, JobState, QueryRequest, TileJob
+from .. import gazetteer
 from ..parser import parse
 from ..receipt import build_receipt
 from ..tiling import tiles_for_bbox
@@ -74,12 +76,18 @@ def create_app(cfg: Optional[dict[str, Any]] = None) -> FastAPI:
                     "card": job.card.model_dump(mode="json")}
         size = float(cfg.get("tiling", {}).get("tile_deg", 0.05))
         tiles = tiles_for_bbox(parsed.bbox, size)  # type: ignore[arg-type]
+        if parsed.region:  # keep only tiles that touch the district outline
+            from shapely.geometry import box
+            outline = gazetteer.outline_lonlat(parsed.region)
+            if outline is not None:
+                tiles = [(tid, tb) for tid, tb in tiles if outline.intersects(box(*tb))]
         limit = int(cfg.get("tiling", {}).get("max_tiles_per_job", 400))
         if len(tiles) > limit:
             raise HTTPException(413, f"Area too large: {len(tiles)} tiles (limit {limit}). Pick a smaller area.")
         instrument = cfg.get("intents", {}).get(parsed.intent.value, "not_implemented")
         tile_jobs = [TileJob(job_id=job.job_id, tile_id=tid, bbox=tb, intent=parsed.intent,
-                             windows=parsed.windows, instrument=instrument) for tid, tb in tiles]
+                             windows=parsed.windows, instrument=instrument, region=parsed.region)
+                     for tid, tb in tiles]
         queue.submit(job, tile_jobs)
         return {"job_id": job.job_id, "parsed": parsed.model_dump(mode="json"), "n_tiles": len(tiles)}
 
@@ -115,6 +123,32 @@ def create_app(cfg: Optional[dict[str, Any]] = None) -> FastAPI:
         if not rec:
             raise HTTPException(404, "receipt not found")
         return rec
+
+    masks_dir = Path(__file__).resolve().parents[3] / cfg.get("outputs", {}).get("masks_dir", "backend/runtime/masks")
+
+    @app.get("/v1/masks/{name}")
+    def get_mask(name: str) -> FileResponse:
+        """Per-tile map overlay (RGBA PNG in the tile's lon/lat box)."""
+        if not re.fullmatch(r"[0-9a-f]{20}\.png", name) or not (masks_dir / name).exists():
+            raise HTTPException(404, "mask not found")
+        return FileResponse(masks_dir / name, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
+
+    @app.get("/v1/regions")
+    def regions(q: str = "", limit: int = 10) -> dict:
+        """District search for the AOI picker. Returns name, state, key and bbox (no outlines)."""
+        ql = q.strip().lower()
+        hits = [d for d in gazetteer._data()["by_key"].values() if ql and d["name"].lower().startswith(ql)]
+        hits += [d for d in gazetteer._data()["by_key"].values() if ql and ql in d["name"].lower() and d not in hits]
+        return {"source": gazetteer.meta(), "regions": [{"key": gazetteer.key(d), "name": d["name"], "state": d["state"],
+                                                         "bbox": d["bbox"]} for d in hits[: max(1, min(limit, 50))]]}
+
+    @app.get("/v1/regions/{key}")
+    def region(key: str) -> dict:
+        d = gazetteer.get(key)
+        if not d:
+            raise HTTPException(404, "district not found")
+        return {"type": "Feature", "properties": {"key": key, "name": d["name"], "state": d["state"], "bbox": d["bbox"]},
+                "geometry": d["geometry"]}
 
     frontend = Path(__file__).resolve().parents[3] / "frontend"
     if frontend.is_dir():  # single-process demo: serve the UI from the API too

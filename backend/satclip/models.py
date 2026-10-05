@@ -38,6 +38,8 @@ class ParsedQuery(BaseModel):
     place_name: Optional[str] = None
     windows: list[DateWindow] = []
     understood_as: str
+    region: Optional[str] = None       # gazetteer key ("barpeta|assam") when a district was named
+    candidates: list[str] = []         # district options when a name is ambiguous
     problems: list[str] = []  # why the query cannot run yet (missing AOI, dates, out of scope)
 
 
@@ -48,6 +50,7 @@ class TileJob(BaseModel):
     intent: Intent
     windows: list[DateWindow]
     instrument: str
+    region: Optional[str] = None       # measurements are clipped to this district outline
 
 
 class TileStatus(str, Enum):
@@ -66,6 +69,7 @@ class TileResult(BaseModel):
     scenes: list[dict[str, Any]] = []   # [{id, date, sensor, catalog, href}]
     params: dict[str, Any] = {}         # instrument parameters, incl. fitted thresholds
     reason: Optional[str] = None
+    mask: Optional[dict[str, Any]] = None   # {"href", "bounds": [w, s, e, n], "legend"} map overlay
     cache_hit: bool = False
 
 
@@ -92,6 +96,15 @@ class EvidenceCard(BaseModel):
     tiles_total: int = 0
     tiles_answered: int = 0
     receipt_id: Optional[str] = None
+    instrument: Optional[str] = None
+    method: Optional[str] = None             # one plain sentence on how the number was measured
+    calibration: Optional[str] = None        # "fitted" or "placeholder (...)"
+    selection_notes: list[str] = []          # why these sensors and scenes were chosen
+    caveats: list[str] = []                  # what the measurement cannot tell you
+    breakdown: Optional[dict[str, float]] = None   # land cover / description shares (0..1)
+    details: dict[str, Any] = {}             # secondary numbers, e.g. water before and after
+    masks: list[dict[str, Any]] = []         # per-tile overlays for the map
+    region_name: Optional[str] = None
 
 
 class JobState(str, Enum):

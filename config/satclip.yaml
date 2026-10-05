@@ -48,11 +48,15 @@ trust:
     - {min: 0.85, label: high}
     - {min: 0.70, label: moderate}
     - {min: 0.0,  label: low}
-  calibration_dir: calibration/
+  calibration_dir: config/calibration
+
+outputs:
+  masks_dir: backend/runtime/masks   # per-tile PNG overlays; share this volume between api and workers
+  read_res_m: 20                     # measurement resolution (S2 10 m bands are averaged to 20 m)
 
 intents:
   water_extent: sar_water_otsu
   water_change: sar_logratio_change
   vegetation_change: ndvi_difference
   land_cover: zero_shot_landcover
-  describe: caption
+  describe: index_caption

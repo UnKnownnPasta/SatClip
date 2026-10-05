@@ -1,0 +1,7 @@
+{
+ "instrument": "zero_shot_landcover",
+ "method": "temperature",
+ "T": 1.5,
+ "fitted": false,
+ "note": "Placeholder temperature for the softmax over class prompts. M5 fits T on labelled Sentinel-2 patches (archive A031 shows zero-shot CLIP is miscalibrated without it)."
+}

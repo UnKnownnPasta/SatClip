@@ -13,8 +13,8 @@ def tile_id(col: int, row: int, size: float) -> str:
 
 def tiles_for_bbox(bbox: BBox, size: float) -> list[tuple[str, BBox]]:
     min_lon, min_lat, max_lon, max_lat = bbox
-    c0, c1 = math.floor((min_lon + 180) / size), math.ceil((max_lon + 180) / size - 1e-9)
-    r0, r1 = math.floor((min_lat + 90) / size), math.ceil((max_lat + 90) / size - 1e-9)
+    c0, c1 = math.floor((min_lon + 180) / size + 1e-9), math.ceil((max_lon + 180) / size - 1e-9)
+    r0, r1 = math.floor((min_lat + 90) / size + 1e-9), math.ceil((max_lat + 90) / size - 1e-9)
     out = []
     for r in range(r0, r1):
         for c in range(c0, c1):

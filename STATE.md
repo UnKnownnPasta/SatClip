@@ -6,9 +6,9 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 
 | Item | Value |
 |---|---|
-| Papers archived | 75 (IDs 001 to 075) |
-| Next paper ID | 076 |
-| Milestones done | M1, M2 (M3 is next) |
+| Papers archived | 100 (IDs 001 to 100) |
+| Next paper ID | 101 |
+| Milestones done | M1, M2, M3 (M4 is next) |
 | Deck | not yet created (M7) |
 
 ## Conventions and decisions
@@ -25,6 +25,11 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 
 - **Data layer conventions (run 3).** `backend/satclip/data/`. Instruments get pixels only through `DataProvider` (`for_tile`, `read`, `tile_is_clear`) and only see canonical band names (`green`, `red`, `nir`, `swir16`, `scl`, `vv`, `vh`). Searches are cached per 1 degree search cell. Tests use recorded fixtures in `backend/tests/fixtures/stac/` via `httpx.MockTransport`; COG tests write temp GeoTIFFs. Live check: `cd backend && python -m satclip.data.smoke`.
 - **Catalogue readability (run 3).** Earth Search S1 GRD is requester-pays and CDSE downloads need a login, so both are marked `readable: false` for those sensors in config. Sentinel-1 pixels therefore come only from Planetary Computer `sentinel-1-rtc` (SAS-signed). S2 has two readable sources (Earth Search, Planetary Computer).
+- **Lost data package (found run 4).** `.gitignore` had a bare `data/` rule, so `backend/satclip/data/` (the whole M2 data layer) was never committed in run 3; only its tests were. Run 4 rebuilt it against those committed tests and changed the rule to `/data/`. After every commit, check `git status --ignored` for source files that are being ignored.
+- **Live access (run 4).** In run 4 the sandbox reached all three STAC hosts, the Sentinel-2 COG bucket, Planetary Computer SAS tokens and blob storage, Hugging Face and geoBoundaries directly. Live checks: `cd backend && python -m satclip.data.smoke` and `python -m satclip.livecheck` (writes `backend/runtime/livecheck.json`). If egress is blocked again in a later run, fall back to the fixtures.
+- **Instrument conventions (run 4).** Instruments get config from `get_provider().cfg`; tests inject a fake provider with `satclip.data.provider.set_provider`. Each area instrument returns `value` (km2), `confidence`, `params.sigma_abs_km2`, `params.sigma_floor_km2`, `params.evidence_factor` and `params.measured_km2`; the aggregator sums the sds for the card confidence (ARCHITECTURE 6.7). Calibration files live in `config/calibration/<instrument>.json`; all are `fitted: false` identity maps until M5. Masks are written to `backend/runtime/masks/` (gitignored, shared docker volume) and served at `/v1/masks/{name}`.
+- **Gazetteer (run 4).** `backend/satclip/resources/districts.json`, 735 districts with state and simplified outline, built by `tools/build_gazetteer.py` from geoBoundaries gbOpen IND ADM2 and ADM1 (ODbL 1.0, LGD source, build 2023-12-12; the GitHub files are LFS, fetch them via media.githubusercontent.com). Duplicate names need the state in the question. Names of four letters or fewer must match their capitalisation.
+- **Radiometry (run 4).** Planetary Computer S1 RTC is gamma0 linear; SAR thresholds from sigma0 papers are shifted +1 dB. Earth Search S2 items with `earthsearch:boa_offset_applied: true` must not get the -0.1 offset again; Planetary Computer S2 needs it for baseline 04.00 and later.
 - **Sandbox egress (run 3).** The run sandbox's proxy refuses direct connections to all three STAC hosts (CONNECT 403, organization policy), even though the user allowed all websites. WebFetch can still reach them, which is how the fixtures were recorded. Live smoke and the real M3 instrument checks must be run by the user, or tested through WebFetch-recorded fixtures plus synthetic rasters.
 
 ## Open questions and items to verify
@@ -43,6 +48,9 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 - Venues confirmed only from READMEs:
   - GEOBench-VLM, ICCV 2025 (A014);
   - BigEarthNet-MM, GRSM 2021, not shown on any fetched page (A017).
+
+- Run 4 entries with flagged details: A077, A079, A080 have no peer-reviewed venue; A081 author list differs between arXiv and the journal record; A079 training set size given as 20K and 30K in different places; A082 test-set size is the agent's estimate; A083, A085, A086 written from abstracts and GFM documentation (paywalled); A086 volume unknown and Ashman D numbers from ESA training slides; A087 volume unknown; A092 CVPR 2026 workshop venue only from its README; A095 v1 date and public access unconfirmed; A096 Earth Engine catalogue page not loaded; A098 public STAC for NISAR not confirmed; A099 no scores or dataset link; A100 commissioning date and revisit over India unconfirmed.
+- Live findings to recheck in M6: Barpeta 11 July 2024 water figure (681 sq km) includes permanent water and paddy; compare with NRSC or ASDMA flood reports for early July 2024 before quoting it as flood extent.
 
 ## Run log
 
@@ -150,3 +158,35 @@ Together these point to an evidence-first design.
 **Exact next step (run 4)**
 1. Archive papers 076 to 100: rs-vlm (about 7, newest 2025 to 2026 models), sar-optical-fusion (about 6), eo-agents (about 6), upcoming (about 6).
 2. Build M3 in `backend/satclip/instruments/`: `sar_water_otsu` (VV dB, per-tile Otsu with bimodality check, abstain when no clear split), `sar_logratio_change`, `ndvi_difference` (with SCL masking via `DataProvider.tile_is_clear`), `zero_shot_landcover` (RemoteCLIP or GeoRSCLIP on CPU via open_clip, lazy-loaded), a template `caption` instrument; confidence from a calibration file per instrument (temperature or isotonic, with a documented placeholder until M5 fits it); masks saved as small PNG or COG per tile and linked from the card; replace demo gazetteer with OSM/Bhuvan boundaries if reachable. Test instruments on synthetic rasters through a fake `DataProvider` reader, since live catalogue access is blocked in the sandbox.
+
+### Run 4, 2026-10-05
+
+**Papers: 25 added (IDs 076 to 100)**
+- rs-vlm (7): GeoPixel, GeoGround, VHM, EarthMind, Falcon, Geo-R1, FUSAR-GPT.
+- sar-optical-fusion (6): Twele 2016 S1 flood chain, Martinis 2009 split-based thresholding, Martinis 2015 TerraSAR-X flood service, Chini 2017 HSBA, SEN12MS-CR-TS, UnCRtainTS.
+- eo-agents (6): Change-Agent, GeoGPT, Autonomous GIS (Li and Ning), ThinkGeo, GeoBenchX, Earth-Agent.
+- upcoming (6): Google Earth AI, AlphaEarth Foundations, TerraMind, NISAR, IEEE GRSS DFC 2026, Sentinel-1D.
+
+**Repair: M2 data layer rebuilt.** The run 3 data package had never been committed (see Conventions, "Lost data package"). Rebuilt `scene.py`, `stac.py`, `select.py`, `cog.py`, `provider.py`, `smoke.py` so all 34 committed tests pass, then verified live: S1 RTC and S2 windows read for Barpeta.
+
+**Milestone M3 done** (`backend/satclip/instruments/`, `calibration.py`, `gazetteer.py`)
+- `sar_water_otsu`: split-based bimodal block selection, Kittler-Illingworth threshold, neighbourhood refit, gamma0 limits, speckle removal; S2 NDWI path.
+- `sar_logratio_change`: same-orbit pair, threshold from the after scene plus a 3 dB drop; S2 NDWI pair path.
+- `ndvi_difference`: two-date NDVI on doubly clear pixels, decline and gain areas.
+- `index_caption`: template description from NDVI and NDWI shares (no generative model).
+- `zero_shot_landcover`: RemoteCLIP ViT-B/32 on CPU, lazy-loaded from Hugging Face, abstains if torch is missing.
+- Confidence model (threshold-error propagation, summed tile sds) and placeholder calibration files; district gazetteer with outline clipping; per-tile PNG overlays; card fields for method, calibration status, selection notes, caveats, breakdown, details, masks; API `/v1/masks`, `/v1/regions`, `/v1/regions/{key}`; `satclip.livecheck` script.
+- Tests: 49 passing (14 new instrument and API tests on synthetic rasters, plus new data and tiling tests).
+- Measured live: Barpeta district, 117 tiles, 2,335 sq km, 30.6 s from question to card on sandbox CPU. The same live question run twice in fresh processes gave the same receipt output hash.
+
+**Defects found on live data and fixed:** Otsu threshold misplaced on real SAR (switched to Kittler-Illingworth); Earth Search reflectance offset applied twice (description changed from 88% to 38% dense vegetation after the fix); tiling float edge added an extra column of tiles; naive Ashman D test passes unimodal data (now D >= 3 plus a 3 dB gap).
+
+**Docs updated:** ARCHITECTURE 6.7 (engine as built), SOLUTION v1.3 (ease evidence from agent benchmarks, built instruments, confidence as built, risks 11 and 12), NOVELTY v4 (seven new comparison rows, narrowed abstention claim, run 4 evidence, Google Earth AI now top threat), README, PLAN.
+
+**Problems hit:** torchvision from PyPI mismatched the CPU torch build (reinstall from the PyTorch CPU index fixed it). geoBoundaries files are Git LFS pointers on raw.githubusercontent.
+
+**Most important finding:** instrument-grounded EO agents now exist (Earth-Agent at ICLR 2026, Google Earth AI), so "instruments answer" alone is not new. But those agents get tool parameters right only 26% to 35% of the time and none abstains or attaches scene receipts. Our own live test showed the value of the gate: RemoteCLIP mislabelled Darbhanga cropland and the card abstained instead of publishing it.
+
+**Exact next step (run 5)**
+1. Archive papers 101 to 125: indian-context (about 7: ASDMA/NDMA flood reporting, Bhuvan, PMFBY YES-TECH, NRSC crop monitoring, Assam 2022 or 2024 floods), historical (about 7: Otsu 1979, Kittler-Illingworth 1986, McFeeters NDWI 1996, Tucker NDVI 1979, Chow 1970 reject option, Lee filter 1980, CVA Malila 1980), rs-benchmark (about 6), data-infrastructure (about 5).
+2. Build M4 in `frontend/`: map (Leaflet or MapLibre from cdnjs) with district search via `/v1/regions`, outline from `/v1/regions/{key}`, tile overlays from card `masks`, two-date compare picker, evidence chips (scene, date, sensor, confidence band, calibration status), abstention state with reason and next step, ambiguous-district chooser, method and caveats drawer, receipt link; mobile-first claymorphism, keyboard and contrast checks; Playwright screenshots saved in `docs/screenshots/` for the deck.
