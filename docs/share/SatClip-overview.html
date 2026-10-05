@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>SatClip in two pages</title>
+<style>
+@page { size: A4; margin: 0; }
+:root{
+  --bg:#EEF0FA; --card:#F7F8FD; --ink:#22243A; --muted:#55597A;
+  --lav:#7B6CF6; --lav-soft:#E3E0FD; --mint:#2E9C7B; --mint-soft:#D7F2E8;
+  --peach:#C4612F; --peach-soft:#FCE3D3; --sky:#2F78C4; --sky-soft:#DCEBFA;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:9.4pt;line-height:1.38}
+.page{width:210mm;height:297mm;padding:11mm 13mm 10mm;overflow:hidden;page-break-after:always;position:relative}
+.page:last-child{page-break-after:auto}
+.clay{background:var(--card);border-radius:16px;padding:9px 13px;
+  box-shadow:6px 6px 14px rgba(120,124,170,.28),-5px -5px 12px rgba(255,255,255,.95),inset 1px 1px 2px rgba(255,255,255,.9),inset -2px -2px 4px rgba(120,124,170,.10)}
+h1{font-size:23pt;line-height:1.08;margin:0 0 4px;font-weight:800;letter-spacing:-.3px}
+h1 span{color:var(--lav)}
+h2{font-size:11.5pt;margin:0 0 5px;font-weight:800}
+p{margin:0 0 6px}
+.kicker{font-size:8.6pt;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.lede{font-size:10.4pt;color:var(--muted);margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.mt{margin-top:9px}
+.pill{display:inline-block;border-radius:999px;padding:1px 9px;font-size:8.4pt;font-weight:700;margin:0 4px 4px 0}
+.p-lav{background:var(--lav-soft);color:#4A3DC4}.p-mint{background:var(--mint-soft);color:#1D6B53}
+.p-peach{background:var(--peach-soft);color:#97451C}.p-sky{background:var(--sky-soft);color:#1D5590}
+ul{margin:2px 0 0;padding-left:16px}li{margin-bottom:3px}
+.step{text-align:center;padding:10px 9px}
+.step .n{width:28px;height:28px;border-radius:50%;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;
+  box-shadow:inset -2px -3px 5px rgba(0,0,0,.18),inset 2px 2px 4px rgba(255,255,255,.4)}
+.step b{display:block;font-size:10.4pt;margin-bottom:2px}
+.step small{color:var(--muted);font-size:8.8pt;line-height:1.3;display:block}
+.card{border:2px dashed #C9C4F7}
+.card .q{font-weight:700;font-size:10.4pt;margin-bottom:6px}
+.answer{font-size:13pt;font-weight:800;color:#1D6B53;margin:4px 0 6px}
+.mapbox{height:60px;border-radius:12px;background:
+  radial-gradient(ellipse 60px 22px at 40% 55%, #8DB8EE 0 60%, transparent 62%),
+  radial-gradient(ellipse 40px 14px at 70% 35%, #8DB8EE 0 60%, transparent 62%),
+  linear-gradient(135deg,#DDEBD5,#CFE3C3);box-shadow:inset 2px 2px 6px rgba(0,0,0,.12)}
+.note{font-size:8.2pt;color:var(--muted);font-style:italic}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:8.9pt}
+th,td{text-align:left;padding:3px 7px;vertical-align:top}
+th{font-size:8.8pt;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+tr+tr td{border-top:1px solid #E1E3F1}
+td.us{color:#1D6B53;font-weight:700}
+.status li b{display:inline-block;width:64px}
+.foot{position:absolute;bottom:8mm;left:14mm;right:14mm;font-size:8pt;color:var(--muted);display:flex;justify-content:space-between}
+.gl dt{font-weight:800;display:inline}.gl dd{display:inline;margin:0}.gl div{margin-bottom:3px}
+</style></head><body>
+
+<!-- PAGE 1 -->
+<section class="page">
+  <div class="kicker">Team Stardust · Smart India Hackathon 2026 · Problem SIH26167 (Space Technology)</div>
+  <h1>SatClip: ask a question about land,<br><span>get an answer you can check.</span></h1>
+  <p class="lede">Free satellites photograph all of India every few days. SatClip lets anyone ask a plain question about a place and a date, and answers with a measurement taken from those images, the proof behind it, and an honest "not enough evidence" when it cannot be sure.</p>
+
+  <div class="grid2">
+    <div class="clay">
+      <h2>The problem</h2>
+      <p>Satellite images could answer urgent questions like "which villages are flooded?" or "did this crop fail?". Today, using them is hard:</p>
+      <ul>
+        <li><b>It needs specialist skills.</b> Choosing satellites, downloading huge files and processing them takes mapping (GIS) training most offices do not have.</li>
+        <li><b>Clouds hide the ground</b> in the monsoon, exactly when floods happen. Ordinary photos from space show only cloud.</li>
+        <li><b>Official maps are shared thin.</b> In 2024 India's national flood-mapping service issued about 300 flood maps for the whole country, so most local questions go unanswered.</li>
+        <li><b>AI chatbots sound sure but show no proof.</b> A fluent answer with no date, image or confidence is hard to act on.</li>
+      </ul>
+    </div>
+    <div class="clay">
+      <h2>Who it helps</h2>
+      <p><span class="pill p-sky">District disaster officials</span> "Which parts of my district are under water since Tuesday, and is it spreading?"</p>
+      <p><span class="pill p-mint">Agriculture and crop-insurance officers</span> "Did crops in these blocks really suffer this season?"</p>
+      <p><span class="pill p-peach">Journalists and fact-checkers</span> "Was this place really flooded on the date a viral post claims?"</p>
+      <p><span class="pill p-lav">Planners and researchers</span> "How much has this town grown since 2020?"</p>
+      <p style="margin-top:6px">We start with <b>monsoon floods and crop condition at district level</b>, where a slow or wrong answer costs the most.</p>
+    </div>
+  </div>
+
+  <h2 class="mt">How it works, in four steps</h2>
+  <div class="grid4">
+    <div class="clay step"><div class="n" style="background:var(--lav)">1</div><b>You ask</b><small>Type a question in plain words. SatClip repeats back what it understood, so a misreading is caught at once.</small></div>
+    <div class="clay step"><div class="n" style="background:var(--sky)">2</div><b>It finds the right image</b><small>It searches free public satellite archives. If clouds block the view, it switches to radar, which sees through cloud.</small></div>
+    <div class="clay step"><div class="n" style="background:var(--mint)">3</div><b>It measures</b><small>A transparent, well-tested method does the measuring (for example, spotting water in radar images). The AI never makes up the number.</small></div>
+    <div class="clay step"><div class="n" style="background:var(--peach)">4</div><b>It shows the proof</b><small>You get an evidence card: the answer, a map, which image and date it came from, and how confident it is.</small></div>
+  </div>
+
+  <div class="grid2 mt">
+    <div class="clay card">
+      <div class="kicker" style="margin-bottom:3px">What an answer looks like</div>
+      <div class="q">"How much of Barpeta district was under water around 11 July 2024?"</div>
+      <div class="mapbox"></div>
+      <div class="answer">About ___ sq km under water</div>
+      <span class="pill p-mint">Confidence: high</span><span class="pill p-sky">Radar image, 11 Jul 2024</span><span class="pill p-lav">Scene ID shown</span><span class="pill p-peach">Re-run receipt</span>
+      <p class="note">Illustration of the layout only. The measuring engine is being built now, so no real figure is shown.</p>
+    </div>
+    <div class="clay">
+      <h2>And when it is not sure</h2>
+      <p>If the image is unclear, the question is outside what SatClip can measure, or confidence falls below a set level, it says <b>"insufficient evidence"</b> instead of guessing, and tells you what would help, such as the date of the next satellite pass.</p>
+      <p>A careful "I don't know" protects decisions. A confident wrong answer about a flood or a crop can send help to the wrong place or deny a fair claim.</p>
+    </div>
+  </div>
+  <div class="foot"><span>SatClip · github.com/UnKnownnPasta/satclip</span><span>1 / 2</span></div>
+</section>
+
+<!-- PAGE 2 -->
+<section class="page">
+  <h2 style="font-size:15pt">Why it is easier than what exists</h2>
+  <p class="lede" style="font-size:10.4pt">Our innovation is not a bigger AI model. It is a shorter, checkable path from a question to an answer someone can act on.</p>
+
+  <div class="clay">
+    <table>
+      <tr><th style="width:26%"></th><th>Typical satellite AI chatbot or GIS tool</th><th>SatClip</th></tr>
+      <tr><td><b>Skills needed</b></td><td>GIS training, or knowing which satellite and settings to use</td><td class="us">Just a question in plain words</td></tr>
+      <tr><td><b>Monsoon clouds</b></td><td>Often no usable image, or you must know to switch to radar</td><td class="us">Switches to radar automatically and says so</td></tr>
+      <tr><td><b>Where the number comes from</b></td><td>Generated by the AI model itself</td><td class="us">Measured by a transparent method from the actual image</td></tr>
+      <tr><td><b>Proof</b></td><td>Usually none shown</td><td class="us">Image ID, date, map, confidence and a receipt anyone can re-run</td></tr>
+      <tr><td><b>When unsure</b></td><td>Usually answers anyway</td><td class="us">Says "insufficient evidence" and what would fix it</td></tr>
+      <tr><td><b>Cost and setup</b></td><td>Paid licences, powerful hardware, or region-locked services</td><td class="us">Free public data, open models, runs on an ordinary computer, can run offline</td></tr>
+    </table>
+  </div>
+
+  <div class="grid2 mt">
+    <div class="clay">
+      <h2>Why you can trust it</h2>
+      <ul>
+        <li><b>Every answer points to its source:</b> the exact satellite image, its date and the area measured.</li>
+        <li><b>Confidence is checked, not guessed.</b> It is tuned against cases where the true answer is known, and shown in plain words: high, moderate or low.</li>
+        <li><b>Anyone can re-run it.</b> Each answer has a receipt that reproduces the same result.</li>
+        <li><b>Evidence first, chat second.</b> Studies show AI explanations can make people accept wrong answers as readily as right ones, while a well-tuned confidence helps them judge when to rely on it. So SatClip leads with the map and proof.</li>
+      </ul>
+    </div>
+    <div class="clay">
+      <h2>How it grows</h2>
+      <ul>
+        <li><b>More users:</b> big areas are split into small tiles worked on in parallel; repeated questions reuse results.</li>
+        <li><b>More places:</b> it reads only the part of each image it needs, with backup archives if one is down.</li>
+        <li><b>More languages:</b> only the question reading changes; numbers never pass through translation.</li>
+        <li><b>Government use:</b> runs on a laptop, a state data centre, or fully offline.</li>
+      </ul>
+      <h2 style="margin-top:8px">What it will not do</h2>
+      <p>Count cars or houses (the free images are too coarse), predict the future, or replace official maps and field checks. It answers the local follow-up questions those cannot.</p>
+    </div>
+  </div>
+
+  <div class="grid2 mt">
+    <div class="clay status">
+      <h2>Where the project is today</h2>
+      <ul style="list-style:none;padding-left:0">
+        <li><span class="pill p-mint">Done</span> Research review: 75 papers so far, of about 200 planned</li>
+        <li><span class="pill p-mint">Done</span> System design and working app skeleton</li>
+        <li><span class="pill p-mint">Done</span> Connection to free satellite archives, with automatic radar fallback</li>
+        <li><span class="pill p-sky">Next</span> Measuring engine: floods, crop change, land cover</li>
+        <li><span class="pill p-lav">Then</span> Full app screens, training code, testing, demo</li>
+      </ul>
+      <p style="margin-top:6px;font-size:8.8pt"><b>Team Stardust (RVITM):</b> Sai Bhuwan S, Yashita Mandavilli, Raj Venkat, Nikhil S Rao, Shashwat Mittal, Sasanuru Anirudh.</p>
+    </div>
+    <div class="clay">
+      <h2>Words used here</h2>
+      <dl class="gl" style="margin:0">
+        <div><dt>Radar (Sentinel-1):</dt> <dd>a European satellite that sends its own signal, so it sees through cloud and at night.</dd></div>
+        <div><dt>Optical (Sentinel-2):</dt> <dd>a satellite camera, like a photo from space; blocked by cloud.</dd></div>
+        <div><dt>GIS:</dt> <dd>mapping software that usually needs training.</dd></div>
+        <div><dt>Confidence:</dt> <dd>how likely the answer is to be right, checked against known cases.</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="foot"><span>SatClip · github.com/UnKnownnPasta/satclip</span><span>2 / 2</span></div>
+</section>
+</body></html>
