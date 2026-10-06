@@ -38,6 +38,13 @@ def create_app(cfg: Optional[dict[str, Any]] = None) -> FastAPI:
     def health() -> dict:
         return {"status": "ok", "version": __version__, "queue": cfg.get("queue", {}).get("backend", "inline")}
 
+    @app.get("/v1/ui-config")
+    def ui_config() -> dict:
+        """Settings the web UI needs: confidence bands, the publication threshold, the base map and example questions."""
+        trust, ui = cfg.get("trust", {}), cfg.get("ui", {})
+        return {"abstain_below": trust.get("abstain_below", 0.6), "bands": trust.get("bands", []),
+                "window_half_days": 6, "basemap": ui.get("basemap", {}), "examples": ui.get("examples", [])}
+
     @app.get("/v1/intents")
     def intents() -> dict:
         return {"intents": cfg.get("intents", {})}

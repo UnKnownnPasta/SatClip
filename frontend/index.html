@@ -3,49 +3,139 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>SatClip</title>
+  <meta name="description" content="Ask a plain-language question about an Indian district. Get a measured answer with its satellite evidence, or an honest 'not enough evidence'.">
+  <!-- Leaflet is vendored (frontend/vendor) so the UI also works on air-gapped installs. -->
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip" href="#ask">Skip to question</a>
+  <a class="skip" href="#q">Skip to question</a>
+
   <header class="top clay">
     <span class="logo" aria-hidden="true"></span>
-    <div>
+    <div class="brand">
       <h1>SatClip</h1>
-      <p class="tag">Ask about any place. Get an answer with its evidence.</p>
+      <p class="tag">Ask about any district. Get a measured answer with its evidence, or an honest "not enough evidence".</p>
     </div>
+    <span id="status" class="pill clay-sm" role="status" aria-live="polite">Connecting</span>
   </header>
 
-  <main>
-    <form id="ask" class="clay panel" autocomplete="off">
+  <main class="layout">
+    <!-- 1. Ask -->
+    <form id="ask" class="clay panel ask" autocomplete="off" novalidate aria-labelledby="ask-h">
+      <h2 id="ask-h" class="h2">Ask a question</h2>
+
       <label for="q" class="label">Your question</label>
-      <textarea id="q" rows="2" required minlength="3"
-        placeholder="How much of Barpeta was under water on 2026-07-05?"></textarea>
-      <div class="chips" role="group" aria-label="Example questions">
-        <button type="button" class="chip clay-sm" data-q="How much of Barpeta was under water on 2026-07-05?">Flood extent</button>
-        <button type="button" class="chip clay-sm" data-q="Did the flood spread in Barpeta between 2026-06-15 and 2026-07-05?">Flood change</button>
-        <button type="button" class="chip clay-sm" data-q="Did the crop decline in Darbhanga between 2026-06-01 and 2026-09-01?">Crop change</button>
-      </div>
-      <button type="submit" class="go clay-btn">Ask</button>
+      <textarea id="q" rows="3" required minlength="3" maxlength="500" aria-describedby="q-hint q-err"
+        placeholder="How much of Barpeta was under water on 2024-07-11?"></textarea>
+      <p id="q-hint" class="hint">Name a district and a date, or pick them below. SatClip answers four kinds of question: water extent, water change, crop or greenness change, and what the land looks like.</p>
+      <p id="q-err" class="err hidden" role="alert"></p>
+
+      <div class="chips" role="group" aria-label="Example questions" id="examples"></div>
+
+      <details class="more clay-inset" id="more">
+        <summary>Pick the place and dates yourself</summary>
+
+        <div class="field">
+          <label for="place" class="label">District</label>
+          <div class="combo">
+            <input id="place" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false"
+              aria-controls="place-list" aria-describedby="place-hint" placeholder="Start typing, e.g. Barpeta" spellcheck="false">
+            <ul id="place-list" role="listbox" class="listbox clay hidden" aria-label="Matching districts"></ul>
+          </div>
+          <p id="place-hint" class="hint">A picked district is used even if the question names another place.</p>
+          <div id="place-picked" class="picked hidden"></div>
+        </div>
+
+        <fieldset class="field">
+          <legend class="label">Dates</legend>
+          <div class="seg clay-inset" role="radiogroup" aria-label="Date mode">
+            <label><input type="radio" name="mode" value="one" checked><span>One date</span></label>
+            <label><input type="radio" name="mode" value="two"><span>Compare two dates</span></label>
+          </div>
+          <div class="dates">
+            <label class="date"><span id="d1-label">Date</span><input type="date" id="d1" min="2015-01-01"></label>
+            <label class="date hidden" id="d2-wrap"><span>After date</span><input type="date" id="d2" min="2015-01-01"></label>
+          </div>
+          <p class="hint">Each date becomes a search window of plus or minus <span id="half">6</span> days, about one Sentinel-1 revisit.</p>
+        </fieldset>
+      </details>
+
+      <button type="submit" class="go clay-btn" id="go">
+        <span class="go-label">Ask</span>
+      </button>
     </form>
 
-    <section id="understood" class="clay panel hidden" aria-live="polite">
-      <h2 class="label">I understood your question as</h2>
-      <p id="understood-text"></p>
-      <div class="progress clay-inset" aria-hidden="true"><span id="bar"></span></div>
-      <p id="progress-text" class="muted"></p>
+    <!-- 2. What SatClip understood and how far it got -->
+    <section id="understood" class="clay panel hidden" aria-labelledby="u-h">
+      <h2 id="u-h" class="label">I understood your question as</h2>
+      <p id="understood-text" class="understood"></p>
+      <ol class="steps" id="steps" aria-label="Progress">
+        <li data-step="parse">Read the question</li>
+        <li data-step="scenes">Find satellite passes</li>
+        <li data-step="measure">Measure each map tile</li>
+        <li data-step="check">Check confidence</li>
+      </ol>
+      <div class="progress clay-inset" role="progressbar" aria-labelledby="progress-text" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress">
+        <span id="bar"></span>
+      </div>
+      <p id="progress-text" class="muted" aria-live="polite"></p>
     </section>
 
-    <section id="card" class="clay panel hidden" aria-live="polite">
-      <h2 class="label" id="card-title">Answer</h2>
+    <!-- 3. The evidence card -->
+    <section id="card" class="clay panel card hidden" tabindex="-1" aria-labelledby="card-title">
+      <div class="card-head">
+        <span id="badge" class="badge"></span>
+        <h2 class="label" id="card-title">Answer</h2>
+      </div>
+      <p id="headline" class="headline"></p>
       <p id="answer" class="answer"></p>
-      <div id="evidence" class="chips"></div>
-      <p id="next" class="next hidden"></p>
-      <p class="muted"><a id="receipt" href="#" target="_blank" rel="noopener">View receipt</a> (re-run this answer)</p>
+
+      <div id="meter-wrap" class="meter-wrap hidden">
+        <div class="meter clay-inset" aria-hidden="true">
+          <span id="meter-fill"></span>
+          <span id="meter-threshold" class="threshold"></span>
+        </div>
+        <p id="meter-text" class="muted small"></p>
+      </div>
+
+      <div id="abstain-box" class="abstain-box hidden">
+        <p id="reason" class="reason"></p>
+        <p id="next" class="next"></p>
+        <div id="choices" class="chips" role="group" aria-label="Choose a district"></div>
+      </div>
+
+      <h3 class="label">Evidence</h3>
+      <ul id="evidence" class="chips evidence" aria-label="Evidence"></ul>
+
+      <details class="drawer clay-inset" id="drawer">
+        <summary>How this was measured</summary>
+        <div id="drawer-body"></div>
+      </details>
+
+      <div class="card-actions">
+        <a id="receipt" class="clay-sm action" href="#" target="_blank" rel="noopener">Open receipt</a>
+        <button type="button" id="copy" class="clay-sm action">Copy receipt ID</button>
+        <button type="button" id="again" class="clay-sm action">Edit question</button>
+      </div>
+    </section>
+
+    <!-- 4. Map -->
+    <section class="clay panel mapbox" aria-labelledby="map-h">
+      <div class="map-head">
+        <h2 id="map-h" class="label">Map</h2>
+        <label class="toggle"><input type="checkbox" id="show-overlay" checked> Measured overlay</label>
+      </div>
+      <div id="map" class="map clay-inset" role="region" aria-label="Map of the district and the measured result. All numbers are also in the evidence card."></div>
+      <ul id="legend" class="legend" aria-label="Map legend"></ul>
+      <p id="map-note" class="muted small">The outline is the district boundary. Coloured cells show what was measured, tile by tile.</p>
     </section>
   </main>
 
-  <footer class="muted foot">Team Stardust, SIH 2026 (SIH26167). Data: Copernicus Sentinel via public STAC catalogues.</footer>
+  <footer class="muted foot">Team Stardust, SIH 2026 (SIH26167). Data: Copernicus Sentinel-1 and Sentinel-2 via public STAC catalogues. District boundaries: geoBoundaries (ODbL).</footer>
+  <script src="vendor/leaflet/leaflet.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

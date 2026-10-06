@@ -10,11 +10,11 @@ from .models import EvidenceCard, Intent, Job, SceneRef, TileStatus
 MIN_TILE_COVERAGE = 0.5  # abstain if fewer than half the tiles could be measured
 
 _NEXT_STEP = {
-    "out_of_scope": "Try a supported question, for example: 'How much of Barpeta was under water on 2026-07-05?'",
+    "out_of_scope": "Try a supported question, for example: 'How much of Barpeta was under water on 2024-07-11?'",
     "missing_area": "Pick an area on the map, or name a district.",
     "invalid_area": "The area box is not valid. Draw it again on the map.",
-    "missing_dates": "Add a date, for example 2026-07-05.",
-    "need_two_dates": "A change question needs two dates, for example 2026-06-15 and 2026-07-05.",
+    "missing_dates": "Add a date, for example 2024-07-11.",
+    "need_two_dates": "A change question needs two dates, for example 2024-06-05 and 2024-07-11.",
     "ambiguous_area": "Several districts share this name. Add the state, for example 'Aurangabad, Bihar'.",
 }
 

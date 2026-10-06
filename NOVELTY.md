@@ -1,6 +1,6 @@
 # What is new in SatClip, and what would have to be true
 
-This document is an honest comparison against the closest existing systems. It is checked against the archive as it grows: version 4 (run 4) covers 100 papers plus the competitor evidence in [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md). A final pass against the whole archive is milestone M8.
+This document is an honest comparison against the closest existing systems. It is checked against the archive as it grows: version 5 (run 5) covers 125 papers plus the competitor evidence in [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md). A final pass against the whole archive is milestone M8.
 
 Citation keys: `[A001]` is an archive entry and `[E49]` is an evidence-brief claim.
 
@@ -96,7 +96,18 @@ The claim is novelty of **combination and packaging for a specific user**, which
 - **The data supply keeps improving.** Sentinel-1C and 1D restore a two-satellite constellation with about 6-day revisit [A100]; NISAR adds free L-band and S-band SAR with provisional calibrated products since July 2026 [A098]. More passes mean fewer abstentions for lack of a recent scene.
 - **A learned land-cover model was wrong, and the card abstained.** On live Sentinel-2 over Darbhanga (mostly cropland), RemoteCLIP [A008] labelled patches as grassland, forest and bare land with mean top probability 0.35, so the card abstained instead of publishing it. This is the design working, and a measured case for keeping learned models behind a confidence gate.
 
+### Run 5 evidence that strengthens or tests the claim
+
+- **Benchmarks keep confirming the core design choice.** On DisasterM3, general and RS VLMs are near chance at counting damaged buildings and get worse when the post-disaster image is SAR [A118]. On XLRS-Bench, the best MLLMs average about 40% on four-option questions over huge scenes and almost never draw a correct box [A117]. EarthVQA finds counting and comprehensive analysis far weaker than yes/no judging even with masks as input [A115]. Measuring with instruments and letting language only phrase the result remains the safer design.
+- **Foundation models do not beat simple supervised baselines on flood water.** On PANGAEA's Sen1Floods11 task a plain UNet outperforms every geospatial foundation model, and RemoteCLIP reaches about 55 water IoU [A120]; GEO-Bench also found RS pre-training often fails to beat ImageNet weights [A119]. This supports keeping SAR thresholding as the water instrument and keeping RemoteCLIP experimental (risk 10 in SOLUTION.md is not yet materialising).
+- **The data-layer ease is not unique and should not be claimed as such.** openEO (now an OGC Community Standard) [A121] and odc-stac [A125] already turn STAC searches into district-clipped cubes. SatClip's novelty is above that layer: the question-to-card contract, calibrated abstention and receipts for a non-expert. We should reuse these tools where they fit and record an openEO-style process graph in the receipt.
+- **The method lineage is decades old, which is a strength.** Minimum-error thresholding [A109], Otsu [A108], NDWI [A110], NDVI [A111], Lee speckle filtering [A113], change vectors [A114] and the reject option [A112] are well understood and explainable to an auditor. The new part is packaging them behind a plain question with a calibrated, abstaining, receipt-backed answer.
+- **Official Indian products still publish headline numbers without uncertainty.** A peer-reviewed Assam 2022 Sentinel-1 study reports a flooded area of about 33,900 sq km with no stated uncertainty [A105]; the NRSC atlases are multi-year syntheses, not answers to today's question [A046, A106]. This gap is exactly what the evidence card fills.
+- **Live check, run 5.** The web UI ran end to end on live data: Barpeta flood extent (published, 0.66, just above the 0.60 line), Barpeta flood change June to July 2024 (abstained at 0.56, shown with its map), Darbhanga crop change March to April 2024 (published, 0.89, with the caveat that harvest also lowers greenness), and an ambiguous "Aurangabad" (two one-tap choices, nothing measured). A live search on 6 October 2026 also returned Sentinel-1D scenes over Barpeta, so the restored constellation [A100] is already in the catalogue.
+
 ## 4. Closest threats to the claim (watch list)
+
+- **openEO and odc-stac based assistants** [A121, A125]: anyone could put a chat front end on these. Watch for one that adds confidence and abstention.
 
 - **Google Earth AI** [A095] is now the closest threat, not just a product page: same headline (plain-language land questions answered by chaining models), Google's data and distribution. Gaps today: no refusal behaviour described, no per-answer scene receipts, high-resolution RGB rather than SAR time series, small rubric-based evaluation, US-gated. If it adds abstention and provenance, SatClip's differentiation narrows to openness, offline deployment on Indian infrastructure, SAR-first monsoon handling and free data.
 - **Earth-Agent** [A094] could add confidence and refusal with modest work. Watch for a follow-up.

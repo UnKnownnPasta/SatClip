@@ -13,6 +13,10 @@ You might ask: *"Was Barpeta flooded after 2 July compared to mid June?"* SatCli
 
 When the evidence is not good enough, it says "insufficient evidence" and tells you when the next useful satellite pass is.
 
+![SatClip answering a live flood question for Barpeta district](docs/screenshots/02-flood-extent-desktop.png)
+
+More screens (mobile, dark mode, abstention, ambiguous district): [docs/screenshots/](docs/screenshots/).
+
 ## Run it
 
 ```bash
@@ -50,13 +54,13 @@ See [SOLUTION.md](SOLUTION.md) for the full thesis and evidence.
 
 | Part | Where | Status |
 |---|---|---|
-| Solution thesis | [SOLUTION.md](SOLUTION.md) | v1.3 (run 4) |
-| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v4 (run 4) |
-| Research archive (target about 200 papers) | [archive/](archive/README.md) | 100 papers |
+| Solution thesis | [SOLUTION.md](SOLUTION.md) | v1.4 (run 5) |
+| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v5 (run 5) |
+| Research archive (target about 200 papers) | [archive/](archive/README.md) | 125 papers |
 | Problem evidence brief | [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md) | v1 |
 | Idea deck summary | [docs/reference/deck-notes.md](docs/reference/deck-notes.md) | done |
-| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | M1 to M3 done |
-| Prototype (FastAPI backend and claymorphism frontend) | [backend/](backend/), [frontend/](frontend/), [config/satclip.yaml](config/satclip.yaml), [docker-compose.yml](docker-compose.yml) | Working end to end on live Sentinel data: data layer (M2), five instruments with confidence, abstention and map overlays (M3); full UI is M4 |
+| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | M1 to M4 done |
+| Prototype (FastAPI backend and claymorphism frontend) | [backend/](backend/), [frontend/](frontend/), [config/satclip.yaml](config/satclip.yaml), [docker-compose.yml](docker-compose.yml) | Working end to end on live Sentinel data: data layer (M2), five instruments with confidence, abstention and map overlays (M3); mobile-first claymorphism UI with district picker, two-date compare, evidence chips, confidence meter and map overlays (M4) |
 | Training code (LoRA, Colab notebook, evaluation, calibration) | `training/` | M5, planned |
 | Pitch deck (.pptx) | `deck/` | M7, planned |
 | Plan and progress | [PLAN.md](PLAN.md), [STATE.md](STATE.md) | live |

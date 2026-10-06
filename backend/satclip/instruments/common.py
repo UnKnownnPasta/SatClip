@@ -160,7 +160,8 @@ def save_overlay(job: TileJob, raster, classes: np.ndarray, palette: dict[int, t
     name = digest({"j": job.instrument, "t": job.tile_id, "w": [x.model_dump(mode="json") for x in job.windows],
                    "r": job.region})[:20] + ".png"
     Image.fromarray(rgba, "RGBA").save(out_dir / name, optimize=True)
-    return {"href": f"/v1/masks/{name}", "bounds": list(job.bbox), "legend": legend}
+    colors = {str(k): "#%02x%02x%02x" % tuple(c[:3]) for k, c in palette.items() if k}
+    return {"href": f"/v1/masks/{name}", "bounds": list(job.bbox), "legend": legend, "colors": colors}
 
 
 def scene_ev(scene, role: Optional[str] = None) -> dict[str, Any]:

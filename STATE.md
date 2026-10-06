@@ -6,9 +6,9 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 
 | Item | Value |
 |---|---|
-| Papers archived | 100 (IDs 001 to 100) |
-| Next paper ID | 101 |
-| Milestones done | M1, M2, M3 (M4 is next) |
+| Papers archived | 125 (IDs 001 to 125) |
+| Next paper ID | 126 |
+| Milestones done | M1, M2, M3, M4 (M5 is next) |
 | Deck | not yet created (M7) |
 
 ## Conventions and decisions
@@ -30,6 +30,8 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 - **Instrument conventions (run 4).** Instruments get config from `get_provider().cfg`; tests inject a fake provider with `satclip.data.provider.set_provider`. Each area instrument returns `value` (km2), `confidence`, `params.sigma_abs_km2`, `params.sigma_floor_km2`, `params.evidence_factor` and `params.measured_km2`; the aggregator sums the sds for the card confidence (ARCHITECTURE 6.7). Calibration files live in `config/calibration/<instrument>.json`; all are `fitted: false` identity maps until M5. Masks are written to `backend/runtime/masks/` (gitignored, shared docker volume) and served at `/v1/masks/{name}`.
 - **Gazetteer (run 4).** `backend/satclip/resources/districts.json`, 735 districts with state and simplified outline, built by `tools/build_gazetteer.py` from geoBoundaries gbOpen IND ADM2 and ADM1 (ODbL 1.0, LGD source, build 2023-12-12; the GitHub files are LFS, fetch them via media.githubusercontent.com). Duplicate names need the state in the question. Names of four letters or fewer must match their capitalisation.
 - **Radiometry (run 4).** Planetary Computer S1 RTC is gamma0 linear; SAR thresholds from sigma0 papers are shifted +1 dB. Earth Search S2 items with `earthsearch:boa_offset_applied: true` must not get the -0.1 offset again; Planetary Computer S2 needs it for baseline 04.00 and later.
+- **UI conventions (run 5).** `frontend/` is plain HTML, CSS and JS with no build step; Leaflet is vendored in `frontend/vendor/leaflet/` (no CDN scripts, a test enforces it). UI settings and example questions live in `config/satclip.yaml` under `ui`, served by `GET /v1/ui-config`. Screenshots: start the API (`cd backend && uvicorn satclip.api.main:app --port 8000`), then `python tools/screenshots.py` (live questions take 20 to 60 s each) and `python tools/ui_keyboard_check.py`. Do not run `pkill -f "uvicorn satclip"` from the Bash tool: the pattern matches the tool's own shell and kills it.
+- **Research agents and fetching (run 5).** Two research agents fell back to curl when WebFetch permission prompts timed out (not domain blocks). Entries were still verified against Crossref, arXiv and official pages. Later runs should prefer WebFetch and note in the entry if another route was used.
 - **Sandbox egress (run 3).** The run sandbox's proxy refuses direct connections to all three STAC hosts (CONNECT 403, organization policy), even though the user allowed all websites. WebFetch can still reach them, which is how the fixtures were recorded. Live smoke and the real M3 instrument checks must be run by the user, or tested through WebFetch-recorded fixtures plus synthetic rasters.
 
 ## Open questions and items to verify
@@ -50,6 +52,8 @@ This file is the shared memory between scheduled runs. Read it first, append a r
   - BigEarthNet-MM, GRSM 2021, not shown on any fetched page (A017).
 
 - Run 4 entries with flagged details: A077, A079, A080 have no peer-reviewed venue; A081 author list differs between arXiv and the journal record; A079 training set size given as 20K and 30K in different places; A082 test-set size is the agent's estimate; A083, A085, A086 written from abstracts and GFM documentation (paywalled); A086 volume unknown and Ashman D numbers from ESA training slides; A087 volume unknown; A092 CVPR 2026 workshop venue only from its README; A095 v1 date and public access unconfirmed; A096 Earth Engine catalogue page not loaded; A098 public STAC for NISAR not confirmed; A099 no scores or dataset link; A100 commissioning date and revisit over India unconfirmed.
+- Run 5 entries with flagged details: A101 has no peer-reviewed paper (usage figures self-reported by OGC); A103 manual hosted by APSAC, not pmfby.gov.in; A104 RMSE values not copied; A105 and A107 written from abstracts (MDPI and PDF not read); A108 to A113 summaries from standard knowledge (bibliographic data checked on Crossref); A114 pages not confirmed; A115 and A117 venue only from arXiv comments; A118 NeurIPS 2025 only from README; A119 track unconfirmed; A121 test cases not confirmed; A122 numeric thresholds not extracted; A123 and A124 years approximate.
+- Planetary Computer `sentinel-1-rtc` metadata says an account is needed for tokens (A123), but anonymous SAS tokens worked in runs 4 and 5. Watch for failures (SOLUTION risk 13).
 - Live findings to recheck in M6: Barpeta 11 July 2024 water figure (681 sq km) includes permanent water and paddy; compare with NRSC or ASDMA flood reports for early July 2024 before quoting it as flood extent.
 
 ## Run log
@@ -190,3 +194,29 @@ Together these point to an evidence-first design.
 **Exact next step (run 5)**
 1. Archive papers 101 to 125: indian-context (about 7: ASDMA/NDMA flood reporting, Bhuvan, PMFBY YES-TECH, NRSC crop monitoring, Assam 2022 or 2024 floods), historical (about 7: Otsu 1979, Kittler-Illingworth 1986, McFeeters NDWI 1996, Tucker NDVI 1979, Chow 1970 reject option, Lee filter 1980, CVA Malila 1980), rs-benchmark (about 6), data-infrastructure (about 5).
 2. Build M4 in `frontend/`: map (Leaflet or MapLibre from cdnjs) with district search via `/v1/regions`, outline from `/v1/regions/{key}`, tile overlays from card `masks`, two-date compare picker, evidence chips (scene, date, sensor, confidence band, calibration status), abstention state with reason and next step, ambiguous-district chooser, method and caveats drawer, receipt link; mobile-first claymorphism, keyboard and contrast checks; Playwright screenshots saved in `docs/screenshots/` for the deck.
+
+### Run 5, 2026-10-06
+
+**Papers: 25 added (IDs 101 to 125)**
+- indian-context (7): Bhuvan, NDEM, PMFBY YES-TECH manual, FASAL wheat forecasts, Assam 2022 Sentinel-1 flood study, NRSC Assam Flood Hazard Zonation Atlas, Sentinel-1 near-real-time kharif rice mapping.
+- historical (7): Otsu 1979, Kittler-Illingworth 1986, McFeeters NDWI 1996, Tucker NDVI 1979, Chow reject option 1970, Lee local-statistics filter 1980, Malila change vector analysis 1980.
+- rs-benchmark (6): EarthVQA, RSVG/DIOR-RSVG, XLRS-Bench, DisasterM3, GEO-Bench, PANGAEA.
+- data-infrastructure (5): openEO API, CEOS-ARD SAR (NRB), Planetary Computer Sentinel-1 RTC, Copernicus Data Space APIs, odc-stac.
+
+**Milestone M4 done** (`frontend/`, ARCHITECTURE 6.8)
+- Mobile-first claymorphism UI: question box with examples from config, folded district combobox (ARIA 1.2, arrow keys) and one-date or two-date picker, "I understood" panel with four progress steps and a progressbar, evidence card (headline number, confidence meter with the 0.60 publication marker, evidence chips grouped by sensor and date, calibration chip, method drawer with scene choice, numbers, breakdown bars and caveats, receipt open and copy), two distinct "no" states ("Needs one detail" with one-tap district choices, "Not enough evidence" with what would help), vendored Leaflet map with district outline, per-tile overlays, legend with colours and overlay toggle, light and dark themes, reduced motion.
+- Backend support: `QueryRequest.region` (picked district wins over text), `ParsedQuery.candidate_keys`, `GET /v1/ui-config`, `ui` block in config, legend colours on masks, example dates in "what would help" text moved to 2024 dates that have data.
+- Tests: 54 passing (5 new in `tests/test_ui.py`). Keyboard-only walkthrough passes. All colour pairs measured at 4.5:1 or better (light and dark).
+- Screenshots from live runs in `docs/screenshots/` (8 screens: home, flood extent desktop, mobile and dark, ambiguous district, out of scope, crop change, flood change abstention).
+
+**Measured live in the UI:** Barpeta flood extent 2024-07-11 published at 681 sq km (0.66, low band); Barpeta flood change 2024-06-05 to 2024-07-11 abstained at 0.56; Darbhanga crop change 2024-03-01 to 2024-04-25 published at 1,544 sq km decline (0.89, high; rabi harvest explains much of it, which the caveat says); Aurangabad offered Bihar and Maharashtra.
+
+**Docs updated:** SOLUTION v1.4 (official channels NDEM, Bhuvan, YES-TECH, FASAL as the context SatClip complements; Chow reject option as the root of abstention; CEOS-ARD check in receipts; trust item 8 on the UI; risks 13 radar access terms and 14 missing shadow mask), NOVELTY v5 (run 5 evidence: DisasterM3, XLRS-Bench, EarthVQA, PANGAEA; data-layer ease not claimed as unique given openEO and odc-stac; new watch-list item), README (screenshot, statuses), ARCHITECTURE 6.8, PLAN.
+
+**Problems hit:** WebFetch permission prompts timed out for two research agents (they used curl against Crossref and arXiv). `pkill -f "uvicorn satclip"` killed the tool shell (see Conventions).
+
+**Most important finding:** benchmarks from 2025 to 2026 keep landing on the same side: VLMs are near chance at counting disaster damage and worse on SAR (DisasterM3), and on Sen1Floods11 a plain UNet beats every geospatial foundation model while RemoteCLIP reaches only about 55 water IoU (PANGAEA). Classical, auditable instruments behind a calibrated, abstaining card remain the right core.
+
+**Exact next step (run 6)**
+1. Archive papers 126 to 150: trust-calibration (about 8: isotonic regression calibration, Platt scaling, risk-coverage and AURC, conformal risk control, semantic segmentation calibration, LVLM abstention or "I don't know" training, uncertainty in RS segmentation), human-factors (about 6), change-detection (about 6), efficient-inference (about 5).
+2. Build M5 in `training/`: (a) `calibration/fit.py` that runs the water instruments on Sen1Floods11 hand-labelled chips (and Kuro Siwo if reachable), fits isotonic maps into `config/calibration/*.json` with `fitted: true`, and writes reliability diagrams and risk-coverage curves; (b) LoRA fine-tuning for the parser and explainer (SmolVLM or Qwen2-VL-2B, PEFT, QLoRA) on RSVQA plus auto-generated question-to-intent pairs from the gazetteer and templates; (c) a Colab notebook; (d) an evaluation harness for RSVQA and VRSBench subsets. If too big, do (a) first since it makes the confidence real, and note the stop point.

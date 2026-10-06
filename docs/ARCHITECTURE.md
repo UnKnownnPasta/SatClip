@@ -264,6 +264,37 @@ flowchart LR
 
 **Defects found on live data and fixed in this milestone.** (1) Otsu placed the threshold at -10.8 dB on a clearly bimodal Barpeta histogram (water mode near -18 dB, land near -7 dB), because land is far more variable than water; Kittler-Illingworth finds the valley near -14 dB. (2) Earth Search Sentinel-2 items carry `earthsearch:boa_offset_applied: true` while `raster:bands` still lists offset -0.1; applying it again made most reflectances negative. (3) A floating-point edge in tiling added a column of tiles outside the requested box.
 
+### 6.8 Web UI as built (M4, `frontend/`)
+
+Plain HTML, CSS and JavaScript with no build step, served by nginx in docker-compose or by the API itself in single-process mode. Leaflet 1.9.4 is vendored in `frontend/vendor/leaflet/` (BSD-2) so the UI works on an air-gapped install; the base map URL comes from config (`ui.basemap.url`, empty for offline), and without it the map still shows the district outline and the measured overlays.
+
+```mermaid
+flowchart LR
+  Q[Question box<br/>examples from /v1/ui-config] --> P{Pickers open?}
+  P -- district combobox --> R[/v1/regions?q=/] --> K[region key]
+  P -- one date or two dates --> W[windows +/- 6 days]
+  Q & K & W --> POST[POST /v1/queries]
+  POST -- problems --> C1[Card: Needs one detail<br/>one-tap district choices]
+  POST -- job --> SSE[/v1/jobs/id/events/] -- tile --> PR[Progress steps and bar]
+  SSE -- card --> C2[Card: Answer or Not enough evidence]
+  C2 --> M[Map: outline from /v1/regions/key<br/>overlays from card.masks]
+  C2 --> D[Drawer: method, scene choice, numbers, caveats, calibration]
+  C2 --> RC[Receipt link and copy]
+```
+
+| UX decision | Why |
+|---|---|
+| The question box works alone; place and date pickers are optional and folded away | Officials type what they would say on the phone. A picked district (`region` in the request) wins over names in the text, so a typo never sends the wrong district. |
+| "I understood your question as..." plus four progress steps | Misparsing is risk 3 in SOLUTION.md; showing the parse before the answer lets the user catch it. |
+| Two kinds of "no" | "Needs one detail" (blue) when the question lacks a place, date or a unique district name, with one-tap choices from `parsed.candidate_keys`; "Not enough evidence" (amber) when the measurement is too weak. Both carry a "What would help" line. |
+| Confidence meter with the publication threshold drawn as a marker | Users see how far above or below the line an answer is, not just a band word. Uncalibrated confidence is flagged as a chip on every card. |
+| Scenes grouped by sensor and date ("Radar S1, 2024-07-11") with full IDs on hover and in the receipt | Short enough to read on a phone, complete enough to audit. |
+| Card first, map second on phones; map sticky on the right on wide screens | The number and its evidence are the product; the map supports it. Every number on the map is also in the card (map has an accessible label). |
+
+Accessibility: every text colour pair is at least 4.5:1 (measured: ink 14.5, muted 7.7, status chips 5.6 to 8.5, dark mode 5.8 to 12.0); all controls are at least 44 px tall; the district picker follows the ARIA 1.2 combobox pattern (arrow keys, Enter, Escape, `aria-activedescendant`); progress is a `role=progressbar` with live text; focus moves to the card when it arrives; Ctrl+Enter submits; a skip link leads to the question; reduced-motion is respected; light and dark themes follow the system. `tools/ui_keyboard_check.py` walks a full change question by keyboard only, and `tools/screenshots.py` captures the screens in `docs/screenshots/`.
+
+New API pieces for the UI: `GET /v1/ui-config` (bands, threshold, window size, base map, example questions), `QueryRequest.region`, `ParsedQuery.candidate_keys`, and `colors` on each mask legend.
+
 ---
 
 ## 7. Deployment modes

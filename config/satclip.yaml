@@ -60,3 +60,17 @@ intents:
   vegetation_change: ndvi_difference
   land_cover: zero_shot_landcover
   describe: index_caption
+
+ui:
+  # Base map for the web UI. Set url to "" for air-gapped installs: the map then shows only the district
+  # outline and the measured overlays on a plain background.
+  basemap:
+    url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+    attribution: "Map data (c) OpenStreetMap contributors"
+    max_zoom: 18
+  examples:
+    - {label: "Flood extent", text: "How much of Barpeta was under water on 2024-07-11?"}
+    - {label: "Flood change", text: "Did the flood spread in Barpeta between 2024-06-05 and 2024-07-11?"}
+    - {label: "Crop change", text: "Did the crop decline in Darbhanga between 2024-03-01 and 2024-04-25?"}
+    - {label: "Describe", text: "Describe the land in Ernakulam on 2024-02-15"}
+    - {label: "Ambiguous place", text: "How much of Aurangabad was under water on 2024-08-10?"}

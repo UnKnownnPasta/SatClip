@@ -54,7 +54,7 @@ def _bbox_from_text(text: str) -> tuple[Optional[BBox], Optional[str], Optional[
     d, options = gazetteer.find(text)
     if d:
         return tuple(d["bbox"]), f"{d['name']}, {d['state']}", gazetteer.key(d), []  # type: ignore[return-value]
-    return None, None, None, [f"{o['name']}, {o['state']}" for o in options]
+    return None, None, None, [(f"{o['name']}, {o['state']}", gazetteer.key(o)) for o in options]
 
 
 def _valid_bbox(b: BBox) -> bool:
@@ -63,7 +63,11 @@ def _valid_bbox(b: BBox) -> bool:
 
 def parse(req: QueryRequest) -> ParsedQuery:
     intent = classify_intent(req.text)
-    if req.bbox:
+    picked = gazetteer.get(req.region) if req.region else None
+    if picked:
+        bbox, place, region, options = (tuple(picked["bbox"]), f"{picked['name']}, {picked['state']}",
+                                        gazetteer.key(picked), [])
+    elif req.bbox:
         bbox, place, region, options = tuple(req.bbox), None, None, []
     else:
         bbox, place, region, options = _bbox_from_text(req.text)
@@ -87,5 +91,5 @@ def parse(req: QueryRequest) -> ParsedQuery:
     understood = (f"{label} in {where}, {when}" if intent != Intent.unsupported
                   else "a question outside what SatClip can measure")
     return ParsedQuery(text=req.text, intent=intent, bbox=bbox, place_name=place, windows=windows,
-                       region=region, candidates=options,
+                       region=region, candidates=[o[0] for o in options], candidate_keys=[o[1] for o in options],
                        understood_as=understood, problems=problems)

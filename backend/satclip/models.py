@@ -28,6 +28,7 @@ BBox = tuple[float, float, float, float]  # min_lon, min_lat, max_lon, max_lat
 class QueryRequest(BaseModel):
     text: str = Field(min_length=3, max_length=500)
     bbox: Optional[BBox] = None
+    region: Optional[str] = None       # gazetteer key picked in the UI ("barpeta|assam"); wins over names in the text
     windows: Optional[list[DateWindow]] = None
 
 
@@ -40,6 +41,7 @@ class ParsedQuery(BaseModel):
     understood_as: str
     region: Optional[str] = None       # gazetteer key ("barpeta|assam") when a district was named
     candidates: list[str] = []         # district options when a name is ambiguous
+    candidate_keys: list[str] = []     # gazetteer keys for the same options, for a one-tap chooser in the UI
     problems: list[str] = []  # why the query cannot run yet (missing AOI, dates, out of scope)
 
 
