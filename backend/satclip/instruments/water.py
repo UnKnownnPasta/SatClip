@@ -96,6 +96,17 @@ def water_quality(values: np.ndarray, t: float, fit: dict[str, Any], margin: flo
     return {**tc, "evidence_factor": round(factor, 3), "raw_quality": round(tc["p_area_within_tol"] * factor, 4)}
 
 
+def classify_sar_water(vv_db: np.ndarray, valid: np.ndarray, fit: Optional[dict[str, Any]] = None
+                       ) -> tuple[np.ndarray, dict[str, float]]:
+    """Core of sar_water_otsu on one tile of gamma0 VV in dB: threshold, speckle removal, raw quality.
+    Shared with training/calibration/fit_water.py so the calibration is fitted on exactly this code."""
+    if fit is None:
+        fit = fit_sar_threshold(np.where(np.isfinite(vv_db), vv_db, np.nan))
+    water = drop_small(valid & (vv_db < fit["threshold_db"]), MIN_BLOB_PX)
+    q = water_quality(np.where(valid, vv_db, np.nan), fit["threshold_db"], fit)
+    return water, q
+
+
 def _sar_water(job: TileJob, prov, sel, res: float) -> tuple[Optional[dict], Optional[str]]:
     r = prov.read(sel.scene, "vv", job.bbox, res)
     vv = db(r.data)
@@ -106,7 +117,6 @@ def _sar_water(job: TileJob, prov, sel, res: float) -> tuple[Optional[dict], Opt
         return None, "tile lies outside the named district"
     if valid.sum() < 0.5 * inside * vv.size:
         return None, f"only {valid.mean():.0%} of the tile has valid radar pixels"
-    vals = np.where(valid, vv, np.nan)
     fit = fit_sar_threshold(np.where(np.isfinite(vv), vv, np.nan))
     if fit["source"] == "default":
         # Not enough bimodal evidence inside the tile: refit on the 3 x 3 tile neighbourhood at 40 m,
@@ -121,8 +131,7 @@ def _sar_water(job: TileJob, prov, sel, res: float) -> tuple[Optional[dict], Opt
         if cfit["source"] == "fitted":
             fit = {**cfit, "source": "fitted (3 x 3 tile neighbourhood)", "tile_fit": fit}
             fit["ashman_d"] = cfit["ashman_d"]
-    water = drop_small(valid & (vv < fit["threshold_db"]), MIN_BLOB_PX)
-    q = water_quality(vals, fit["threshold_db"], fit)
+    water, q = classify_sar_water(vv, valid, fit)
     return {"raster": r, "water": water, "valid": valid, "fit": fit, "quality": q, "values": vv}, None
 
 

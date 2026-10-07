@@ -1,0 +1,242 @@
+{
+ "all": {
+  "n": 1500,
+  "valid": 1.0,
+  "intent": 0.569,
+  "district": 0.925,
+  "dates": 0.197,
+  "full": 0.163
+ },
+ "hinglish": {
+  "n": 391,
+  "valid": 1.0,
+  "intent": 0.276,
+  "district": 0.923,
+  "dates": 0.22,
+  "full": 0.153
+ },
+ "en": {
+  "n": 837,
+  "valid": 1.0,
+  "intent": 0.865,
+  "district": 0.92,
+  "dates": 0.219,
+  "full": 0.196
+ },
+ "hi": {
+  "n": 272,
+  "valid": 1.0,
+  "intent": 0.081,
+  "district": 0.941,
+  "dates": 0.099,
+  "full": 0.077
+ },
+ "refusal": {
+  "precision": 0.257,
+  "recall": 0.957
+ },
+ "examples_of_errors": [
+  {
+   "text": "13 Oct 2025 aur 2025-10-22 ke beech Supual ki hariyali kaise badli?",
+   "gold": {
+    "intent": "vegetation_change",
+    "region": "supaul|bihar",
+    "dates": [
+     "2025-10-13",
+     "2025-10-22"
+    ]
+   },
+   "pred": {
+    "intent": "unsupported",
+    "region": null,
+    "dates": [
+     "2025-10-22"
+    ],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "28-12-2023 aur 2024-01-26 ke beech Ashoknagar ki hariyali kaise badli?",
+   "gold": {
+    "intent": "vegetation_change",
+    "region": "ashoknagar|madhya pradesh",
+    "dates": [
+     "2023-12-28",
+     "2024-01-26"
+    ]
+   },
+   "pred": {
+    "intent": "unsupported",
+    "region": "ashoknagar|madhya pradesh",
+    "dates": [
+     "2024-01-26"
+    ],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "26 October 2018 aur February 19, 2019 ke beech yadadri bhogniri ki hariyali kaise badli?",
+   "gold": {
+    "intent": "vegetation_change",
+    "region": "yadadri bhongiri|telangana",
+    "dates": [
+     "2018-10-26",
+     "2019-02-19"
+    ]
+   },
+   "pred": {
+    "intent": "unsupported",
+    "region": null,
+    "dates": [],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "How much land was submerged in Barelily, 23/05/2018?",
+   "gold": {
+    "intent": "water_extent",
+    "region": "bareilly|uttar pradesh",
+    "dates": [
+     "2018-05-23"
+    ]
+   },
+   "pred": {
+    "intent": "water_extent",
+    "region": null,
+    "dates": [],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "bokaro में 21 मई 2019 और 2 सितंबर 2019 के बीच हरियाली में क्या बदलाव आया?",
+   "gold": {
+    "intent": "vegetation_change",
+    "region": "bokaro|jharkhand",
+    "dates": [
+     "2019-05-21",
+     "2019-09-02"
+    ]
+   },
+   "pred": {
+    "intent": "unsupported",
+    "region": "bokaro|jharkhand",
+    "dates": [],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "24 अगस्त 2024 को Suryapet की भूमि किस प्रकार की है?",
+   "gold": {
+    "intent": "land_cover",
+    "region": "suryapet|telangana",
+    "dates": [
+     "2024-08-24"
+    ]
+   },
+   "pred": {
+    "intent": "unsupported",
+    "region": "suryapet|telangana",
+    "dates": [],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "murshidabad me 02-03-2020 se 15-03-2020 tak fasal kitni kharab hui?",
+   "gold": {
+    "intent": "vegetation_change",
+    "region": "murshidabad|west bengal",
+    "dates": [
+     "2020-03-02",
+     "2020-03-15"
+    ]
+   },
+   "pred": {
+    "intent": "unsupported",
+    "region": "murshidabad|west bengal",
+    "dates": [],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "6 September 2017 aur 14/11/2017 ke beech Tonk me naya paani kitna aaya?",
+   "gold": {
+    "intent": "water_change",
+    "region": "tonk|rajasthan",
+    "dates": [
+     "2017-09-06",
+     "2017-11-14"
+    ]
+   },
+   "pred": {
+    "intent": "unsupported",
+    "region": "tonk|rajasthan",
+    "dates": [],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "Tinsukia में 5 मार्च 2026 और 2 मई 2026 के बीच हरियाली में क्या बदलाव आया?",
+   "gold": {
+    "intent": "vegetation_change",
+    "region": "tinsukia|assam",
+    "dates": [
+     "2026-03-05",
+     "2026-05-02"
+    ]
+   },
+   "pred": {
+    "intent": "unsupported",
+    "region": "tinsukia|assam",
+    "dates": [],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "peddapalli, telangana me 31 Jul 2026 se 6 Nov 2026 tak fasal kitni kharab hui?",
+   "gold": {
+    "intent": "vegetation_change",
+    "region": "peddapalli|telangana",
+    "dates": [
+     "2026-07-31",
+     "2026-11-06"
+    ]
+   },
+   "pred": {
+    "intent": "unsupported",
+    "region": "peddapalli|telangana",
+    "dates": [],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "Will Chiitrakoot flood next week?",
+   "gold": {
+    "intent": "unsupported",
+    "region": "chitrakoot|uttar pradesh",
+    "dates": []
+   },
+   "pred": {
+    "intent": "water_extent",
+    "region": null,
+    "dates": [],
+    "ambiguous": false
+   }
+  },
+  {
+   "text": "इस इलाके ज़िले में 5 नवंबर 2017 को बाढ़ का क्षेत्र दिखाओ",
+   "gold": {
+    "intent": "water_extent",
+    "region": null,
+    "dates": [
+     "2017-11-05"
+    ]
+   },
+   "pred": {
+    "intent": "unsupported",
+    "region": null,
+    "dates": [],
+    "ambiguous": false
+   }
+  }
+ ]
+}

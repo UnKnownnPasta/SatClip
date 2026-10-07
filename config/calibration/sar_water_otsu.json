@@ -1,16 +1,23 @@
 {
+ "method": "logistic",
+ "a": 2.4425,
+ "b": -1.7649,
+ "fitted": true,
  "instrument": "sar_water_otsu",
- "method": "isotonic",
- "points": [
-  [
-   0.0,
-   0.0
-  ],
-  [
-   1.0,
-   1.0
-  ]
- ],
- "fitted": false,
- "note": "Placeholder until M5 fits it on labelled data (Sen1Floods11 / Kuro Siwo for water, field labels for NDVI). Identity map: the card shows the instrument's model-based estimate and labels it as not yet fitted."
+ "fit": {
+  "method_choice_valid_ece": {
+   "isotonic": 0.2571,
+   "logistic": 0.1066
+  },
+  "n": 312,
+  "dataset": "Sen1Floods11 v1.1 hand-labelled chips (archive A022)",
+  "date": "2026-10-07",
+  "shift_db": 1.0,
+  "event": "measured water area within +/-20% of the hand-labelled area",
+  "test_ece": 0.0883,
+  "test_coverage_at_0.60": 0.11,
+  "test_error_when_published": 0.333,
+  "report": "training/calibration/reports/sar_water_otsu.md"
+ },
+ "note": "Fitted on 5 km chips from 11 flood events worldwide, 68 of them in India. Applied at district scale through the same formula; see the report for the event-level check and its limits."
 }

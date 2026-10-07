@@ -1,16 +1,7 @@
 {
  "instrument": "sar_logratio_change",
- "method": "isotonic",
- "points": [
-  [
-   0.0,
-   0.0
-  ],
-  [
-   1.0,
-   1.0
-  ]
- ],
+ "method": "inherit",
+ "from": "sar_water_otsu",
  "fitted": false,
- "note": "Placeholder until M5 fits it on labelled data (Sen1Floods11 / Kuro Siwo for water, field labels for NDVI). Identity map: the card shows the instrument's model-based estimate and labels it as not yet fitted."
+ "note": "The change answer is built on the same water threshold as sar_water_otsu, whose Sen1Floods11 fit (M5, run 6) showed the uncalibrated score is overconfident. Until a labelled before/after set (Kuro Siwo, archive A041) is used to fit this instrument, it borrows the water map, which lowers its confidence. A change is harder to get right than an extent, so this is still likely to be optimistic; the card says the map is borrowed."
 }

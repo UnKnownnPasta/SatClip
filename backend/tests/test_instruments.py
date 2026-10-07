@@ -96,7 +96,7 @@ def use(p):
 
 # ---------- SAR water ----------
 
-def test_sar_water_fits_threshold_and_measures_area():
+def test_sar_water_fits_threshold_and_measures_area(identity_calibration):
     s = scene("S1_after", "S1", "2024-07-11")
     use(FakeProvider([Selection(True, "S1", s, "monsoon month, radar first")], {("S1_after", "vv"): flood_db(0.4)}))
     _, fn = get("sar_water_otsu")
@@ -110,7 +110,7 @@ def test_sar_water_fits_threshold_and_measures_area():
     assert r.mask and r.mask["href"].startswith("/v1/masks/") and r.mask["bounds"] == list(TILE)
 
 
-def test_sar_no_water_uses_default_threshold_and_stays_confident():
+def test_sar_no_water_uses_default_threshold_and_stays_confident(identity_calibration):
     s = scene("S1_dry", "S1", "2024-07-11")
     use(FakeProvider([Selection(True, "S1", s, "r")], {("S1_dry", "vv"): flood_db(0.0)}))
     r = get("sar_water_otsu")[1](job("sar_water_otsu", Intent.water_extent, [W("2024-07-05", "2024-07-17")]))
@@ -239,12 +239,32 @@ def test_calibration_isotonic_and_fit():
     spec = calibration.fit_isotonic([0.1, 0.2, 0.3, 0.6, 0.7, 0.9], [0, 1, 0, 1, 1, 1])
     ys = [p[1] for p in spec["points"]]
     assert ys == sorted(ys) and spec["fitted"]
-    assert calibration.load("sar_water_otsu").status.startswith("placeholder")
+    # tiny blocks are pooled, so a single chip cannot create a cliff
+    spec = calibration.fit_isotonic([i / 20 for i in range(20)], [0, 1] * 10, min_block=5)
+    assert all(b >= a for a, b in zip([p[1] for p in spec["points"]], [p[1] for p in spec["points"]][1:]))
+    assert len(spec["points"]) <= 4
+
+
+def test_calibration_files():
+    """Shipped maps: water extent is fitted on Sen1Floods11 (M5) and carries its ledger; the others are
+    still labelled placeholders, so the card can never claim a calibration that does not exist."""
+    calibration.load.cache_clear()
+    water = calibration.load("sar_water_otsu")
+    assert water.fitted and water.status == "fitted"
+    assert water.spec["fit"]["n"] >= 100 and "Sen1Floods11" in water.spec["fit"]["dataset"]
+    xs = [i / 20 for i in range(21)]
+    ys = [water(x) for x in xs]
+    assert all(0 <= y <= 1 for y in ys) and ys == sorted(ys)
+    for name in ("ndvi_difference", "index_caption"):
+        assert calibration.load(name).status.startswith("placeholder")
+    change = calibration.load("sar_logratio_change")
+    assert change.status.startswith("borrowed from sar_water_otsu") and not change.fitted
+    assert change(0.9) == pytest.approx(water(0.9))
 
 
 # ---------- end to end through the API ----------
 
-def test_api_end_to_end_district_card(tmp_path):
+def test_api_end_to_end_district_card(tmp_path, identity_calibration):
     from fastapi.testclient import TestClient
     from satclip.api.main import create_app
     cfg = copy.deepcopy(CFG)

@@ -61,8 +61,10 @@ def _valid_bbox(b: BBox) -> bool:
     return -180 <= b[0] < b[2] <= 180 and -90 <= b[1] < b[3] <= 90
 
 
-def parse(req: QueryRequest) -> ParsedQuery:
-    intent = classify_intent(req.text)
+def parse(req: QueryRequest, intent: Optional[Intent] = None) -> ParsedQuery:
+    """`intent` lets a learned parser (training/lora/schema.py) supply the intent; everything else
+    (gazetteer, windows, problems, echo text) stays deterministic."""
+    intent = intent or classify_intent(req.text)
     picked = gazetteer.get(req.region) if req.region else None
     if picked:
         bbox, place, region, options = (tuple(picked["bbox"]), f"{picked['name']}, {picked['state']}",

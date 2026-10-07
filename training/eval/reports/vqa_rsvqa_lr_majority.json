@@ -1,0 +1,23 @@
+{
+ "rural_urban": {
+  "n": 100,
+  "accuracy": 0.56
+ },
+ "all": {
+  "n": 1600,
+  "accuracy": 0.562
+ },
+ "presence": {
+  "n": 500,
+  "accuracy": 0.754
+ },
+ "count": {
+  "n": 500,
+  "accuracy": 0.234,
+  "refusal_rate": 0.0
+ },
+ "comp": {
+  "n": 500,
+  "accuracy": 0.7
+ }
+}

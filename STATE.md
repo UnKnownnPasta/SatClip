@@ -6,9 +6,9 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 
 | Item | Value |
 |---|---|
-| Papers archived | 125 (IDs 001 to 125) |
-| Next paper ID | 126 |
-| Milestones done | M1, M2, M3, M4 (M5 is next) |
+| Papers archived | 150 (IDs 001 to 150) |
+| Next paper ID | 151 |
+| Milestones done | M1, M2, M3, M4; M5 mostly built (run 6), remaining items listed in PLAN.md |
 | Deck | not yet created (M7) |
 
 ## Conventions and decisions
@@ -34,6 +34,10 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 - **Research agents and fetching (run 5).** Two research agents fell back to curl when WebFetch permission prompts timed out (not domain blocks). Entries were still verified against Crossref, arXiv and official pages. Later runs should prefer WebFetch and note in the entry if another route was used.
 - **Sandbox egress (run 3).** The run sandbox's proxy refuses direct connections to all three STAC hosts (CONNECT 403, organization policy), even though the user allowed all websites. WebFetch can still reach them, which is how the fixtures were recorded. Live smoke and the real M3 instrument checks must be run by the user, or tested through WebFetch-recorded fixtures plus synthetic rasters.
 
+- **Training conventions (run 6).** `training/` holds `calibration/`, `lora/`, `eval/`, `colab/`. Generated data goes to `training/data/` and downloads to `training/.cache/` (both gitignored; rebuild with the builders, all seeded). Reports in `training/eval/reports/` and `training/calibration/reports/` are committed. Training extras: `pip install --break-system-packages torch torchvision --index-url https://download.pytorch.org/whl/cpu` then `transformers peft accelerate` (run 6 had transformers 5.19: `dtype` replaces `torch_dtype`, `warmup_ratio` is gone, Qwen2-VL needs `mm_token_type_ids`; the scripts handle all three). CPU smoke test: `python training/lora/train_lora.py --model hf-internal-testing/tiny-random-Qwen2VLForConditionalGeneration --data <small jsonl> --max-steps 4 --image-size 112 --out /tmp/x`.
+- **Calibration conventions (run 6).** Instrument physics tests use the `identity_calibration` fixture (conftest) so they do not depend on fitted files; `test_calibration_files` checks the shipped maps. `"method": "inherit"` borrows another instrument's fitted map (used by `sar_logratio_change`). Refit water with `python training/calibration/fit_water.py` (streams about 1.4 GB from the public Sen1Floods11 bucket, about 5 minutes with 8 workers) or `--rows training/calibration/reports/sar_water_otsu_chips.csv` to refit without downloading.
+- **Sen1Floods11 does include India (run 6).** A022 originally said India was absent; the bucket's split files show 68 Indian hand-labelled chips. A022 and SOLUTION risk 2 were corrected.
+
 ## Open questions and items to verify
 
 - The deck reference "unified multimodal LLM for cross-sensor EO evaluated on SAR and BigEarthNet" is assumed to be EarthGPT (A002). This needs confirming with the team.
@@ -54,6 +58,7 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 - Run 4 entries with flagged details: A077, A079, A080 have no peer-reviewed venue; A081 author list differs between arXiv and the journal record; A079 training set size given as 20K and 30K in different places; A082 test-set size is the agent's estimate; A083, A085, A086 written from abstracts and GFM documentation (paywalled); A086 volume unknown and Ashman D numbers from ESA training slides; A087 volume unknown; A092 CVPR 2026 workshop venue only from its README; A095 v1 date and public access unconfirmed; A096 Earth Engine catalogue page not loaded; A098 public STAC for NISAR not confirmed; A099 no scores or dataset link; A100 commissioning date and revisit over India unconfirmed.
 - Run 5 entries with flagged details: A101 has no peer-reviewed paper (usage figures self-reported by OGC); A103 manual hosted by APSAC, not pmfby.gov.in; A104 RMSE values not copied; A105 and A107 written from abstracts (MDPI and PDF not read); A108 to A113 summaries from standard knowledge (bibliographic data checked on Crossref); A114 pages not confirmed; A115 and A117 venue only from arXiv comments; A118 NeurIPS 2025 only from README; A119 track unconfirmed; A121 test cases not confirmed; A122 numeric thresholds not extracted; A123 and A124 years approximate.
 - Planetary Computer `sentinel-1-rtc` metadata says an account is needed for tokens (A123), but anonymous SAS tokens worked in runs 4 and 5. Watch for failures (SOLUTION risk 13).
+- Run 6 entries with flagged details: A126 cited by its Crossref chapter title and year 2000 (the 1999 tech-report form is the usual citation); A126 to A128 give no dataset or numeric results; A130 and A132 dataset names not confirmed; A131 and A132 code repositories not opened (GitHub blocked for agents); A134, A138, A139 written from abstracts; A140 and A141 abstracts only; A142 repo not checked; A146 to A148 venues from arXiv comments only; A149 and A150 have no peer-reviewed venue; A149 licence of the 2B weights not checked (must be before government deployment); bitsandbytes and Outlines repo links from general knowledge. All run 6 research agents fell back to curl (WebFetch permission prompts timed out), as noted in each `verified` field.
 - Live findings to recheck in M6: Barpeta 11 July 2024 water figure (681 sq km) includes permanent water and paddy; compare with NRSC or ASDMA flood reports for early July 2024 before quoting it as flood extent.
 
 ## Run log
@@ -220,3 +225,33 @@ Together these point to an evidence-first design.
 **Exact next step (run 6)**
 1. Archive papers 126 to 150: trust-calibration (about 8: isotonic regression calibration, Platt scaling, risk-coverage and AURC, conformal risk control, semantic segmentation calibration, LVLM abstention or "I don't know" training, uncertainty in RS segmentation), human-factors (about 6), change-detection (about 6), efficient-inference (about 5).
 2. Build M5 in `training/`: (a) `calibration/fit.py` that runs the water instruments on Sen1Floods11 hand-labelled chips (and Kuro Siwo if reachable), fits isotonic maps into `config/calibration/*.json` with `fitted: true`, and writes reliability diagrams and risk-coverage curves; (b) LoRA fine-tuning for the parser and explainer (SmolVLM or Qwen2-VL-2B, PEFT, QLoRA) on RSVQA plus auto-generated question-to-intent pairs from the gazetteer and templates; (c) a Colab notebook; (d) an evaluation harness for RSVQA and VRSBench subsets. If too big, do (a) first since it makes the confidence real, and note the stop point.
+
+### Run 6, 2026-10-07
+
+**Papers: 25 added (IDs 126 to 150)**
+- trust-calibration (8): Platt scaling, Zadrozny and Elkan isotonic, Naeini ECE/BBQ, Deep Ensembles, Kendall and Gal uncertainties, Local Temperature Scaling, Ovadia uncertainty under shift, Conformal Risk Control.
+- human-factors (6): MacEachren uncertainty semiotics, Kay quantile dotplots ("When (ish) is my bus?"), Bucinca cognitive forcing, Vasconcelos explanations and overreliance, Voigt satellite emergency mapping trends, Eviza.
+- change-detection (6): Bruzzone and Prieto difference image, Gong SAR deep change, FC-Siamese, ChangeFormer, AnyChange, BFAST.
+- efficient-inference (5): GPTQ, LLM.int8(), DoRA, Qwen2-VL, Outlines guided generation.
+- Correction: A022 (Sen1Floods11) wrongly said India was absent; it has 68 Indian hand-labelled chips.
+
+**Milestone M5: mostly built** (`training/`, ARCHITECTURE 6.9, `training/README.md`)
+- Calibration: `training/calibration/fit_water.py` streams all 446 Sen1Floods11 hand-labelled chips, runs the production `classify_sar_water` (factored out of `sar_water_otsu` this run), labels a chip correct when its area is within 20% of the hand label, chooses Platt over isotonic on the valid split (ECE 0.107 vs 0.257), refits on train plus valid (312 chips) and writes `config/calibration/sar_water_otsu.json` (`fitted: true`, a = 2.44, b = -1.76) plus a report, plot and per-chip CSV. `fit_isotonic` rewritten (tiny blocks pooled, no duplicate points). `sar_logratio_change` borrows the water map (`inherit`).
+- Language layer: `lora/schema.py` (five-key intent JSON, JSON schema for constrained decoding, resolver through the rule parser via the new `parse(req, intent=...)`), `build_intent_data.py` (12,000 / 1,500 / 1,500 pairs, English, Hinglish, Hindi, Indian date styles, typos, refusals, unseen-district test split), `build_rsvqa.py` (verified on the real RSVQA-LR files from Zenodo), `build_bigearthnet.py` (verified against the real v2 metadata.parquet; patch reading untested on real tars), `images.py` (S2 true colour, S1 VV/VH/ratio false colour), `train_lora.py` (LoRA, QLoRA, DoRA, vision tower frozen, reply-only loss; smoke-tested 4 steps on CPU with a tiny random Qwen2-VL on mixed text and image batches), `eval/eval_intents.py`, `eval/eval_vqa.py` (with yes/no confidence and risk-coverage; VRSBench converter untested), `colab/satclip_lora.ipynb`.
+- Tests: 59 passing (5 new: schema, resolver, builder consistency, Sen1Floods11 regrid and metrics, calibration files).
+
+**Measured**
+- Water calibration (held-out test, 82 chips): ECE 0.296 to 0.088; at the 0.60 line, uncalibrated would publish 79% with 55% wrong, calibrated publishes 11% with 33% wrong. Bolivia: ECE 0.342 to 0.217, publishes none. India with a fit made without India: ECE 0.503 to 0.357, publishes 12% with 62.5% wrong; median IoU 0.03.
+- Live: Barpeta flood extent 11 July 2024 now abstains at 0.46 (was published at 0.66); Barpeta flood change abstains; Darbhanga crop change unchanged (1,544 sq km, 0.89, placeholder calibration).
+- Intent parsing, rule parser, 1,500 held-out questions: full match 0.163 (en 0.196, hinglish 0.153, hi 0.077), intent 0.569, district 0.925, dates 0.197, refusal precision 0.257 and recall 0.957.
+- RSVQA-LR test (1,600 stratified), majority-per-type floor: 0.562 overall.
+
+**Problems hit:** fresh container needed backend deps reinstalled; transformers 5.19 API changes (handled); research agents could not use WebFetch (timeouts) and used curl to arXiv, Crossref, OpenAlex and Semantic Scholar instead; GitHub pages blocked for agents, so several code links are unverified.
+
+**Most important finding:** the first real calibration showed the water confidence was overconfident and, worse, that the VV-only water instrument misses most hand-labelled Indian flood water (flooded vegetation and rough water sit around -12 to -13 dB in VV but separate in VH). With the fitted map SatClip now abstains on most flood questions. That is the trust design working, but it makes the flagship use case unhelpful until the instrument improves.
+
+**Exact next step (run 7)**
+1. Archive papers 151 to 175: eo-foundation (about 8), object-detection (about 5), rs-vlm (about 5, newest 2026 models and any calibrated RS VLM), eo-agents (about 4), upcoming (about 3).
+2. Water instrument v1.1 (highest priority, it decides whether the demo can publish anything): add VH to `classify_sar_water` (fit KI thresholds on VV and VH, water if either is below its threshold with the VH rule guarded against dry sand and shadow), tune only on Sen1Floods11 train, then refit calibration with `fit_water.py` and report test, Bolivia and India before and after. Keep v1.0 numbers in the report for comparison. Re-run livecheck on Barpeta.
+3. Finish M5: `training/lora/build_india_qa.py` (OSM land-use shares over Sentinel-2 chips for sampled Indian districts via Overpass and the existing data layer), a multi-format date parser in `parser.py` (re-run `eval_intents.py --predictor rules`), and either fit `sar_logratio_change` on Kuro Siwo or record why not. Then tick M5 and start M6.
+

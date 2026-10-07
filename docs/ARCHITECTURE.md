@@ -295,6 +295,36 @@ Accessibility: every text colour pair is at least 4.5:1 (measured: ink 14.5, mut
 
 New API pieces for the UI: `GET /v1/ui-config` (bands, threshold, window size, base map, example questions), `QueryRequest.region`, `ParsedQuery.candidate_keys`, and `colors` on each mask legend.
 
+### 6.9 Training, calibration and evaluation as built (M5, `training/`)
+
+```mermaid
+flowchart LR
+  subgraph CPU["CPU, in the repo"]
+    S11["Sen1Floods11 hand labels<br/>446 chips, streamed"] --> FIT["fit_water.py<br/>same classify_sar_water code"]
+    FIT --> CAL["config/calibration/<br/>sar_water_otsu.json (fitted)"]
+    FIT --> REP["reliability and<br/>risk-coverage report"]
+    GAZ["gazetteer + templates<br/>EN / Hinglish / HI"] --> INT["intents train/val/test<br/>unseen-district split"]
+    RSVQA["RSVQA-LR (Zenodo)"] --> VQA["chat JSONL + PNG"]
+    BEN["BigEarthNet v2 subset"] --> BQA["S2 RGB + S1 false colour Q&A"]
+  end
+  subgraph GPU["GPU (Colab notebook)"]
+    INT & VQA & BQA --> TRAIN["train_lora.py<br/>Qwen2-VL-2B, LoRA/QLoRA/DoRA"]
+    TRAIN --> AD["adapter (+ merged model)"]
+  end
+  AD --> EVAL["eval_intents.py / eval_vqa.py"]
+  RULES["rule parser baseline"] --> EVAL
+  CAL --> API["API card confidence"]
+  AD -. "schema.resolve(): same gazetteer and date rules" .-> API
+```
+
+- **Calibration contract.** A calibration file maps an instrument's raw quality score (the probability its area is within 20% under a stated threshold error, times an evidence factor) to the observed probability of that event on labelled maps. Methods: `isotonic` (PAV with tiny blocks pooled), `logistic` (Platt, fitted by Newton's method), `temperature`, `inherit` (borrow a parent instrument's fitted map, used by `sar_logratio_change`), `identity`. The card's calibration chip prints `fitted`, `borrowed from ...` or `placeholder`.
+- **Fitting is on production code.** `fit_water.py` imports `classify_sar_water` from the instrument, so the fitted map belongs to exactly the code that runs. Sen1Floods11 chips are put on the working grid first (10 m sigma0 to 20 m, plus 1 dB to approximate gamma0).
+- **Method choice is held out.** Isotonic versus Platt is chosen by ECE on the valid split with a train-only fit; the test split, Bolivia (unseen country) and a leave-India-out fit are only reported. The run 6 fit chose Platt.
+- **The language model never touches geography or numbers.** It emits the JSON of `training/lora/schema.py`; `schema.resolve()` calls `parser.parse(req, intent=...)`, so gazetteer lookups, date windows, problems and the "I understood" text stay deterministic. A wrong parse can only cost a correction, never a wrong map.
+- **Evaluation is comparative.** Every model result is reported next to a non-learned baseline (rule parser for intents, majority-per-type for RSVQA), on districts the model never saw.
+
+Measured in run 6: see `training/README.md` and `training/calibration/reports/sar_water_otsu.md`. Live effect: the Barpeta flood-extent card for 11 July 2024 moved from published at 0.66 (uncalibrated) to abstained at 0.46 (fitted); the Darbhanga crop-change card is unchanged (its calibration is still a placeholder and says so).
+
 ---
 
 ## 7. Deployment modes
@@ -357,6 +387,12 @@ backend/
   pyproject.toml
 frontend/              static claymorphism UI (full UX in M4)
 config/satclip.yaml    shared configuration
+config/calibration/    one confidence map per instrument (fitted, borrowed or placeholder)
+training/
+  calibration/         fit_water.py and reports (Sen1Floods11)
+  lora/                schema, data builders (intents, RSVQA, BigEarthNet), train_lora.py
+  eval/                eval_intents.py, eval_vqa.py, reports/
+  colab/               satclip_lora.ipynb
 docker-compose.yml     api, worker, redis, frontend
 ```
 
@@ -368,6 +404,6 @@ docker-compose.yml     api, worker, redis, frontend
 |---|---|---|
 | API, models, queue, worker loop, tiling, receipts, aggregation | Working, tested, with a placeholder instrument | Done in M3: five real instruments, propagated confidence, overlays (section 6.7) |
 | Data layer | Interface and config only | Done in M2: STAC search with failover, cloud filter and SAR fallback, COG reads, search cells (section 6.6) |
-| Parser | Rule-based intents, ISO dates, bbox | District gazetteer done in M3 (735 outlines); LoRA VLM parser (M5) |
+| Parser | Rule-based intents, ISO dates, bbox | District gazetteer done in M3 (735 outlines); LoRA VLM parser pipeline built in M5 (section 6.9), not yet trained on a GPU |
 | Frontend | Claymorphism shell wired to the API | Full UX, map, AOI picker, compare view in M4 |
 | Deployment | docker-compose with Redis | Load numbers in M6 |

@@ -8,7 +8,7 @@ You might ask: *"Was Barpeta flooded after 2 July compared to mid June?"* SatCli
 
 - the measured answer and a map mask;
 - the scene IDs and acquisition dates;
-- a confidence score (model-based today, fitted on labelled data in M5, and the card says which);
+- a confidence score, fitted on hand-labelled flood maps for water (Sen1Floods11) and labelled as a placeholder where no fit exists yet;
 - a receipt that re-runs the same analysis.
 
 When the evidence is not good enough, it says "insufficient evidence" and tells you when the next useful satellite pass is.
@@ -32,9 +32,10 @@ docker compose up --scale worker=8
 Try a question in the UI, or run real questions end to end against the live catalogues:
 
 ```bash
-cd backend && python -m satclip.livecheck "How much of Barpeta was under water on 2024-07-08?"
-# About 681 sq km of Barpeta, Assam under water, 29% of the 2,335 sq km measured (low confidence, 0.66).
-# 117 tiles, about 30 s on a CPU; scene S1A_IW_GRDH_1SDV_20240711T115715_..._rtc (2024-07-11)
+cd backend && python -m satclip.livecheck "How much of Barpeta was under water on 2024-07-11?"
+# Insufficient evidence: confidence is below the publication threshold.   (0.46, calibration: fitted)
+# 117 tiles, about 30 s on a CPU. Before the run 6 calibration this card published 681 sq km at 0.66;
+# the fit on Sen1Floods11 showed that score was overconfident, so the card now abstains.
 ```
 
 The optional land-cover instrument needs `pip install -e ".[ml]"` (CPU torch and open_clip); without it, land-cover questions abstain with a clear reason.
@@ -54,14 +55,14 @@ See [SOLUTION.md](SOLUTION.md) for the full thesis and evidence.
 
 | Part | Where | Status |
 |---|---|---|
-| Solution thesis | [SOLUTION.md](SOLUTION.md) | v1.4 (run 5) |
-| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v5 (run 5) |
-| Research archive (target about 200 papers) | [archive/](archive/README.md) | 125 papers |
+| Solution thesis | [SOLUTION.md](SOLUTION.md) | v1.5 (run 6) |
+| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v6 (run 6) |
+| Research archive (target about 200 papers) | [archive/](archive/README.md) | 150 papers |
 | Problem evidence brief | [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md) | v1 |
 | Idea deck summary | [docs/reference/deck-notes.md](docs/reference/deck-notes.md) | done |
-| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | M1 to M4 done |
+| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | M1 to M4 done, M5 section 6.9 |
 | Prototype (FastAPI backend and claymorphism frontend) | [backend/](backend/), [frontend/](frontend/), [config/satclip.yaml](config/satclip.yaml), [docker-compose.yml](docker-compose.yml) | Working end to end on live Sentinel data: data layer (M2), five instruments with confidence, abstention and map overlays (M3); mobile-first claymorphism UI with district picker, two-date compare, evidence chips, confidence meter and map overlays (M4) |
-| Training code (LoRA, Colab notebook, evaluation, calibration) | `training/` | M5, planned |
+| Training code (LoRA, Colab notebook, evaluation, calibration) | [training/](training/README.md) | M5 mostly built (run 6): water calibration fitted on Sen1Floods11; LoRA pipeline, Colab notebook and evaluation harness with measured baselines; Indian OSM Q&A builder next |
 | Pitch deck (.pptx) | `deck/` | M7, planned |
 | Plan and progress | [PLAN.md](PLAN.md), [STATE.md](STATE.md) | live |
 
