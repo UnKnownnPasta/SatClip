@@ -1,22 +1,23 @@
 {
  "method": "logistic",
- "a": 2.4425,
- "b": -1.7649,
+ "a": 3.0825,
+ "b": -1.8485,
  "fitted": true,
  "instrument": "sar_water_otsu",
  "fit": {
   "method_choice_valid_ece": {
-   "isotonic": 0.2571,
-   "logistic": 0.1066
+   "isotonic": 0.1507,
+   "logistic": 0.1465
   },
   "n": 312,
   "dataset": "Sen1Floods11 v1.1 hand-labelled chips (archive A022)",
   "date": "2026-10-07",
   "shift_db": 1.0,
+  "instrument_version": "1.1",
   "event": "measured water area within +/-20% of the hand-labelled area",
-  "test_ece": 0.0883,
-  "test_coverage_at_0.60": 0.11,
-  "test_error_when_published": 0.333,
+  "test_ece": 0.074,
+  "test_coverage_at_0.60": 0.427,
+  "test_error_when_published": 0.257,
   "report": "training/calibration/reports/sar_water_otsu.md"
  },
  "note": "Fitted on 5 km chips from 11 flood events worldwide, 68 of them in India. Applied at district scale through the same formula; see the report for the event-level check and its limits."

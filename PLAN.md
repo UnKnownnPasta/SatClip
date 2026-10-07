@@ -20,13 +20,13 @@
   - Evidence chips (scene, date, confidence) and a map overlay; clear abstention states.
   - Accessible contrast and keyboard support.
   - As built: vendored Leaflet map with district outline and per-tile overlays, ARIA combobox district picker, one-date or two-date picker, progress steps, "Needs one detail" versus "Not enough evidence" cards, confidence meter with threshold marker, method drawer, receipt actions, light and dark themes; screenshots in `docs/screenshots/`; keyboard walkthrough `tools/ui_keyboard_check.py`. See ARCHITECTURE.md 6.8.
-- [ ] **M5. Training code.** (mostly built in run 6; see "Remaining" below)
+- [x] **M5. Training code.** (run 6, finished run 7)
   - LoRA fine-tuning pipeline for an open VLM on optical and SAR data (BigEarthNet, RSVQA, auto-generated Indian Q&A from Bhuvan and OSM layers).
   - A Colab notebook.
   - An evaluation harness against RSVQA and VRSBench.
   - Calibration fitting.
   - As built (run 6): `training/calibration/fit_water.py` (Sen1Floods11, 446 chips, Platt chosen on valid, fitted map shipped, report with reliability and risk-coverage); `training/lora/` (intent JSON schema and resolver, intent data builder with unseen-district split, RSVQA-LR and BigEarthNet v2 builders, S1 false colour, `train_lora.py` with LoRA, QLoRA, DoRA, smoke-tested on CPU); `training/eval/` (intent and VQA harnesses, measured rule and majority baselines); `training/colab/satclip_lora.ipynb`. See `training/README.md` and ARCHITECTURE 6.9.
-  - Remaining: `build_india_qa.py` (OSM land-use Q&A over Sentinel-2 chips for Indian districts; Bhuvan layers if licence allows); verify the VRSBench converter on the real file; fit `ndvi_difference` (crop labels needed) and `sar_logratio_change` (Kuro Siwo) calibrations, or record why not.
+  - Finished in run 7: water instrument v1.1 (VV or VH; `tune_water_vh.py`, `cache_sen1floods11.py`, refit with v1.0 kept for comparison); `fit_change.py` (Kuro Siwo streamed by HTTP range, cross-validated by event, `regimes` calibration method); `build_india_qa.py` (ESA WorldCover labels over Sentinel-2 and Sentinel-1 chips in Indian districts; OSM rejected for land-use labels and kept for positive-only named-water questions; Bhuvan not used, terms unclear); multi-format date parser and Hindi/Hinglish keywords in `parser.py`; hand-written intent test set (`training/eval/data/intents_handwritten.jsonl`); VRSBench converter verified on the real file with an answer-prior report. `ndvi_difference` calibration not fitted by decision: no open labelled crop-decline set for India (recorded in `training/README.md`).
 - [ ] **M6. Quality.**
   - Tests, sample queries and a scripted demo.
   - Load and scalability notes with measured numbers where possible.
@@ -43,21 +43,21 @@ Each run adds 25 papers, choosing the categories with the largest remaining gap.
 
 | Category key | Scope | Target | Current |
 |---|---|---|---|
-| rs-vlm | RS vision-language models and assistants | 25 | 16 |
+| rs-vlm | RS vision-language models and assistants | 25 | 21 |
 | rs-benchmark | RS VQA, captioning, grounding datasets and benchmarks | 20 | 13 |
-| eo-foundation | Scene classification and EO foundation models (SatMAE, Prithvi, SkySense, SSL4EO, CLIP-style) | 18 | 10 |
+| eo-foundation | Scene classification and EO foundation models (SatMAE, Prithvi, SkySense, SSL4EO, CLIP-style) | 18 | 18 |
 | change-detection | Optical and SAR change detection | 16 | 14 |
 | sar-optical-fusion | SAR-optical fusion, SAR analytics, cloud removal | 15 | 10 |
-| object-detection | Object detection in RS | 10 | 5 |
+| object-detection | Object detection in RS | 10 | 10 |
 | trust-calibration | Hallucination, calibration, uncertainty, selective prediction and abstention | 16 | 16 |
-| eo-agents | Retrieval-augmented and tool-using agents for EO | 12 | 8 |
+| eo-agents | Retrieval-augmented and tool-using agents for EO | 12 | 12 |
 | data-infrastructure | STAC, COG, Copernicus, tiling, job queues | 10 | 9 |
 | efficient-inference | LoRA, quantization, edge and offline inference | 12 | 11 |
 | indian-context | ISRO, Bhuvan, monsoon, disaster management, agriculture | 14 | 12 |
 | human-factors | UX of GIS, conversational analytics, decision support | 12 | 12 |
 | historical | Foundations before 2020 | 10 | 8 |
-| upcoming | 2026 preprints, challenges, announced datasets | 10 | 6 |
-| **Total** | | **200** | **150** |
+| upcoming | 2026 preprints, challenges, announced datasets | 10 | 9 |
+| **Total** | | **200** | **175** |
 
 ### Suggested next batches
 
@@ -69,4 +69,4 @@ Each run adds 25 papers, choosing the categories with the largest remaining gap.
 | 5 | indian-context (about 7), historical (about 7), rs-benchmark (about 6), data-infrastructure (about 5) |
 | 6 | trust-calibration (about 8), human-factors (about 6), change-detection (about 6), efficient-inference (about 5) |
 | 7 | eo-foundation (about 8), object-detection (about 5), rs-vlm (about 5, newest 2026 models and any calibrated RS VLM), eo-agents (about 4), upcoming (about 3) |
-| 8 | Remaining gaps (sar-optical-fusion, rs-benchmark, upcoming, indian-context: Indian labelled flood and crop datasets for calibration); newly published work; anything that challenges NOVELTY.md |
+| 8 | Remaining gaps: sar-optical-fusion (5), rs-benchmark (7), indian-context (2: Indian labelled flood and crop datasets for calibration), change-detection (2), historical (2), data-infrastructure (1), efficient-inference (1), rs-vlm (4), upcoming (1) = 25; then newly published work and anything that challenges NOVELTY.md |

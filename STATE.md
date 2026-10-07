@@ -6,9 +6,9 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 
 | Item | Value |
 |---|---|
-| Papers archived | 150 (IDs 001 to 150) |
-| Next paper ID | 151 |
-| Milestones done | M1, M2, M3, M4; M5 mostly built (run 6), remaining items listed in PLAN.md |
+| Papers archived | 175 (IDs 001 to 175) |
+| Next paper ID | 176 |
+| Milestones done | M1, M2, M3, M4, M5 (finished run 7) |
 | Deck | not yet created (M7) |
 
 ## Conventions and decisions
@@ -35,6 +35,7 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 - **Sandbox egress (run 3).** The run sandbox's proxy refuses direct connections to all three STAC hosts (CONNECT 403, organization policy), even though the user allowed all websites. WebFetch can still reach them, which is how the fixtures were recorded. Live smoke and the real M3 instrument checks must be run by the user, or tested through WebFetch-recorded fixtures plus synthetic rasters.
 
 - **Training conventions (run 6).** `training/` holds `calibration/`, `lora/`, `eval/`, `colab/`. Generated data goes to `training/data/` and downloads to `training/.cache/` (both gitignored; rebuild with the builders, all seeded). Reports in `training/eval/reports/` and `training/calibration/reports/` are committed. Training extras: `pip install --break-system-packages torch torchvision --index-url https://download.pytorch.org/whl/cpu` then `transformers peft accelerate` (run 6 had transformers 5.19: `dtype` replaces `torch_dtype`, `warmup_ratio` is gone, Qwen2-VL needs `mm_token_type_ids`; the scripts handle all three). CPU smoke test: `python training/lora/train_lora.py --model hf-internal-testing/tiny-random-Qwen2VLForConditionalGeneration --data <small jsonl> --max-steps 4 --image-size 112 --out /tmp/x`.
+- **Run 7 conventions.** (1) Water experiments use the local cache: `python training/calibration/cache_sen1floods11.py` (about 1 minute, about 90 MB in `training/.cache/sen1floods11/`), then `fit_water.py --from-cache` and `tune_water_vh.py`. VH bounds were chosen on train only; do not retune on test, Bolivia or Indian test chips. (2) `classify_sar_water(vv, valid, fit, vh)` and `classify_sar_change(a, b_vv, b_vh)` in `instruments/water.py` are the shared cores used by the instruments and the fitters; change them only together with a refit. (3) Calibration method `regimes` (calibration.py): `cal(raw, regime)`; `sar_logratio_change` passes "change" or "no_change" (new water at least 5% of measured area). (4) Kuro Siwo is read with `training/calibration/kurosiwo_stream.py` (HTTP range into the Hugging Face webdataset, no full download); its train and test shards share events, so evaluate grouped by event. (5) `training/eval/data/intents_handwritten.jsonl` is a test set written by hand in run 7: never tune the rule parser or prompts on it; add new hand-written questions in later runs instead. (6) OSM Overpass: overpass-api.de was unreachable from the sandbox, `maps.mail.ru/osm/tools/overpass` worked. ESA WorldCover COGs on `esa-worldcover.s3.eu-central-1.amazonaws.com` are readable directly.
 - **Calibration conventions (run 6).** Instrument physics tests use the `identity_calibration` fixture (conftest) so they do not depend on fitted files; `test_calibration_files` checks the shipped maps. `"method": "inherit"` borrows another instrument's fitted map (used by `sar_logratio_change`). Refit water with `python training/calibration/fit_water.py` (streams about 1.4 GB from the public Sen1Floods11 bucket, about 5 minutes with 8 workers) or `--rows training/calibration/reports/sar_water_otsu_chips.csv` to refit without downloading.
 - **Sen1Floods11 does include India (run 6).** A022 originally said India was absent; the bucket's split files show 68 Indian hand-labelled chips. A022 and SOLUTION risk 2 were corrected.
 
@@ -254,4 +255,39 @@ Together these point to an evidence-first design.
 1. Archive papers 151 to 175: eo-foundation (about 8), object-detection (about 5), rs-vlm (about 5, newest 2026 models and any calibrated RS VLM), eo-agents (about 4), upcoming (about 3).
 2. Water instrument v1.1 (highest priority, it decides whether the demo can publish anything): add VH to `classify_sar_water` (fit KI thresholds on VV and VH, water if either is below its threshold with the VH rule guarded against dry sand and shadow), tune only on Sen1Floods11 train, then refit calibration with `fit_water.py` and report test, Bolivia and India before and after. Keep v1.0 numbers in the report for comparison. Re-run livecheck on Barpeta.
 3. Finish M5: `training/lora/build_india_qa.py` (OSM land-use shares over Sentinel-2 chips for sampled Indian districts via Overpass and the existing data layer), a multi-format date parser in `parser.py` (re-run `eval_intents.py --predictor rules`), and either fit `sar_logratio_change` on Kuro Siwo or record why not. Then tick M5 and start M6.
+
+### Run 7, 2026-10-07
+
+**Papers: 25 added (IDs 151 to 175)**
+- eo-foundation (8): Presto, TESSERA, Galileo, AnySat, Copernicus-FM, SoftCon, SatlasPretrain, Scale-MAE.
+- object-detection (5): Open Buildings continental detection, LS-SSDD-v1.0, SSDD official release, RTMDet, LSKNet.
+- eo-agents (4): RSure-Agent (2026), DORA disaster-operations agent benchmark (2026), Earth-Agent-Pro (2026), GIS Copilot.
+- rs-vlm (5): FUSAR-R1 (2026), GeoZero, More with Less (2026), ScaleEarth gated LoRA (2026), selective tool use for change VQA (2026).
+- upcoming (3): GEOID-Flood benchmark (2026), GeoDisaster agent benchmark (2026, IIT Bombay), ISRO GSLV-F17/EOS-05 geosynchronous imaging satellite (launched September 2026 per ISRO pages; no data-access details found).
+- All verified through the arXiv API, Crossref or official pages with curl (WebFetch permission prompts timed out for agents again); nine 2026 arXiv IDs were re-checked by the main run. Skipped as duplicates: DOFA, SpectralGPT, TerraMind, AlphaEarth, GeoRSCLIP, xView, Earth AI, GeoGround, EarthMind, Falcon, Geo-R1.
+
+**Milestone M5: finished** (PLAN ticked)
+- Water instrument v1.1 (`sar_water_otsu` 1.1, `sar_logratio_change` 1.1): VV or VH rule, joint-margin confidence, VH read optional with VV-only fallback; change uses VV or VH on both dates and a 3 dB drop in either polarisation.
+- `cache_sen1floods11.py`, `tune_water_vh.py` (report `sar_water_vh_tuning.md`), `fit_water.py --from-cache --pols`, v1.0 reports kept as `sar_water_otsu_v1.0.*`, v1.0 vs v1.1 table in `sar_water_otsu.md`.
+- `fit_change.py` + `kurosiwo_stream.py`: 848 Kuro Siwo samples from 22 events (train and test shards, 4 byte offsets each), grouped 5-fold CV, new `regimes` calibration method, `sar_logratio_change.json` now fitted (was borrowed).
+- `build_india_qa.py`: Indian chips with WorldCover 2021 labels, S2 true colour and S1 false colour; smoke run 8 districts, 154 pairs. OSM rejected for land-use labels (rural Barpeta box: 85 features, 5 farmland); Bhuvan not used.
+- Parser: `dates_in_text` (ISO, DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY, "11th July, 2024", "July 11, 2024", Hindi month names, Devanagari digits), Hindi and Hinglish keywords, two dates make a water question a change question.
+- Hand-written intent test set (44 questions, English, Hinglish, Hindi). VRSBench converter verified on the real 37,409-question file, with an answer-prior report.
+- `ndvi_difference` calibration: not fitted, recorded why (no open Indian crop-decline labels).
+- Tests: 66 passing (7 new in `tests/test_run7.py`; calibration-file test updated for the fitted change map).
+
+**Measured**
+- Water v1.0 -> v1.1, held-out test (82 chips): share correct 0.44 -> 0.55; ECE after 0.088 -> 0.074; coverage at 0.60 0.11 -> 0.43; error when published 0.33 -> 0.26; median IoU 0.15 -> 0.31. Bolivia: coverage 0 -> 0.43 with no errors. India, fit without India: coverage 0.12 -> 0.52, error when published 0.63 -> 0.55, median IoU 0.03 -> 0.09.
+- Water change on Kuro Siwo (CV by event): raw AUROC 0.52; "no change" answers 68% right, "change" answers 27% right; 75% of flood chips undercounted by more than 20%; ECE 0.214 (borrowed) -> 0.041 (regime maps).
+- Live: Barpeta flood extent 2024-07-11 published 905 sq km at 0.62 (39% of 2,335 sq km measured; was abstained at 0.46); Barpeta flood change 2024-06-05 to 2024-07-11 abstained at 0.23 (466 sq km); Darbhanga crop change unchanged (1,544 sq km, 0.89, placeholder calibration). 905 sq km includes the Brahmaputra channel and permanent wetlands (risk 12), not checked against an independent map.
+- Intent parsing: generated test 0.163 -> 0.898 full match; hand-written test 0.682 (refusal precision 0.41).
+- VRSBench: 83% of yes/no answers are "yes"; per-type answer prior 0.345.
+
+**Problems hit:** Overpass main endpoint unreachable (used the mail.ru mirror); the first Kuro Siwo fit used the shard split, which shares events between train and test, and produced a flat map that abstained on everything (replaced by grouped CV and regime maps); `build_india_qa.py` is slow (about 25 s per district) because each chip does a STAC search and COG reads; research agents again could not use WebFetch.
+
+**Most important finding:** adding VH made the water card useful again on the held-out data (it answers four times as often with fewer errors), but two hard limits surfaced: Indian flood water is still mostly missed with a fit that never saw India, and positive flood-change areas are usually undercounted, so the change card now abstains on almost every real flood spread question. The 2026 literature (RSure-Agent, selective tool use) reaches the same conclusion from the agent side: tools that run are still often wrong, and their reliability must be learned per tool.
+
+**Exact next step (run 8)**
+1. Archive papers 176 to 200 filling the remaining gaps (PLAN "Suggested next batches" row 8): rs-benchmark 7, sar-optical-fusion 5, rs-vlm 4, change-detection 2, historical 2, indian-context 2 (Indian labelled flood or crop sets usable for calibration), data-infrastructure 1, efficient-inference 1, upcoming 1. Read the "Not used, but real" leads in this log first: RS-Agent (2406.07089), CangLing-KnowFlow (2512.15231), REMSA (2511.17442), EO-Gym (2605.01250), TerraBench (2606.13148), Agentic AI for RS survey (2604.24919), lightweight VLM adaptation for MS and SAR (2609.02187).
+2. Build M6 (Quality): (a) `tools/demo.py`, a scripted demo of six questions (flood extent published, flood change abstained with the before and after extents shown, crop change, ambiguous district, out of scope, Hindi question) writing `docs/demo/` cards and a short markdown transcript; (b) `docs/QUALITY.md` with sample queries and expected behaviour; (c) a load test (`tools/loadtest.py`) with the inline queue and with fakeredis plus 2 to 4 workers, measuring tiles per second, warm-cache latency and memory, and a note on horizontal scaling; (d) receipt reproducibility check (re-run 10 receipts, compare output hashes). Consider the SOLUTION risk 17 mitigation (show before and after extents for "did the flood spread") as part of M6 if small.
 

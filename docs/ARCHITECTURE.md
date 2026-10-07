@@ -248,7 +248,7 @@ flowchart LR
 
 | Instrument | Sensor | Method | Fixed parameters (source) |
 |---|---|---|---|
-| `sar_water_otsu` | S1 RTC VV (S2 NDWI outside monsoon or as fallback) | Split-based selection of bimodal 1 km blocks (half-overlapping), Kittler-Illingworth minimum-error threshold on the pooled blocks; refit on the 3 x 3 tile neighbourhood at 40 m if the tile alone has no bimodal evidence; speckle blobs under 10 px removed | Ashman D >= 3 on class moments and 3 dB class gap, minority >= 10% (A084, A086); fit above -14 dB gamma0 rejected, default -17 dB gamma0 (A083, shifted +1 dB from sigma0) |
+| `sar_water_otsu` (v1.1) | S1 RTC VV and VH (S2 NDWI outside monsoon or as fallback) | Split-based selection of bimodal 1 km blocks (half-overlapping), Kittler-Illingworth minimum-error threshold on the pooled blocks; refit on the 3 x 3 tile neighbourhood at 40 m if the tile alone has no bimodal evidence; v1.1: water if VV is below its threshold OR VH is below its own fitted threshold, confidence on the joint margin min(VV - t_vv, VH - t_vh); speckle blobs under 10 px removed | Ashman D >= 3 on class moments and 3 dB class gap, minority >= 10% (A084, A086); fit above -14 dB gamma0 rejected, default -17 dB gamma0 (A083, shifted +1 dB from sigma0); VH fit rejected above -18 dB, default -22 dB (chosen on Sen1Floods11 train, run 7) |
 | `sar_logratio_change` | S1 same orbit and track (S2 NDWI pair otherwise) | Water threshold fitted on the after scene and applied to both dates, plus a backscatter drop of at least 3 dB (log-ratio) | 3 dB drop (A036) |
 | `ndvi_difference` | S2 pair | NDVI on pixels clear on both dates (SCL 4 to 7), decline where NDVI fell by 0.15 or more on pixels vegetated before (NDVI >= 0.3) | 0.15 drop, 0.3 vegetated |
 | `index_caption` | S2 | Shares of water (NDWI > 0), dense vegetation (NDVI >= 0.5), sparse (0.2 to 0.5), other | Index cut-offs |
@@ -300,15 +300,18 @@ New API pieces for the UI: `GET /v1/ui-config` (bands, threshold, window size, b
 ```mermaid
 flowchart LR
   subgraph CPU["CPU, in the repo"]
-    S11["Sen1Floods11 hand labels<br/>446 chips, streamed"] --> FIT["fit_water.py<br/>same classify_sar_water code"]
+    S11["Sen1Floods11 hand labels<br/>446 chips, cached VV+VH"] --> FIT["fit_water.py<br/>same classify_sar_water code"]
     FIT --> CAL["config/calibration/<br/>sar_water_otsu.json (fitted)"]
+    KS["Kuro Siwo webdataset<br/>848 pairs, streamed by range"] --> FITC["fit_change.py<br/>same classify_sar_change code"]
+    FITC --> CALC["sar_logratio_change.json<br/>(fitted, one map per regime)"]
+    WC["ESA WorldCover 2021<br/>+ S2/S1 chips in India"] --> IQA["india_qa Q&A<br/>clear-cut answers only"]
     FIT --> REP["reliability and<br/>risk-coverage report"]
     GAZ["gazetteer + templates<br/>EN / Hinglish / HI"] --> INT["intents train/val/test<br/>unseen-district split"]
     RSVQA["RSVQA-LR (Zenodo)"] --> VQA["chat JSONL + PNG"]
     BEN["BigEarthNet v2 subset"] --> BQA["S2 RGB + S1 false colour Q&A"]
   end
   subgraph GPU["GPU (Colab notebook)"]
-    INT & VQA & BQA --> TRAIN["train_lora.py<br/>Qwen2-VL-2B, LoRA/QLoRA/DoRA"]
+    INT & VQA & BQA & IQA --> TRAIN["train_lora.py<br/>Qwen2-VL-2B, LoRA/QLoRA/DoRA"]
     TRAIN --> AD["adapter (+ merged model)"]
   end
   AD --> EVAL["eval_intents.py / eval_vqa.py"]
@@ -317,13 +320,15 @@ flowchart LR
   AD -. "schema.resolve(): same gazetteer and date rules" .-> API
 ```
 
-- **Calibration contract.** A calibration file maps an instrument's raw quality score (the probability its area is within 20% under a stated threshold error, times an evidence factor) to the observed probability of that event on labelled maps. Methods: `isotonic` (PAV with tiny blocks pooled), `logistic` (Platt, fitted by Newton's method), `temperature`, `inherit` (borrow a parent instrument's fitted map, used by `sar_logratio_change`), `identity`. The card's calibration chip prints `fitted`, `borrowed from ...` or `placeholder`.
+- **Calibration contract.** A calibration file maps an instrument's raw quality score (the probability its area is within 20% under a stated threshold error, times an evidence factor) to the observed probability of that event on labelled maps. Methods: `isotonic` (PAV with tiny blocks pooled), `logistic` (Platt, fitted by Newton's method), `temperature`, `inherit` (borrow a parent instrument's fitted map), `regimes` (one map per answer regime; `sar_logratio_change` uses "no_change" when new water is under 5% of the measured area and "change" otherwise, because the two are right at very different rates), `identity`. The card's calibration chip prints `fitted`, `borrowed from ...` or `placeholder`.
 - **Fitting is on production code.** `fit_water.py` imports `classify_sar_water` from the instrument, so the fitted map belongs to exactly the code that runs. Sen1Floods11 chips are put on the working grid first (10 m sigma0 to 20 m, plus 1 dB to approximate gamma0).
 - **Method choice is held out.** Isotonic versus Platt is chosen by ECE on the valid split with a train-only fit; the test split, Bolivia (unseen country) and a leave-India-out fit are only reported. The run 6 fit chose Platt.
 - **The language model never touches geography or numbers.** It emits the JSON of `training/lora/schema.py`; `schema.resolve()` calls `parser.parse(req, intent=...)`, so gazetteer lookups, date windows, problems and the "I understood" text stay deterministic. A wrong parse can only cost a correction, never a wrong map.
 - **Evaluation is comparative.** Every model result is reported next to a non-learned baseline (rule parser for intents, majority-per-type for RSVQA), on districts the model never saw.
 
-Measured in run 6: see `training/README.md` and `training/calibration/reports/sar_water_otsu.md`. Live effect: the Barpeta flood-extent card for 11 July 2024 moved from published at 0.66 (uncalibrated) to abstained at 0.46 (fitted); the Darbhanga crop-change card is unchanged (its calibration is still a placeholder and says so).
+- **Grouped evaluation for change.** Kuro Siwo's webdataset train and test parts share flood events, so `fit_change.py` cross-validates with folds grouped by event instead of trusting the shard split.
+
+Measured in runs 6 and 7: see `training/README.md` and the reports in `training/calibration/reports/`. Run 7 live effect: Barpeta flood extent on 11 July 2024 publishes 905 sq km at 0.62 with water v1.1 (abstained at 0.46 under v1.0); Barpeta flood change abstains at 0.23 under its own regime map. Run 6 live effect: the Barpeta flood-extent card for 11 July 2024 moved from published at 0.66 (uncalibrated) to abstained at 0.46 (fitted). The Darbhanga crop-change card is unchanged (its calibration is still a placeholder and says so).
 
 ---
 

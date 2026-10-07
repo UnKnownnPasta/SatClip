@@ -257,9 +257,11 @@ def test_calibration_files():
     assert all(0 <= y <= 1 for y in ys) and ys == sorted(ys)
     for name in ("ndvi_difference", "index_caption"):
         assert calibration.load(name).status.startswith("placeholder")
-    change = calibration.load("sar_logratio_change")
-    assert change.status.startswith("borrowed from sar_water_otsu") and not change.fitted
-    assert change(0.9) == pytest.approx(water(0.9))
+    change = calibration.load("sar_logratio_change")   # run 7: fitted on Kuro Siwo, one map per answer regime
+    assert change.fitted and change.status == "fitted" and change.method == "regimes"
+    assert "Kuro Siwo" in change.spec["fit"]["dataset"]
+    assert change(0.9, "no_change") > change(0.9, "change")
+    assert change(0.9) == pytest.approx(min(change(0.9, "no_change"), change(0.9, "change")))
 
 
 # ---------- end to end through the API ----------

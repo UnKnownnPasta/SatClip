@@ -131,7 +131,7 @@ def main() -> None:
     name = args.name or args.predictor
     REPORTS.mkdir(parents=True, exist_ok=True)
     (REPORTS / f"intents_{name}.json").write_text(json.dumps(res, indent=1, ensure_ascii=False))
-    lines = [f"# Intent parsing: {name}", "", f"Data: `{args.data.relative_to(ROOT)}` ({len(rows)} questions, districts unseen in training).", "",
+    lines = [f"# Intent parsing: {name}", "", f"Data: `{args.data.resolve().relative_to(ROOT)}` ({len(rows)} questions).", "",
              "| Slice | n | Valid JSON | Intent | District | Dates | Full match |", "|---|---|---|---|---|---|---|"]
     for b in ("all", "en", "hinglish", "hi"):
         if b in res:

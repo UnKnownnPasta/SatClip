@@ -12,13 +12,16 @@ sar_water_otsu (water_extent)
   If no block in the tile is bimodal, the fit is repeated on the 3 x 3 tile neighbourhood at 40 m.
   If that also fails, or the fitted value is above -14 dB gamma0 (about -15 dB sigma0, implausible
   for water), a default of -17 dB gamma0 (about -18 dB sigma0) is used and the card says so.
+  v1.1 adds VH: a pixel is water if VV is below the VV threshold OR VH is below its own fitted
+  threshold (rejected above -18 dB gamma0, default -22 dB). Bounds were chosen on the Sen1Floods11
+  train split only. If VH cannot be read the instrument falls back to VV only and says so.
   Blobs under 10 px are dropped.
   Outside the monsoon the data layer may choose Sentinel-2 instead: NDWI = (green - nir) / (green + nir)
   with water at NDWI > 0 (McFeeters), on SCL-clear pixels only.
 
 sar_logratio_change (water_change)
-  Two same-orbit Sentinel-1 scenes. New water = water after (threshold fitted on the after scene,
-  applied to both dates) AND not water before AND a backscatter drop of at least 3 dB
+  Two same-orbit Sentinel-1 scenes. New water = water after (thresholds fitted on the after scene,
+  applied to both dates) AND not water before AND a backscatter drop of at least 3 dB in VV or VH
   (log-ratio, archive A036). Optical pairs use NDWI crossing zero on pixels clear on both dates.
 """
 from __future__ import annotations
@@ -48,11 +51,19 @@ MIN_GAP_DB = 3.0
 MIN_BLOB_PX = 10
 DROP_DB = -3.0
 CLEAR_SCL = (4, 5, 6, 7, 11)
+# v1.1: VH cross-pol rule. Rough, wind-roughened or shallow flood water and flooded vegetation often sit
+# around -12 to -13 dB in VV but stay dark in VH. Bounds chosen on the Sen1Floods11 train split only
+# (training/calibration/reports/sar_water_vh_tuning.md): a fitted VH threshold above -18 dB gamma0 is
+# rejected, and -22 dB is the default when no VH block is bimodal.
+VH_MAX_WATER_DB = -18.0
+VH_DEFAULT_DB = -22.0
 WATER_PALETTE = {1: (37, 99, 235, 170)}
 CHANGE_PALETTE = {1: (37, 99, 235, 190), 2: (148, 163, 184, 110), 3: (234, 88, 12, 160)}
 
 
-def fit_sar_threshold(vv_db: np.ndarray) -> dict[str, Any]:
+def fit_sar_threshold(vv_db: np.ndarray, max_water_db: float = MAX_WATER_DB, default_db: float = DEFAULT_DB
+                      ) -> dict[str, Any]:
+    """Split-based threshold fit on one band in dB (VV by default; VH with its own bounds)."""
     h, w = vv_db.shape
     kept = []
     n_blocks = 0
@@ -65,7 +76,7 @@ def fit_sar_threshold(vv_db: np.ndarray) -> dict[str, Any]:
             n_blocks += 1
             t = otsu(blk)
             st = split_stats(blk, t)
-            if (st["ashman_d"] >= MIN_D and st["minority"] >= 0.10 and st["mean_low"] < MAX_WATER_DB - 1
+            if (st["ashman_d"] >= MIN_D and st["minority"] >= 0.10 and st["mean_low"] < max_water_db - 1
                     and st["mean_high"] - st["mean_low"] >= MIN_GAP_DB):
                 kept.append(blk[np.isfinite(blk)])
     fit = {"blocks": n_blocks, "bimodal_blocks": len(kept)}
@@ -73,11 +84,11 @@ def fit_sar_threshold(vv_db: np.ndarray) -> dict[str, Any]:
         pool = np.concatenate(kept)
         t = kittler_illingworth(pool)
         st = split_stats(pool, t)
-        if t <= MAX_WATER_DB:
+        if t <= max_water_db:
             return {**fit, "threshold_db": round(t, 2), "source": "fitted", **{k: round(v, 3) for k, v in st.items()}}
         fit["rejected_fit_db"] = round(t, 2)
-    st = split_stats(vv_db, DEFAULT_DB)
-    return {**fit, "threshold_db": DEFAULT_DB, "source": "default", **{k: round(v, 3) for k, v in st.items()}}
+    st = split_stats(vv_db, default_db)
+    return {**fit, "threshold_db": default_db, "source": "default", **{k: round(v, 3) for k, v in st.items()}}
 
 
 THRESH_SIGMA_DB = 1.0   # assumed threshold error (1 sd) for the confidence model
@@ -96,15 +107,38 @@ def water_quality(values: np.ndarray, t: float, fit: dict[str, Any], margin: flo
     return {**tc, "evidence_factor": round(factor, 3), "raw_quality": round(tc["p_area_within_tol"] * factor, 4)}
 
 
-def classify_sar_water(vv_db: np.ndarray, valid: np.ndarray, fit: Optional[dict[str, Any]] = None
+def classify_sar_water(vv_db: np.ndarray, valid: np.ndarray, fit: Optional[dict[str, Any]] = None,
+                       vh_db: Optional[np.ndarray] = None, vh_fit: Optional[dict[str, Any]] = None
                        ) -> tuple[np.ndarray, dict[str, float]]:
-    """Core of sar_water_otsu on one tile of gamma0 VV in dB: threshold, speckle removal, raw quality.
+    """Core of sar_water_otsu on one tile of gamma0 dB: threshold, speckle removal, raw quality.
+    v1.1: when VH is given, a pixel is water if VV is below the VV threshold OR VH is below the VH
+    threshold. The confidence model then works on the joint margin min(VV - t_vv, VH - t_vh), whose
+    threshold is 0 dB. Without VH it is exactly v1.0 (VV only).
     Shared with training/calibration/fit_water.py so the calibration is fitted on exactly this code."""
     if fit is None:
         fit = fit_sar_threshold(np.where(np.isfinite(vv_db), vv_db, np.nan))
-    water = drop_small(valid & (vv_db < fit["threshold_db"]), MIN_BLOB_PX)
-    q = water_quality(np.where(valid, vv_db, np.nan), fit["threshold_db"], fit)
-    return water, q
+    if vh_db is None:
+        water = drop_small(valid & (vv_db < fit["threshold_db"]), MIN_BLOB_PX)
+        q = water_quality(np.where(valid, vv_db, np.nan), fit["threshold_db"], fit)
+        return water, {**q, "polarisations": "VV"}
+    if vh_fit is None:
+        vh_fit = fit_sar_threshold(np.where(np.isfinite(vh_db), vh_db, np.nan), VH_MAX_WATER_DB, VH_DEFAULT_DB)
+    with np.errstate(invalid="ignore"):
+        margin = np.fmin(vv_db - fit["threshold_db"], vh_db - vh_fit["threshold_db"])
+    water = drop_small(valid & (margin < 0), MIN_BLOB_PX)
+    lead = fit if fit.get("source", "").startswith("fitted") or not vh_fit.get("source", "").startswith("fitted") else vh_fit
+    q = water_quality(np.where(valid, margin, np.nan), 0.0, lead)
+    return water, {**q, "polarisations": "VV+VH", "vh_threshold_db": vh_fit["threshold_db"], "vh_source": vh_fit["source"],
+                   "vh_bimodal_blocks": vh_fit.get("bimodal_blocks", 0)}
+
+
+def _read_vh(prov, scene, bbox, res, shape) -> Optional[np.ndarray]:
+    """VH is optional: older fixtures, single-pol scenes or a failed read fall back to VV only."""
+    try:
+        vh = db(prov.read(scene, "vh", bbox, res).data)
+    except Exception:  # noqa: BLE001
+        return None
+    return vh if vh.shape == shape and np.isfinite(vh).any() else None
 
 
 def _sar_water(job: TileJob, prov, sel, res: float) -> tuple[Optional[dict], Optional[str]]:
@@ -131,8 +165,11 @@ def _sar_water(job: TileJob, prov, sel, res: float) -> tuple[Optional[dict], Opt
         if cfit["source"] == "fitted":
             fit = {**cfit, "source": "fitted (3 x 3 tile neighbourhood)", "tile_fit": fit}
             fit["ashman_d"] = cfit["ashman_d"]
-    water, q = classify_sar_water(vv, valid, fit)
-    return {"raster": r, "water": water, "valid": valid, "fit": fit, "quality": q, "values": vv}, None
+    vh = _read_vh(prov, sel.scene, job.bbox, res, vv.shape)
+    water, q = classify_sar_water(vv, valid, fit, vh)
+    if vh is not None:
+        fit = {**fit, "vh_threshold_db": q["vh_threshold_db"], "vh_source": q["vh_source"]}
+    return {"raster": r, "water": water, "valid": valid, "fit": fit, "quality": q, "values": vv, "vh": vh}, None
 
 
 def _s2_water(job: TileJob, prov, sel, res: float) -> tuple[Optional[dict], Optional[str]]:
@@ -157,11 +194,36 @@ def _s2_water(job: TileJob, prov, sel, res: float) -> tuple[Optional[dict], Opti
     return {"raster": g, "water": water, "valid": valid, "fit": fit, "quality": q, "values": ndwi}, None
 
 
+def classify_sar_change(a: dict[str, Any], b_db: np.ndarray, b_vh: Optional[np.ndarray]) -> dict[str, Any]:
+    """Core of sar_logratio_change for one tile, given the after-date water result `a` (from _sar_water or
+    the fitter: keys water, valid, values (VV dB), vh, fit, quality) and the before-date VV and VH in dB.
+    Shared with training/calibration/fit_change.py so the change calibration is fitted on exactly this code."""
+    t = a["fit"]["threshold_db"]
+    valid = a["valid"] & np.isfinite(b_db)
+    with np.errstate(invalid="ignore"):
+        water_b = valid & (b_db < t)
+        ratio = a["values"] - b_db  # dB difference = 10 log10(after / before)
+        rise = ratio
+        if b_vh is not None and a.get("vh") is not None:  # v1.1: the same VV-or-VH rule on the before scene
+            water_b |= valid & (b_vh < a["fit"]["vh_threshold_db"])
+            vh_ratio = a["vh"] - b_vh
+            ratio = np.fmin(ratio, vh_ratio)   # a 3 dB drop in either polarisation counts as new water
+            rise = np.fmax(rise, vh_ratio)
+        new = drop_small(valid & a["water"] & ~water_b & (ratio <= DROP_DB), MIN_BLOB_PX)
+        receded = drop_small(valid & water_b & ~a["water"] & (rise >= -DROP_DB), MIN_BLOB_PX)
+    cand = valid & a["water"] & ~water_b
+    # how stable is the new-water area if the 3 dB drop rule were off by 1 dB?
+    rc = (threshold_confidence(np.where(cand, ratio, np.nan), DROP_DB, 1.0, below=True) if cand.any()
+          else {"p_area_within_tol": 1.0, "near_share": 0.0})
+    raw = a["quality"]["raw_quality"] * rc["p_area_within_tol"]
+    return {"valid": valid, "water_b": water_b, "new": new, "receded": receded, "cand": cand, "rc": rc, "raw": raw}
+
+
 def _measure(job, prov, sel, res):
     return (_sar_water if sel.sensor == "S1" else _s2_water)(job, prov, sel, res)
 
 
-@register("sar_water_otsu", "1.0")
+@register("sar_water_otsu", "1.1")
 def sar_water_otsu(job: TileJob) -> TileResult:
     prov = get_provider()
     cfg = prov.cfg
@@ -179,7 +241,8 @@ def sar_water_otsu(job: TileJob) -> TileResult:
     q = m["quality"]
     sigma_abs = q["sigma_rel"] * max(q["class_share"], 0.05) * measured  # 1 sd of the area, km2
     mask = save_overlay(job, m["raster"], m["water"].astype("uint8"), WATER_PALETTE, {"1": "open water"}, cfg)
-    method = ("Sentinel-1 VV backscatter, split-based Otsu threshold" if sel.sensor == "S1"
+    method = (("Sentinel-1 VV or VH backscatter below split-based thresholds" if m.get("vh") is not None
+               else "Sentinel-1 VV backscatter, split-based threshold (VH not available)") if sel.sensor == "S1"
               else "Sentinel-2 NDWI > 0 on cloud-free pixels")
     return TileResult(job_id=job.job_id, tile_id=job.tile_id, status=TileStatus.ok, value=round(area, 4), unit="km2",
                       confidence=round(conf, 3), scenes=[scene_ev(sel.scene)], mask=mask,
@@ -189,7 +252,7 @@ def sar_water_otsu(job: TileJob) -> TileResult:
                               "sigma_floor_km2": round(0.05 * measured, 4), "calibration": cal.status})
 
 
-@register("sar_logratio_change", "1.0")
+@register("sar_logratio_change", "1.1")
 def sar_logratio_change(job: TileJob) -> TileResult:
     prov = get_provider()
     cfg = prov.cfg
@@ -209,18 +272,10 @@ def sar_logratio_change(job: TileJob) -> TileResult:
         b_db = db(rb.data)
         if b_db.shape != a["values"].shape:
             return abstain(job, "before and after scenes are on different grids; cannot compare pixel by pixel")
-        t = a["fit"]["threshold_db"]
-        valid = a["valid"] & np.isfinite(b_db)
-        water_b = valid & (b_db < t)
-        ratio = a["values"] - b_db  # dB difference = 10 log10(after / before)
-        new = drop_small(valid & a["water"] & ~water_b & (ratio <= DROP_DB), MIN_BLOB_PX)
-        receded = drop_small(valid & water_b & ~a["water"] & (ratio >= -DROP_DB), MIN_BLOB_PX)
-        cand = valid & a["water"] & ~water_b
-        # how stable is the new-water area if the 3 dB drop rule were off by 1 dB?
-        rc = (threshold_confidence(np.where(cand, ratio, np.nan), DROP_DB, 1.0, below=True) if cand.any()
-              else {"p_area_within_tol": 1.0, "near_share": 0.0})
+        b_vh = _read_vh(prov, before.scene, job.bbox, res, b_db.shape) if a.get("vh") is not None else None
+        ch = classify_sar_change(a, b_db, b_vh)
+        valid, water_b, new, receded, cand, rc, raw = (ch[k] for k in ("valid", "water_b", "new", "receded", "cand", "rc", "raw"))
         amb = rc.get("near_share", 0.0)
-        raw = a["quality"]["raw_quality"] * rc["p_area_within_tol"]
         px_ = pixel_km2(res)
         new_km2, after_km2 = float(new.sum()) * px_, float(a["water"].sum()) * px_
         cand_km2 = float(cand.sum()) * px_
@@ -229,7 +284,7 @@ def sar_logratio_change(job: TileJob) -> TileResult:
         sigma = {"sigma_abs_km2": round(float(np.hypot(r_abs, a_abs * new_km2 / max(after_km2, 1e-6))), 4),
                  "sigma_floor_km2": round(0.05 * float(a["valid"].sum()) * px_, 4),
                  "evidence_factor": a["quality"]["evidence_factor"]}
-        method = "Sentinel-1 same-orbit pair: water threshold fitted on the after scene, plus a 3 dB backscatter drop"
+        method = "Sentinel-1 same-orbit pair: VV and VH water thresholds fitted on the after scene, plus a 3 dB backscatter drop in either"
         fit = {**a["fit"], "drop_db": DROP_DB, "ratio_ambiguous_share": round(amb, 4)}
         raster = a["raster"]
     else:
@@ -259,8 +314,11 @@ def sar_logratio_change(job: TileJob) -> TileResult:
         a = {"water": water_a}
         sigma = {}
     cal = load_cal("sar_logratio_change")
-    conf = cal(raw)
     px = pixel_km2(res)
+    # v1.1 calibration has one map per answer regime (fit_change.py): "no meaningful new water" answers and
+    # "X sq km of new water" answers are right at very different rates on Kuro Siwo.
+    regime = "change" if float(new.sum()) >= 0.05 * float(valid.sum()) else "no_change"
+    conf = cal(raw, regime)
     classes = np.zeros(new.shape, dtype="uint8")
     classes[water_b & a["water"]] = 2
     classes[new] = 1
@@ -275,4 +333,5 @@ def sar_logratio_change(job: TileJob) -> TileResult:
                               "water_before_km2": round(float(water_b.sum()) * px, 4),
                               "water_after_km2": round(float(a["water"].sum()) * px, 4),
                               "receded_km2": round(float(receded.sum()) * px, 4), "raw_quality": round(raw, 4), **sigma,
+                              "calibration_regime": regime,
                               "measured_km2": round(float(valid.sum()) * px, 4), "calibration": cal.status})

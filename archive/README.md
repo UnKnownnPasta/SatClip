@@ -35,24 +35,24 @@ A verified, annotated archive of research that shapes SatClip. One file per pape
 
 <!-- CATALOG:START -->
 
-Total papers: **150**
+Total papers: **175**
 
 | Category | Count |
 |---|---|
 | change-detection | 14 |
 | data-infrastructure | 9 |
 | efficient-inference | 11 |
-| eo-agents | 8 |
-| eo-foundation | 10 |
+| eo-agents | 12 |
+| eo-foundation | 18 |
 | historical | 8 |
 | human-factors | 12 |
 | indian-context | 12 |
-| object-detection | 5 |
+| object-detection | 10 |
 | rs-benchmark | 13 |
-| rs-vlm | 16 |
+| rs-vlm | 21 |
 | sar-optical-fusion | 10 |
 | trust-calibration | 16 |
-| upcoming | 6 |
+| upcoming | 9 |
 
 ### change-detection
 
@@ -115,6 +115,10 @@ Total papers: **150**
 | 092 | [ThinkGeo: Evaluating Tool-Augmented Agents for Remote Sensing Tasks](papers/092-thinkgeo.md) ([source](https://arxiv.org/abs/2505.23752)) | 2025 | recent | RS tool-agent benchmark where even GPT-4o gets tool arguments right only about a third of the time and final answers right under 10% end to end; the strongest published case for SatClip's fixed instruments and exact tool-call scoring |
 | 093 | [GeoBenchX: Benchmarking LLMs in Agent Solving Multistep Geospatial Tasks](papers/093-geobenchx.md) ([source](https://arxiv.org/abs/2503.18129)) | 2025 | recent | Only geo-agent benchmark here that scores refusal on deliberately unsolvable tasks; shows models trade answering for refusing, which supports SatClip's explicit abstention and gives a test design to copy |
 | 094 | [Earth-Agent: Unlocking the Full Landscape of Earth Observation with Agents](papers/094-earth-agent.md) ([source](https://arxiv.org/abs/2509.23141)) | 2025 | recent | Most capable EO tool agent to date (104 MCP tools, spectral indices, GEE products) and the closest competitor to SatClip's instrument idea, yet GPT-5 matches tool parameters only about 26% of the time and there is no calibration, abstention or receipt |
+| 164 | [RSure-Agent: Reliable Use of Tool Observations for Remote Sensing Agents](papers/164-rsure-agent.md) ([source](https://arxiv.org/abs/2610.04836)) | 2026 | upcoming | The closest prior art to SatClip's 'trust the instrument only with evidence' idea: it shows tool outputs are wrong in over a fifth of tool-dependent tasks and adds accept, ask-for-more or reject decisions, but it serves the agent, not a non-expert user, and gives no calibrated confidence or receipt |
+| 165 | [Can LLM Agents Respond to Disasters? Benchmarking Heterogeneous Geospatial Reasoning in Emergency Operations](papers/165-dora-disaster-agent-benchmark.md) ([source](https://arxiv.org/abs/2605.11633)) | 2026 | upcoming | The first end-to-end disaster-operations agent benchmark finds frontier LLMs fail on sensor-modality mismatch and long tool chains, and that tool-order hints barely help; this backs SatClip's fixed, sensor-aware recipes over open-ended planning for flood questions |
+| 166 | [Earth-Agent-Pro: Towards Real-World Full-Chain Earth Observation with Agents](papers/166-earth-agent-pro.md) ([source](https://arxiv.org/abs/2609.12533)) | 2026 | upcoming | The strongest full-chain EO agent so far (finds and prepares its own data, records accepted evidence in structured memory) moves toward SatClip's design with expert-authored skills, yet still reaches only about two thirds accuracy with GPT-5 and half with a 9B open model, and has no user-facing confidence or abstention |
+| 167 | [GIS Copilot: Towards an Autonomous GIS Agent for Spatial Analysis](papers/167-gis-copilot.md) ([source](https://doi.org/10.1080/17538947.2025.2497489)) | 2025 | recent | A natural-language agent inside QGIS that writes and runs analysis code, aimed partly at non-experts; strong on one- and few-step tasks but not on autonomous multi-step ones, and it offers no calibrated confidence, abstention or provenance card, which is the gap SatClip fills |
 
 ### eo-foundation
 
@@ -130,6 +134,14 @@ Total papers: **150**
 | 056 | [Neural Plasticity-Inspired Multimodal Foundation Model for Earth Observation](papers/056-dofa.md) ([source](https://arxiv.org/abs/2403.15356)) | 2024 | recent | One encoder for any band set via wavelength conditioning (DOFA); lets SatClip use a single learned backbone for both Sentinel-1 and Sentinel-2 in experiments |
 | 057 | [Clay Foundation Model](papers/057-clay-foundation-model.md) ([source](https://clay-foundation.github.io/model/)) | 2024 | recent | Apache-licensed multi-sensor embedding model with precomputed embeddings; useful for similarity search and change hints in SatClip, never as the source of reported numbers |
 | 058 | [SpectralGPT: Spectral Remote Sensing Foundation Model](papers/058-spectralgpt.md) ([source](https://arxiv.org/abs/2311.07113)) | 2024 | recent | 3D spatial-spectral MAE for Sentinel-2 with change detection results; reference for spectral-aware features, but GPL licence and size keep it out of SatClip core |
+| 151 | [Lightweight, Pre-trained Transformers for Remote Sensing Timeseries](papers/151-presto.md) ([source](https://arxiv.org/abs/2304.14065)) | 2023 | recent | A small pixel-timeseries encoder that runs cheaply and feeds simple heads: the best fit among foundation models for a CPU-side crop-condition second opinion, but it outputs embeddings, not calibrated answers |
+| 152 | [TESSERA: Temporal Embeddings of Surface Spectra for Earth Representation and Analysis](papers/152-tessera.md) ([source](https://arxiv.org/abs/2506.20380)) | 2025 | recent | Open, global, annual 10 m int8 Sentinel-1/2 embeddings with small heads: a cheap offline input for crop and land-cover second opinions, but annual granularity cannot answer dated flood questions |
+| 153 | [Galileo: Learning Global & Local Features of Many Remote Sensing Modalities](papers/153-galileo.md) ([source](https://arxiv.org/abs/2502.09356)) | 2025 | recent | One generalist encoder over optical, SAR, elevation and weather that handles both images and pixel time series and names flood detection and crop mapping as targets: the strongest learned second-opinion candidate for SatClip's two beachhead questions |
+| 154 | [AnySat: One Earth Observation Model for Many Resolutions, Scales, and Modalities](papers/154-anysat.md) ([source](https://arxiv.org/abs/2412.14123)) | 2025 | recent | A single JEPA model that accepts any mix of resolutions and sensors and covers flood and crop tasks; useful as a flexible second opinion, not as the source of card numbers |
+| 155 | [Towards a Unified Copernicus Foundation Model for Earth Vision](papers/155-copernicus-fm.md) ([source](https://arxiv.org/abs/2503.11849)) | 2025 | recent | Covers every Sentinel mission with metadata-aware encoding and ships Copernicus-Bench; a good benchmark source for SAR tasks, but too heavy and indirect to sit in SatClip's truth path |
+| 156 | [Multi-Label Guided Soft Contrastive Learning for Efficient Earth Observation Pretraining](papers/156-softcon.md) ([source](https://arxiv.org/abs/2405.20462)) | 2024 | recent | Small SAR and multispectral backbones (ResNet50, ViT-S) that match larger models on BigEarthNet: the most CPU-practical pretrained SAR encoder candidate for a learned land-cover or water head |
+| 157 | [SatlasPretrain: A Large-Scale Dataset for Remote Sensing Image Understanding](papers/157-satlaspretrain.md) ([source](https://arxiv.org/abs/2211.15660)) | 2023 | recent | Supervised multi-task pretraining on 302M labels gives strong Sentinel-2 backbones; useful for optical land-cover and structure instruments, but optical-only and US-heavy at high resolution |
+| 158 | [Scale-MAE: A Scale-Aware Masked Autoencoder for Multiscale Geospatial Representation Learning](papers/158-scale-mae.md) ([source](https://arxiv.org/abs/2212.14532)) | 2023 | recent | Encoding ground sample distance into positional embeddings makes features robust across resolutions; a design lesson for any SatClip learned head that mixes 10 m Sentinel with finer imagery |
 
 ### historical
 
@@ -187,6 +199,11 @@ Total papers: **150**
 | 073 | [Object Detection in Optical Remote Sensing Images: A Survey and A New Benchmark](papers/073-dior-optical-rs-detection.md) ([source](https://arxiv.org/abs/1909.00133)) | 2020 | recent | Survey plus the DIOR benchmark (23,463 images, 20 classes, 0.5 to 30 m); a reference for mixed-resolution detection, but SatClip should cite it only to justify scoping out object-level questions |
 | 074 | [Oriented R-CNN for Object Detection](papers/074-oriented-rcnn.md) ([source](https://arxiv.org/abs/2108.05699)) | 2021 | recent | Simple, fast two-stage rotated-box detector (75.87% mAP on DOTA, 96.50% on HRSC2016, 15.1 FPS on a GPU); a strong baseline if SatClip ever adds ship detection, but its GPU speed does not translate to our CPU budget |
 | 075 | [xView3-SAR: Detecting Dark Fishing Activity Using Synthetic Aperture Radar Imagery](papers/075-xview3-sar-dark-vessels.md) ([source](https://arxiv.org/abs/2206.00897)) | 2022 | recent | Large Sentinel-1 VV/VH ship detection benchmark (991 scenes, 243,018 labelled objects); the closest object-detection work to SatClip's own data, useful for SAR preprocessing and as a model for honest, partially reliable labels |
+| 159 | [Continental-Scale Building Detection from High Resolution Satellite Imagery](papers/159-open-buildings-continental.md) ([source](https://arxiv.org/abs/2107.12283)) | 2021 | recent | Do not detect buildings from Sentinel; ingest a precomputed open footprint layer (Open Buildings or similar) as a versioned exposure layer so flood cards can say how many mapped buildings fall inside the water mask |
+| 160 | [LS-SSDD-v1.0: A Deep Learning Dataset Dedicated to Small Ship Detection from Large-Scale Sentinel-1 SAR Images](papers/160-ls-ssdd-sentinel1-ships.md) ([source](https://doi.org/10.3390/rs12182997)) | 2020 | recent | The right benchmark if SatClip ever answers 'are there vessels here' from Sentinel-1: whole-scene, small-ship, AIS-checked labels, and an explicit focus on suppressing land false alarms |
+| 161 | [SAR Ship Detection Dataset (SSDD): Official Release and Comprehensive Data Analysis](papers/161-ssdd-official-release.md) ([source](https://doi.org/10.3390/rs13183690)) | 2021 | recent | A case study in why fixed evaluation protocols matter: the most used SAR ship benchmark was being split and scored inconsistently, so SatClip must publish its own frozen splits and scoring rules with every instrument |
+| 162 | [RTMDet: An Empirical Study of Designing Real-Time Object Detectors](papers/162-rtmdet.md) ([source](https://arxiv.org/abs/2212.07784)) | 2022 | recent | If SatClip ever adds a learned detector, start from the tiny RTMDet rotated variant in an open toolbox: one family covers boxes, rotated boxes and instance masks at several sizes, which suits a CPU budget better than heavy two-stage models |
+| 163 | [Large Selective Kernel Network for Remote Sensing Object Detection](papers/163-lsknet.md) ([source](https://arxiv.org/abs/2303.09030)) | 2023 | recent | Shows that remote sensing objects need context from a wide, object-dependent window; useful as an RS-tuned backbone if detection is ever needed, but its results are on sub-metre imagery and do not transfer to Sentinel counts |
 
 ### rs-benchmark
 
@@ -226,6 +243,11 @@ Total papers: **150**
 | 080 | [Falcon: A Remote Sensing Vision-Language Foundation Model (Technical Report)](papers/080-falcon.md) ([source](https://arxiv.org/abs/2503.11070)) | 2025 | recent | A 0.7B RS model that does grounding, segmentation and bitemporal change detection is the most CPU-plausible RS VLM to date; worth testing as SatClip's parser/explainer or as a cross-check, never as the measuring instrument |
 | 081 | [Geo-R1: Improving Few-Shot Geospatial Referring Expression Understanding with Reinforcement Fine-Tuning](papers/081-geo-r1.md) ([source](https://arxiv.org/abs/2509.21976)) | 2026 | recent | RL with verifiable rewards lets a 3B VLM learn RS grounding from about 10 examples per class, including SAR; a cheap route to adapt SatClip's parser to Indian place and crop phrases, but its SAR accuracy (25%) confirms the VLM should not measure |
 | 082 | [FUSAR-GPT: A Spatiotemporal Feature-Embedded and Two-Stage Decoupled Visual Language Model for SAR Imagery](papers/082-fusar-gpt.md) ([source](https://arxiv.org/abs/2602.19190)) | 2026 | recent | Injecting location-keyed AlphaEarth embeddings lifts a 7B SAR VLM by 7 to 12 points, a hint that SatClip could add a precomputed geospatial prior; but its own counting accuracy is about 53% on a small test set, so SAR answers still need instruments |
+| 168 | [FUSAR-R1: A Large-Scale Reasoning Model for Intelligent Interpretation of SAR Images](papers/168-fusar-r1.md) ([source](https://arxiv.org/abs/2607.16819)) | 2026 | upcoming | The newest SAR reasoning VLM still emits bare answers with no confidence, abstention or scene receipt, and its land-cover proportion error (MAE 7.67) is too coarse for flood extent, so SatClip should keep SAR numbers in thresholds and use the VLM only to explain |
+| 169 | [GeoZero: Incentivizing Reasoning from Scratch on Geospatial Scenes](papers/169-geozero.md) ([source](https://arxiv.org/abs/2511.22645)) | 2025 | recent | RL can make an 8B RS VLM reason without hand-written chains of thought and its open data recipe is reusable, but it is RGB only and reports no confidence or abstention, so it is a parser or explainer candidate at most, not a measuring instrument |
+| 170 | [More with Less: a Large Scale Remote Sensing VLM with a Simple Recipe](papers/170-mlrs-more-with-less.md) ([source](https://arxiv.org/abs/2607.15942)) | 2026 | recent | A plain InternVL3.5-8B trained with multi-task RL that either answers or calls SAM3 matches specialised RS VLMs, which supports SatClip's 'small model decides, a tool measures' split; but its temporal VQA got worse with training and it reports no confidence or abstention |
+| 171 | [One Adapter, Every Resolution: Gated Low-Rank Adaptation for Remote Sensing VLMs](papers/171-scaleearth-gated-lora.md) ([source](https://arxiv.org/abs/2605.07562)) | 2026 | upcoming | The only 2026 RS VLM found that uses a calibrated uncertainty to abstain from a self-estimate and fall back to a safe default, but only for image resolution, not for the answer; SatClip can copy the pattern (estimate, check interval, fall back) and apply it to the evidence itself |
+| 172 | [Selective Tool Use for Agentic Change Visual Question Answering in Remote Sensing](papers/172-selective-tool-change-vqa.md) ([source](https://arxiv.org/abs/2609.14523)) | 2026 | upcoming | Closest 2026 match to SatClip's architecture: a LoRA-tuned 4B VLM that calls deterministic change tools lifts measurement questions from about 50% to near 100% with perfect maps, but only to 63 to 66% with predicted maps and with no confidence or abstention, so instrument quality and calibrated refusal are where SatClip must win |
 
 ### sar-optical-fusion
 
@@ -273,5 +295,8 @@ Total papers: **150**
 | 098 | [NASA-ISRO Synthetic Aperture Radar (NISAR) mission and data products](papers/098-nisar-mission.md) ([source](https://nisar-docs.asf.alaska.edu/availability-overview/)) | 2025 | upcoming | Free L-band and S-band SAR with a 12-day repeat, provisional calibrated products since July 2026 and S-band samples on ISRO Bhoonidhi; L-band sees flooding under crop canopy, an obvious next instrument for SatClip once access and format are wired in |
 | 099 | [2026 IEEE GRSS Data Fusion Contest: SAR Temporal Storytelling](papers/099-grss-dfc-2026-sar-temporal-storytelling.md) ([source](https://www.grss-ieee.org/resources/news/in-focus-inside-the-2026-ieee-grss-data-fusion-contest/)) | 2026 | upcoming | The field's flagship 2026 contest asked teams to turn SAR time series into readable stories of change, validating SatClip's framing; but entries were open-ended research on commercial X-band, not abstaining, receipted answers on free data |
 | 100 | [Copernicus Sentinel-1D launch and restored two-satellite Sentinel-1 constellation (Sentinel-1C and 1D)](papers/100-sentinel-1d-constellation.md) ([source](https://www.esa.int/Newsroom/Press_Releases/Copernicus_Sentinel-1D_reaches_orbit_on_Ariane_6)) | 2025 | upcoming | Sentinel-1C (Dec 2024) plus 1D (Nov 2025) restore two-satellite C-band SAR, about 6-day revisit at the equator, which directly raises how often SatClip can answer a flood question with a fresh scene instead of abstaining |
+| 173 | [GEOID-Flood: A Large-Scale Multi-Modal Benchmark Dataset for Flood Segmentation](papers/173-geoid-flood.md) ([source](https://arxiv.org/abs/2608.02315)) | 2026 | upcoming | A new 2026 Sentinel-1 flood benchmark with event-level splits, a temporally disjoint 2026 test set and separate permanent-water and flooded-water labels; ideal for scoring and calibrating SatClip's SAR flood instrument, though only 79 of 219 events are outside Europe |
+| 174 | [GeoDisaster: Benchmarking Orchestrated Agents for Operational Disaster Geo-Intelligence](papers/174-geodisaster.md) ([source](https://arxiv.org/abs/2606.17246)) | 2026 | upcoming | An Indian (IIT Bombay) 2026 benchmark whose answers come from executable geospatial workflows, including a 500-item Sentinel-1 SAR flood family; a ready external test for SatClip, and its own authors name uncertainty-aware reasoning as the open gap SatClip targets |
+| 175 | [GSLV-F17/EOS-05 mission: India's first imaging satellite from geosynchronous orbit](papers/175-isro-eos-05-geo-imaging.md) ([source](https://www.isro.gov.in/Mission_GSLVF17.html)) | 2026 | upcoming | ISRO has put an imaging satellite in geosynchronous orbit over India, which could give many looks per day during monsoon cloud gaps; SatClip should plan an adapter but cannot rely on it until ISRO publishes sensor specs and open data access |
 
 <!-- CATALOG:END -->

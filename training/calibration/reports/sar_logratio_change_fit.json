@@ -1,0 +1,132 @@
+{
+ "instrument": "sar_logratio_change",
+ "instrument_version": "1.1",
+ "dataset": "Kuro Siwo GRD webdataset (archive A041), samples from train and test shards at 4 offsets each, before = SL1",
+ "date": "2026-10-07",
+ "shift_db": 1.0,
+ "tolerance": "+/-20% of max(labelled flood area, 0.05 x valid area)",
+ "samples": 848,
+ "skipped_or_error": 5,
+ "events": 22,
+ "chips_with_labelled_flood": 291,
+ "recall_of_flood_chips": 0.206,
+ "median_iou_flood_chips": 0.39,
+ "cv": {
+  "raw score": {
+   "n": 848,
+   "accuracy": 0.575,
+   "ece": 0.2554,
+   "mce": 0.7117,
+   "aurc": 0.4242,
+   "auroc": 0.517,
+   "at_0.60": {
+    "coverage": 0.531,
+    "error_when_published": 0.358,
+    "error_if_always_published": 0.425,
+    "abstained_correct_share": 0.5
+   }
+  },
+  "borrowed water map": {
+   "n": 848,
+   "accuracy": 0.575,
+   "ece": 0.2138,
+   "mce": 0.582,
+   "aurc": 0.4242,
+   "auroc": 0.517,
+   "at_0.60": {
+    "coverage": 0.44,
+    "error_when_published": 0.311,
+    "error_if_always_published": 0.425,
+    "abstained_correct_share": 0.486
+   }
+  },
+  "one map": {
+   "n": 848,
+   "accuracy": 0.575,
+   "ece": 0.1518,
+   "mce": 0.5032,
+   "aurc": 0.5592,
+   "auroc": 0.319,
+   "at_0.60": {
+    "coverage": 0.314,
+    "error_when_published": 0.605,
+    "error_if_always_published": 0.425,
+    "abstained_correct_share": 0.658
+   }
+  },
+  "regime maps": {
+   "n": 848,
+   "accuracy": 0.575,
+   "ece": 0.0414,
+   "mce": 0.277,
+   "aurc": 0.3485,
+   "auroc": 0.638,
+   "at_0.60": {
+    "coverage": 0.673,
+    "error_when_published": 0.335,
+    "error_if_always_published": 0.425,
+    "abstained_correct_share": 0.39
+   }
+  }
+ },
+ "by_regime": {
+  "no_change": {
+   "n": 635,
+   "accuracy": 0.677,
+   "auroc_raw": 0.591,
+   "regime_maps": {
+    "n": 635,
+    "accuracy": 0.677,
+    "ece": 0.0373,
+    "mce": 0.1963,
+    "aurc": 0.3389,
+    "auroc": 0.459,
+    "at_0.60": {
+     "coverage": 0.899,
+     "error_when_published": 0.335,
+     "error_if_always_published": 0.323,
+     "abstained_correct_share": 0.781
+    }
+   }
+  },
+  "change": {
+   "n": 213,
+   "accuracy": 0.272,
+   "auroc_raw": 0.65,
+   "regime_maps": {
+    "n": 213,
+    "accuracy": 0.272,
+    "ece": 0.0638,
+    "mce": 0.277,
+    "aurc": 0.6945,
+    "auroc": 0.558,
+    "at_0.60": {
+     "coverage": 0.0,
+     "error_when_published": null,
+     "error_if_always_published": 0.728,
+     "abstained_correct_share": 0.272
+    }
+   }
+  }
+ },
+ "final_spec": {
+  "method": "regimes",
+  "by": "new_water_share",
+  "cut": 0.05,
+  "maps": {
+   "no_change": {
+    "method": "logistic",
+    "a": 0.7,
+    "b": 0.4077,
+    "fitted": true
+   },
+   "change": {
+    "method": "logistic",
+    "a": 2.3493,
+    "b": -2.6571,
+    "fitted": true
+   }
+  },
+  "fitted": true
+ }
+}

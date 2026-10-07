@@ -1,0 +1,285 @@
+{
+ "instrument": "sar_water_otsu",
+ "dataset": "Sen1Floods11 v1.1 hand-labelled chips (archive A022)",
+ "date": "2026-10-07",
+ "shift_db": 1.0,
+ "tolerance": "+/-20% of max(ref, 0.05 x valid area)",
+ "chips_total": 446,
+ "chips_used": 408,
+ "skipped": 38,
+ "fit_on": "train + valid splits (312 chips)",
+ "held_out_test": {
+  "n": 82,
+  "accuracy": 0.439,
+  "ece_uncalibrated": 0.2958,
+  "mce_uncalibrated": 0.8138,
+  "ece": 0.0883,
+  "mce": 0.128,
+  "aurc": 0.4629,
+  "at_0.60": {
+   "coverage": 0.11,
+   "error_when_published": 0.333,
+   "error_if_always_published": 0.561,
+   "abstained_correct_share": 0.411
+  },
+  "uncalibrated_at_0.60": {
+   "coverage": 0.793,
+   "error_when_published": 0.554,
+   "error_if_always_published": 0.561,
+   "abstained_correct_share": 0.412
+  },
+  "reliability": [
+   {
+    "bin": "0.2-0.3",
+    "n": 8,
+    "conf": 0.247,
+    "acc": 0.375
+   },
+   {
+    "bin": "0.3-0.4",
+    "n": 8,
+    "conf": 0.352,
+    "acc": 0.375
+   },
+   {
+    "bin": "0.4-0.5",
+    "n": 10,
+    "conf": 0.469,
+    "acc": 0.5
+   },
+   {
+    "bin": "0.5-0.6",
+    "n": 47,
+    "conf": 0.523,
+    "acc": 0.404
+   },
+   {
+    "bin": "0.6-0.7",
+    "n": 9,
+    "conf": 0.651,
+    "acc": 0.667
+   }
+  ],
+  "median_iou": 0.152
+ },
+ "bolivia": {
+  "n": 14,
+  "accuracy": 0.286,
+  "ece_uncalibrated": 0.3421,
+  "mce_uncalibrated": 0.6454,
+  "ece": 0.2175,
+  "mce": 0.4551,
+  "aurc": 0.3805,
+  "at_0.60": {
+   "coverage": 0.0,
+   "error_when_published": null,
+   "error_if_always_published": 0.714,
+   "abstained_correct_share": 0.286
+  },
+  "uncalibrated_at_0.60": {
+   "coverage": 0.714,
+   "error_when_published": 0.6,
+   "error_if_always_published": 0.714,
+   "abstained_correct_share": 0.0
+  },
+  "reliability": [
+   {
+    "bin": "0.2-0.3",
+    "n": 3,
+    "conf": 0.275,
+    "acc": 0.0
+   },
+   {
+    "bin": "0.4-0.5",
+    "n": 4,
+    "conf": 0.455,
+    "acc": 0.0
+   },
+   {
+    "bin": "0.5-0.6",
+    "n": 7,
+    "conf": 0.514,
+    "acc": 0.571
+   }
+  ],
+  "median_iou": 0.185
+ },
+ "india_leave_out": {
+  "n": 64,
+  "accuracy": 0.234,
+  "ece_uncalibrated": 0.5027,
+  "mce_uncalibrated": 0.6537,
+  "ece": 0.3567,
+  "mce": 0.4809,
+  "aurc": 0.701,
+  "at_0.60": {
+   "coverage": 0.125,
+   "error_when_published": 0.625,
+   "error_if_always_published": 0.766,
+   "abstained_correct_share": 0.214
+  },
+  "uncalibrated_at_0.60": {
+   "coverage": 0.922,
+   "error_when_published": 0.763,
+   "error_if_always_published": 0.766,
+   "abstained_correct_share": 0.2
+  },
+  "reliability": [
+   {
+    "bin": "0.3-0.4",
+    "n": 3,
+    "conf": 0.379,
+    "acc": 0.333
+   },
+   {
+    "bin": "0.4-0.5",
+    "n": 3,
+    "conf": 0.464,
+    "acc": 0.0
+   },
+   {
+    "bin": "0.5-0.6",
+    "n": 50,
+    "conf": 0.577,
+    "acc": 0.22
+   },
+   {
+    "bin": "0.6-0.7",
+    "n": 6,
+    "conf": 0.648,
+    "acc": 0.167
+   },
+   {
+    "bin": "0.7-0.8",
+    "n": 2,
+    "conf": 0.728,
+    "acc": 1.0
+   }
+  ],
+  "median_iou": 0.032
+ },
+ "method": "logistic",
+ "method_choice_valid_ece": {
+  "isotonic": 0.2571,
+  "logistic": 0.1066
+ },
+ "other_method_on_test": {
+  "method": "isotonic",
+  "ece": 0.2554,
+  "mce": 1.0,
+  "aurc": 0.4629,
+  "at_0.60": {
+   "coverage": 0.634,
+   "error_when_published": 0.538,
+   "error_if_always_published": 0.561,
+   "abstained_correct_share": 0.4
+  }
+ },
+ "fit_in_sample": {
+  "n": 312,
+  "accuracy": 0.481,
+  "ece": 0.081,
+  "mce": 0.1839
+ },
+ "events_test": [
+  {
+   "event": "Bolivia",
+   "chips": 14,
+   "ref_km2": 43.3,
+   "pred_km2": 10.75,
+   "confidence": 0.285,
+   "published": false,
+   "within_20pct": false
+  },
+  {
+   "event": "Ghana",
+   "chips": 8,
+   "ref_km2": 6.88,
+   "pred_km2": 1.74,
+   "confidence": 0.593,
+   "published": false,
+   "within_20pct": false
+  },
+  {
+   "event": "India",
+   "chips": 14,
+   "ref_km2": 71.31,
+   "pred_km2": 41.7,
+   "confidence": 0.533,
+   "published": false,
+   "within_20pct": false
+  },
+  {
+   "event": "Mekong",
+   "chips": 6,
+   "ref_km2": 21.65,
+   "pred_km2": 16.06,
+   "confidence": 0.61,
+   "published": true,
+   "within_20pct": false
+  },
+  {
+   "event": "Nigeria",
+   "chips": 3,
+   "ref_km2": 12.39,
+   "pred_km2": 10.01,
+   "confidence": 0.591,
+   "published": false,
+   "within_20pct": true
+  },
+  {
+   "event": "Pakistan",
+   "chips": 4,
+   "ref_km2": 20.43,
+   "pred_km2": 3.3,
+   "confidence": 0.231,
+   "published": false,
+   "within_20pct": false
+  },
+  {
+   "event": "Paraguay",
+   "chips": 13,
+   "ref_km2": 20.17,
+   "pred_km2": 11.6,
+   "confidence": 0.64,
+   "published": true,
+   "within_20pct": false
+  },
+  {
+   "event": "Somalia",
+   "chips": 6,
+   "ref_km2": 9.41,
+   "pred_km2": 1.44,
+   "confidence": 0.391,
+   "published": false,
+   "within_20pct": false
+  },
+  {
+   "event": "Spain",
+   "chips": 6,
+   "ref_km2": 37.25,
+   "pred_km2": 21.9,
+   "confidence": 0.557,
+   "published": false,
+   "within_20pct": false
+  },
+  {
+   "event": "Sri-Lanka",
+   "chips": 8,
+   "ref_km2": 38.09,
+   "pred_km2": 7.38,
+   "confidence": 0.549,
+   "published": false,
+   "within_20pct": false
+  },
+  {
+   "event": "USA",
+   "chips": 14,
+   "ref_km2": 12.39,
+   "pred_km2": 15.0,
+   "confidence": 0.338,
+   "published": false,
+   "within_20pct": true
+  }
+ ]
+}

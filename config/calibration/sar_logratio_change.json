@@ -1,7 +1,46 @@
 {
+ "method": "regimes",
+ "by": "new_water_share",
+ "cut": 0.05,
+ "maps": {
+  "no_change": {
+   "method": "logistic",
+   "a": 0.7,
+   "b": 0.4077,
+   "fitted": true
+  },
+  "change": {
+   "method": "logistic",
+   "a": 2.3493,
+   "b": -2.6571,
+   "fitted": true
+  }
+ },
+ "fitted": true,
  "instrument": "sar_logratio_change",
- "method": "inherit",
- "from": "sar_water_otsu",
- "fitted": false,
- "note": "The change answer is built on the same water threshold as sar_water_otsu, whose Sen1Floods11 fit (M5, run 6) showed the uncalibrated score is overconfident. Until a labelled before/after set (Kuro Siwo, archive A041) is used to fit this instrument, it borrows the water map, which lowers its confidence. A change is harder to get right than an extent, so this is still likely to be optimistic; the card says the map is borrowed."
+ "fit": {
+  "n": 848,
+  "events": 22,
+  "dataset": "Kuro Siwo GRD webdataset (archive A041), samples from train and test shards at 4 offsets each, before = SL1",
+  "date": "2026-10-07",
+  "instrument_version": "1.1",
+  "event": "new-water area within +/-20% of the labelled flood area",
+  "cv": "5-fold, grouped by flood event",
+  "cv_regime_maps": {
+   "n": 848,
+   "accuracy": 0.575,
+   "ece": 0.0414,
+   "mce": 0.277,
+   "aurc": 0.3485,
+   "auroc": 0.638,
+   "at_0.60": {
+    "coverage": 0.673,
+    "error_when_published": 0.335,
+    "error_if_always_published": 0.425,
+    "abstained_correct_share": 0.39
+   }
+  },
+  "report": "training/calibration/reports/sar_logratio_change.md"
+ },
+ "note": "Fitted on Kuro Siwo 2.2 km chips. One map per answer regime; replaces the map borrowed from sar_water_otsu."
 }

@@ -9,6 +9,9 @@ Files live in `config/calibration/<instrument>.json`:
   {"method": "logistic", "a": 4.0, "b": -2.0, "fitted": true}
   {"method": "temperature", "T": 1.7, "fitted": true}       (softmax models, used by zero-shot CLIP)
   {"method": "inherit", "from": "sar_water_otsu", "fitted": false}   (borrow a parent instrument's map)
+  {"method": "regimes", "by": "new_water_share", "cut": 0.05, "maps": {"no_change": {...}, "change": {...}},
+   "fitted": true}   (one map per answer regime; run 7, sar_logratio_change: "no meaningful new water" and
+   "X sq km of new water" answers are right at very different rates, so one map cannot serve both)
 Until M5 fits them on labelled data, the shipped files are marked `"fitted": false`, and every
 card says the confidence is uncalibrated. No hidden claims.
 """
@@ -33,8 +36,13 @@ class Calibrator:
             pts = sorted(spec["points"])
             self.xs, self.ys = [p[0] for p in pts], [p[1] for p in pts]
 
-    def __call__(self, raw: float) -> float:
+    def __call__(self, raw: float, regime: str | None = None) -> float:
         raw = min(max(float(raw), 0.0), 1.0)
+        if self.method == "regimes":
+            maps = {k: Calibrator(v, f"{self.name}:{k}") for k, v in self.spec["maps"].items()}
+            if regime in maps:
+                return maps[regime](raw)
+            return min(m(raw) for m in maps.values())  # regime unknown: take the more cautious map
         if self.method == "isotonic":
             i = bisect.bisect_left(self.xs, raw)
             if i <= 0:

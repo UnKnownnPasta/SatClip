@@ -33,9 +33,10 @@ Try a question in the UI, or run real questions end to end against the live cata
 
 ```bash
 cd backend && python -m satclip.livecheck "How much of Barpeta was under water on 2024-07-11?"
-# Insufficient evidence: confidence is below the publication threshold.   (0.46, calibration: fitted)
-# 117 tiles, about 30 s on a CPU. Before the run 6 calibration this card published 681 sq km at 0.66;
-# the fit on Sen1Floods11 showed that score was overconfident, so the card now abstains.
+# About 905 sq km of Barpeta, Assam under water, 39% of the 2,335 sq km measured (low confidence, 0.62).
+# 117 tiles, about 40 s on a CPU. History: run 5 published 681 sq km at an uncalibrated 0.66; the run 6
+# Sen1Floods11 fit showed that was overconfident (abstained at 0.46); run 7 added VH to the water
+# instrument and refitted, so the card answers again with a fitted confidence.
 ```
 
 The optional land-cover instrument needs `pip install -e ".[ml]"` (CPU torch and open_clip); without it, land-cover questions abstain with a clear reason.
@@ -55,14 +56,14 @@ See [SOLUTION.md](SOLUTION.md) for the full thesis and evidence.
 
 | Part | Where | Status |
 |---|---|---|
-| Solution thesis | [SOLUTION.md](SOLUTION.md) | v1.5 (run 6) |
-| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v6 (run 6) |
-| Research archive (target about 200 papers) | [archive/](archive/README.md) | 150 papers |
+| Solution thesis | [SOLUTION.md](SOLUTION.md) | v1.6 (run 7) |
+| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v7 (run 7) |
+| Research archive (target about 200 papers) | [archive/](archive/README.md) | 175 papers |
 | Problem evidence brief | [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md) | v1 |
 | Idea deck summary | [docs/reference/deck-notes.md](docs/reference/deck-notes.md) | done |
-| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | M1 to M4 done, M5 section 6.9 |
+| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | M1 to M5 done (section 6.9 for training) |
 | Prototype (FastAPI backend and claymorphism frontend) | [backend/](backend/), [frontend/](frontend/), [config/satclip.yaml](config/satclip.yaml), [docker-compose.yml](docker-compose.yml) | Working end to end on live Sentinel data: data layer (M2), five instruments with confidence, abstention and map overlays (M3); mobile-first claymorphism UI with district picker, two-date compare, evidence chips, confidence meter and map overlays (M4) |
-| Training code (LoRA, Colab notebook, evaluation, calibration) | [training/](training/README.md) | M5 mostly built (run 6): water calibration fitted on Sen1Floods11; LoRA pipeline, Colab notebook and evaluation harness with measured baselines; Indian OSM Q&A builder next |
+| Training code (LoRA, Colab notebook, evaluation, calibration) | [training/](training/README.md) | M5 done (run 7): water extent calibrated on Sen1Floods11 (v1.1, VV or VH), water change on Kuro Siwo; LoRA pipeline, Colab notebook, Indian Q&A builder (WorldCover labels) and evaluation harness with measured baselines, including a hand-written intent test set |
 | Pitch deck (.pptx) | `deck/` | M7, planned |
 | Plan and progress | [PLAN.md](PLAN.md), [STATE.md](STATE.md) | live |
 

@@ -17,7 +17,11 @@ What it does
   6. Writes config/calibration/sar_water_otsu.json (fitted: true, with the fit ledger) and a report with
      reliability and risk-coverage plots in training/calibration/reports/.
 
+Instrument v1.1 (run 7) uses VV and VH; `--pols vv` reproduces v1.0 for comparison (v1.0 report kept as
+reports/sar_water_otsu_v1.0.md).
+
 Usage (from the repo root; needs the backend installed with the geo extra, plus matplotlib):
+    python training/calibration/fit_water.py --from-cache    # after cache_sen1floods11.py, no streaming
     python training/calibration/fit_water.py                 # full run, about 1.4 GB streamed, not stored
     python training/calibration/fit_water.py --limit 40      # quick smoke run
     python training/calibration/fit_water.py --rows rows.csv # refit from a saved per-chip table, no download
@@ -100,15 +104,21 @@ def to_working_grid(vv_db10: np.ndarray, label10: np.ndarray, shift_db: float) -
     return vv20, lab20
 
 
-def measure_chip(chip: dict[str, str], shift_db: float) -> dict[str, Any]:
+def measure_chip(chip: dict[str, str], shift_db: float, pols: str = "vvvh") -> dict[str, Any]:
     s1 = _read(_get(chip["s1"]))           # bands: VV, VH (sigma0 dB)
     lab = _read(_get(chip["label"]))[0]    # 1 water, 0 not water, -1 no data
     vv, lab20 = to_working_grid(s1[0], lab, shift_db)
+    vh = to_working_grid(s1[1], lab, shift_db)[0] if pols == "vvvh" else None
+    return measure_arrays({k: chip[k] for k in ("split", "chip", "event")}, vv, vh, lab20)
+
+
+def measure_arrays(row: dict[str, Any], vv: np.ndarray, vh: Any, lab20: np.ndarray) -> dict[str, Any]:
     valid = np.isfinite(vv) & (lab20 >= 0)
-    row: dict[str, Any] = {k: chip[k] for k in ("split", "chip", "event")}
+    if vh is not None:
+        valid &= np.isfinite(vh)
     if valid.sum() < 0.5 * valid.size:
         return {**row, "status": "skipped", "valid_share": round(float(valid.mean()), 3)}
-    water, q = classify_sar_water(vv, valid)
+    water, q = classify_sar_water(vv, valid, None, vh)
     px = 0.02 * 0.02  # km2 per 20 m pixel
     ref = float((lab20 == 1)[valid].sum()) * px
     pred = float(water[valid].sum()) * px
@@ -119,7 +129,8 @@ def measure_chip(chip: dict[str, str], shift_db: float) -> dict[str, Any]:
     return {**row, "status": "ok", "valid_share": round(float(valid.mean()), 3), "measured_km2": round(measured, 4),
             "ref_km2": round(ref, 4), "pred_km2": round(pred, 4), "iou": round(inter / union, 4) if union else 1.0,
             "raw": q["raw_quality"], "p_area": q["p_area_within_tol"], "evidence_factor": q["evidence_factor"],
-            "sigma_rel": q["sigma_rel"], "class_share": q["class_share"], "correct": int(correct)}
+            "sigma_rel": q["sigma_rel"], "class_share": q["class_share"], "correct": int(correct),
+            "inter_px": int(inter), "union_px": int(union)}
 
 
 # ---------- metrics ----------
@@ -186,7 +197,15 @@ def evaluate(cal: Calibrator, rows: list[dict[str, Any]]) -> dict[str, Any]:
     a, _ = aurc(p, y)
     return {"n": len(rows), "accuracy": round(float(y.mean()), 3), "ece_uncalibrated": e0, "mce_uncalibrated": m0,
             "ece": e, "mce": m, "aurc": a, "at_0.60": selective(p, y), "uncalibrated_at_0.60": selective(raw, y),
-            "reliability": table, "median_iou": round(float(np.median([r["iou"] for r in rows])), 3)}
+            "reliability": table, "median_iou": round(float(np.median([r["iou"] for r in rows])), 3),
+            "pooled_iou": _pooled_iou(rows)}
+
+
+def _pooled_iou(rows: list[dict[str, Any]]) -> Any:
+    if not all(r.get("union_px") not in (None, "") for r in rows):
+        return None
+    u = sum(float(r["union_px"]) for r in rows)
+    return round(sum(float(r["inter_px"]) for r in rows) / u, 3) if u else None
 
 
 def event_cards(cal: Calibrator, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -266,6 +285,10 @@ def main() -> None:
     ap.add_argument("--shift-db", type=float, default=1.0, help="sigma0 to gamma0 shift added to Sen1Floods11 VV")
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--rows", type=Path, help="refit from a saved per-chip CSV instead of downloading")
+    ap.add_argument("--from-cache", action="store_true",
+                    help="measure from training/.cache/sen1floods11 (built by cache_sen1floods11.py) instead of streaming")
+    ap.add_argument("--pols", choices=("vv", "vvvh"), default="vvvh",
+                    help="vvvh = production v1.1 (VV or VH rule); vv = v1.0 behaviour, for comparison")
     ap.add_argument("--no-write", action="store_true", help="do not overwrite config/calibration")
     args = ap.parse_args()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -278,6 +301,15 @@ def main() -> None:
         for r in rows:
             if r["status"] == "ok":
                 r["correct"] = int(r["correct"])
+    elif args.from_cache:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from cache_sen1floods11 import load_cache
+        rows = []
+        for split in SPLITS:
+            for c in load_cache(split):
+                rows.append(measure_arrays({k: c[k] for k in ("split", "chip", "event")}, c["vv"],
+                                           c["vh"] if args.pols == "vvvh" else None, c["label"]))
+        _write_rows(rows, rows_path)
     else:
         chips = list_chips()
         if args.limit:
@@ -291,16 +323,11 @@ def main() -> None:
         print(f"measuring {len(chips)} chips with {args.workers} workers ...", flush=True)
         rows = []
         with ThreadPoolExecutor(args.workers) as pool:
-            for i, r in enumerate(pool.map(lambda c: _safe(measure_chip, c, args.shift_db), chips), 1):
+            for i, r in enumerate(pool.map(lambda c: _safe(measure_chip, c, args.shift_db, args.pols), chips), 1):
                 rows.append(r)
                 if i % 25 == 0:
                     print(f"  {i}/{len(chips)}", flush=True)
-        keys = ["split", "chip", "event", "status", "valid_share", "measured_km2", "ref_km2", "pred_km2", "iou", "raw",
-                "p_area", "evidence_factor", "sigma_rel", "class_share", "correct", "error"]
-        with open(rows_path, "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=keys, extrasaction="ignore")
-            w.writeheader()
-            w.writerows(rows)
+        _write_rows(rows, rows_path)
 
     ok = [r for r in rows if r["status"] == "ok"]
     fit_rows = [r for r in ok if r["split"] in ("train", "valid")]
@@ -326,7 +353,8 @@ def main() -> None:
 
     report = {
         "instrument": "sar_water_otsu", "dataset": "Sen1Floods11 v1.1 hand-labelled chips (archive A022)",
-        "date": dt.date.today().isoformat(), "shift_db": args.shift_db, "tolerance": f"+/-{TOL:.0%} of max(ref, {FLOOR} x valid area)",
+        "date": dt.date.today().isoformat(), "shift_db": args.shift_db,
+        "instrument_version": "1.1" if args.pols == "vvvh" else "1.0", "polarisations": "VV or VH" if args.pols == "vvvh" else "VV", "tolerance": f"+/-{TOL:.0%} of max(ref, {FLOOR} x valid area)",
         "chips_total": len(rows), "chips_used": len(ok), "skipped": len(rows) - len(ok),
         "fit_on": f"train + valid splits ({len(fit_rows)} chips)",
         "held_out_test": evaluate(cal, test), "bolivia": evaluate(cal, bolivia),
@@ -341,9 +369,9 @@ def main() -> None:
     (OUT_DIR / "sar_water_otsu_fit.json").write_text(json.dumps(report, indent=1))
     write_markdown(report, figs)
 
-    if not args.no_write and not args.limit:
+    if not args.no_write and not args.limit and args.pols == "vvvh":
         spec.update({"instrument": "sar_water_otsu", "fit": {"method_choice_valid_ece": choice,
-            "n": len(fit_rows), "dataset": report["dataset"], "date": report["date"], "shift_db": args.shift_db,
+            "n": len(fit_rows), "dataset": report["dataset"], "date": report["date"], "shift_db": args.shift_db, "instrument_version": "1.1",
             "event": "measured water area within +/-20% of the hand-labelled area",
             "test_ece": report["held_out_test"]["ece"], "test_coverage_at_0.60": report["held_out_test"]["at_0.60"]["coverage"],
             "test_error_when_published": report["held_out_test"]["at_0.60"]["error_when_published"],
@@ -355,9 +383,18 @@ def main() -> None:
     print(json.dumps({k: report[k] for k in ("chips_used", "held_out_test")}, indent=1)[:1500])
 
 
-def _safe(fn, chip, shift):
+def _write_rows(rows: list[dict[str, Any]], path: Path) -> None:
+    keys = ["split", "chip", "event", "status", "valid_share", "measured_km2", "ref_km2", "pred_km2", "iou", "raw",
+            "p_area", "evidence_factor", "sigma_rel", "class_share", "correct", "inter_px", "union_px", "error"]
+    with open(path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=keys, extrasaction="ignore")
+        w.writeheader()
+        w.writerows(rows)
+
+
+def _safe(fn, chip, shift, pols):
     try:
-        return fn(chip, shift)
+        return fn(chip, shift, pols)
     except Exception as exc:  # noqa: BLE001
         return {**{k: chip[k] for k in ("split", "chip", "event")}, "status": "error", "error": f"{type(exc).__name__}: {exc}"[:200]}
 
@@ -373,6 +410,7 @@ def write_markdown(r: dict[str, Any], figs: list[str]) -> None:
     lines = [
         "# Calibration report: sar_water_otsu", "",
         f"Generated by `training/calibration/fit_water.py` on {r['date']}. Dataset: {r['dataset']}.",
+        f"Instrument version {r.get('instrument_version', '1.0')} ({r.get('polarisations', 'VV')}).",
         f"Chips used: {r['chips_used']} of {r['chips_total']} (skipped when under half the chip is valid and labelled).",
         f"Correct means: {r['tolerance']}. Fitted on the {r['fit_on']}; sigma0 to gamma0 shift {r['shift_db']} dB.", "",
         "| Evaluation set | Chips | Share correct | ECE before -> after | MCE after | Coverage / error at 0.60, before | "
@@ -389,6 +427,18 @@ def write_markdown(r: dict[str, Any], figs: list[str]) -> None:
     for e in r["events_test"]:
         lines.append(f"| {e['event']} | {e['chips']} | {e['ref_km2']} | {e['pred_km2']} | {e['confidence']:.2f} | "
                      f"{'yes' if e['published'] else 'no'} | {'yes' if e['within_20pct'] else 'no'} |")
+    prev = OUT_DIR / "sar_water_otsu_v1.0_fit.json"
+    if r.get("instrument_version") == "1.1" and prev.exists():
+        p0 = json.loads(prev.read_text())
+        lines += ["", "## v1.0 (VV only, run 6) against v1.1 (VV or VH, run 7)", "",
+                  "| Evaluation set | Share correct v1.0 -> v1.1 | ECE after | Coverage at 0.60 | Error when published | Median IoU |",
+                  "|---|---|---|---|---|---|"]
+        for key, name in (("held_out_test", "Held-out test split"), ("bolivia", "Bolivia"), ("india_leave_out", "India, fit without India")):
+            a, b = p0[key], r[key]
+            lines.append(f"| {name} | {a['accuracy']:.2f} -> {b['accuracy']:.2f} | {a['ece']:.3f} -> {b['ece']:.3f} | "
+                         f"{a['at_0.60']['coverage']:.2f} -> {b['at_0.60']['coverage']:.2f} | {a['at_0.60']['error_when_published']} -> "
+                         f"{b['at_0.60']['error_when_published']} | {a['median_iou']:.2f} -> {b['median_iou']:.2f} |")
+        lines += ["", "VH bounds were chosen on the train split only (`reports/sar_water_vh_tuning.md`)."]
     lines += ["", *[f"![reliability and risk-coverage]({f})" for f in figs], "",
               "Per-chip rows: `sar_water_otsu_chips.csv`. Full numbers: `sar_water_otsu_fit.json`.", ""]
     (OUT_DIR / "sar_water_otsu.md").write_text("\n".join(lines))
