@@ -35,23 +35,23 @@ A verified, annotated archive of research that shapes SatClip. One file per pape
 
 <!-- CATALOG:START -->
 
-Total papers: **125**
+Total papers: **150**
 
 | Category | Count |
 |---|---|
-| change-detection | 8 |
+| change-detection | 14 |
 | data-infrastructure | 9 |
-| efficient-inference | 6 |
+| efficient-inference | 11 |
 | eo-agents | 8 |
 | eo-foundation | 10 |
 | historical | 8 |
-| human-factors | 6 |
+| human-factors | 12 |
 | indian-context | 12 |
 | object-detection | 5 |
 | rs-benchmark | 13 |
 | rs-vlm | 16 |
 | sar-optical-fusion | 10 |
-| trust-calibration | 8 |
+| trust-calibration | 16 |
 | upcoming | 6 |
 
 ### change-detection
@@ -66,6 +66,12 @@ Total papers: **125**
 | 039 | [xBD: A Dataset for Assessing Building Damage from Satellite Imagery](papers/039-xbd.md) ([source](https://arxiv.org/abs/1911.09296)) | 2019 | historical | Largest pre/post building damage set (850k polygons, 19 events, sub-0.8 m); its baseline damage F1 of about 0.27 shows per-building damage is out of reach for 10 m Sentinel, so SatClip should abstain on it |
 | 040 | [Remote Sensing Image Change Captioning With Dual-Branch Transformers: A New Method and a Large Scale Dataset](papers/040-levir-cc-rsiccformer.md) ([source](https://doi.org/10.1109/TGRS.2022.3218921)) | 2022 | recent | LEVIR-CC (10,077 pairs, 50,385 captions, half no-change) is the standard change-captioning set; good template data for SatClip's explanation layer, but captions carry no measured quantities |
 | 041 | [Kuro Siwo: 33 billion m² under the water. A global multi-temporal satellite dataset for rapid flood mapping](papers/041-kuro-siwo.md) ([source](https://arxiv.org/abs/2311.12056)) | 2024 | recent | Expert-labelled Sentinel-1 pre/post flood set (43 events, CC BY, separates flood from permanent water); the best calibration set for SatClip's SAR flood change instrument, though Asia is underrepresented |
+| 140 | [Automatic analysis of the difference image for unsupervised change detection](papers/140-bruzzone-prieto-difference-image.md) ([source](https://doi.org/10.1109/36.843009)) | 2000 | historical | The template for SatClip's two-date change instruments: model the difference image as a changed and unchanged mixture fitted by EM, pick the minimum-error Bayes threshold, and reuse the fitted posteriors as the confidence that drives abstention |
+| 141 | [Change Detection in Synthetic Aperture Radar Images Based on Deep Neural Networks](papers/141-gong-sar-deep-change.md) ([source](https://doi.org/10.1109/TNNLS.2015.2435783)) | 2016 | historical | An early, influential case for learning SAR change directly from the image pair instead of a log-ratio; for SatClip it is a cross-check idea, not a replacement, because it trades away the transparent, auditable difference image |
+| 142 | [Fully Convolutional Siamese Networks for Change Detection](papers/142-fc-siamese-change.md) ([source](https://arxiv.org/abs/1810.08462)) | 2018 | historical | The standard small learned baseline for Sentinel-2 change (FC-EF, FC-Siam-conc, FC-Siam-diff); its modest OSCD F1 near 58 percent shows learned 10 m change maps are far from reliable enough to be SatClip's reported number |
+| 143 | [A Transformer-Based Siamese Network for Change Detection](papers/143-changeformer.md) ([source](https://arxiv.org/abs/2201.01293)) | 2022 | recent | A widely used learned CD baseline whose large DSIFN gain comes from a 192-patch test set on very high resolution imagery; a reminder that benchmark F1 says little about 10 m Sentinel change and cannot stand in for SatClip's calibrated instruments |
+| 144 | [Segment Any Change](papers/144-anychange-segment-any-change.md) ([source](https://arxiv.org/abs/2402.01188)) | 2024 | recent | Zero-shot foundation-model change detection is real but low precision (roughly 4 to 31 percent pixel precision across four benchmarks, with high recall); SatClip could use it to propose candidate change regions, never to report a changed area |
+| 145 | [Detecting trend and seasonal changes in satellite image time series](papers/145-bfast-trend-seasonal-breaks.md) ([source](https://doi.org/10.1016/j.rse.2009.08.014)) | 2010 | historical | Seasonality alone can masquerade as change in a two-date NDVI difference; SatClip's crop-change instrument should compare against the same season's expected NDVI and abstain when a drop could be ordinary phenology or harvest |
 
 ### data-infrastructure
 
@@ -91,6 +97,11 @@ Total papers: **125**
 | 062 | [MobileCLIP: Fast Image-Text Models through Multi-Modal Reinforced Training](papers/062-mobileclip.md) ([source](https://arxiv.org/abs/2311.17049)) | 2024 | recent | Small, fast CLIP models via reinforced training; a CPU-friendly alternative encoder for SatClip's zero-shot land cover instrument if licence and accuracy on Sentinel-2 check out |
 | 063 | [SmolVLM: Redefining small and efficient multimodal models](papers/063-smolvlm.md) ([source](https://arxiv.org/abs/2504.05299)) | 2025 | recent | Fully open 256M to 2.2B VLMs built for edge devices; the most realistic CPU base for SatClip's question parser and explainer, fine-tuned with LoRA |
 | 064 | [Distilling the Knowledge in a Neural Network](papers/064-hinton-knowledge-distillation.md) ([source](https://arxiv.org/abs/1503.02531)) | 2015 | historical | Classic recipe for training a small student model on a large teacher's softened outputs; SatClip can use it to shrink a CLIP land-cover head or a question parser so it runs fast on CPU |
+| 146 | [GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers](papers/146-gptq.md) ([source](https://arxiv.org/abs/2210.17323)) | 2023 | recent | A one-shot, calibration-based 3 to 4-bit weight quantizer to benchmark against AWQ when shrinking SatClip's merged 2B intent model, judged on intent-JSON accuracy rather than perplexity |
+| 147 | [LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale](papers/147-llm-int8.md) ([source](https://arxiv.org/abs/2208.07339)) | 2022 | recent | Explains why naive 8-bit quantization breaks transformers (rare large outlier features) and gives a safe 8-bit baseline that SatClip's quantized builds must match on intent accuracy |
+| 148 | [DoRA: Weight-Decomposed Low-Rank Adaptation](papers/148-dora.md) ([source](https://arxiv.org/abs/2402.09353)) | 2024 | recent | A drop-in LoRA variant with no extra inference cost; worth an A/B run against plain LoRA on SatClip's question-to-intent training set before committing to one |
+| 149 | [Qwen2-VL: Enhancing Vision-Language Model's Perception of the World at Any Resolution](papers/149-qwen2-vl.md) ([source](https://arxiv.org/abs/2409.12191)) | 2024 | recent | A strong open 2B VLM base whose dynamic-resolution input suits Sentinel chips of varying size, but SatClip should use it only for intent parsing and explanation, never for the numbers |
+| 150 | [Efficient Guided Generation for Large Language Models](papers/150-outlines-guided-generation.md) ([source](https://arxiv.org/abs/2307.09702)) | 2023 | recent | Constrain the intent model's decoding to SatClip's JSON schema so every output parses and only allowed fields and values can appear, at little extra cost on CPU |
 
 ### eo-agents
 
@@ -143,6 +154,12 @@ Total papers: **125**
 | 068 | [NL4DV: A Toolkit for Generating Analytic Specifications for Data Visualization from Natural Language Queries](papers/068-nl4dv-natural-language-vis.md) ([source](https://doi.org/10.1109/TVCG.2020.3030378)) | 2021 | recent | Python toolkit that turns a natural-language data question into a structured JSON of attributes, tasks and charts, with explicit ambiguity flags; SatClip's question parser should emit a similar inspectable spec |
 | 069 | [Earth observation tools and services to increase the effectiveness of humanitarian assistance](papers/069-lang-eo-humanitarian-services.md) ([source](https://doi.org/10.1080/22797254.2019.1684208)) | 2019 | historical | Field report on delivering EO information to MSF and other NGOs, stressing that trust, reliability and workflow fit, not algorithms, limit uptake; SatClip should design around delivery and trust for non-expert responders |
 | 070 | [Effect of Confidence and Explanation on Accuracy and Trust Calibration in AI-Assisted Decision Making](papers/070-zhang-confidence-trust-calibration.md) ([source](https://doi.org/10.1145/3351095.3372852)) | 2020 | recent | Showing a confidence score helped people rely on AI more when it was confident, but did not raise joint accuracy, and SHAP explanations did not help calibration; SatClip should show calibrated confidence and treat it as a reliance aid, not an accuracy fix |
+| 134 | [Visual Semiotics & Uncertainty Visualization: An Empirical Study](papers/134-maceachren-uncertainty-semiotics.md) ([source](https://doi.org/10.1109/TVCG.2012.279)) | 2012 | historical | Map uncertainty symbols are not equally intuitive, so SatClip's map overlay should encode low-confidence or cloud-masked pixels with a symbol type users read correctly at a glance, tested with real officials rather than chosen by the developer |
+| 135 | [When (ish) is My Bus? User-centered Visualizations of Uncertainty in Everyday, Mobile Predictive Systems](papers/135-kay-quantile-dotplots.md) ([source](https://doi.org/10.1145/2858036.2858558)) | 2016 | historical | Non-experts on a phone read uncertainty best as a small number of countable discrete outcomes, so SatClip's confidence meter and flooded-area range should use a frequency framing (for example 20 dots) instead of a density curve or a bare percentage |
+| 136 | [To Trust or to Think: Cognitive Forcing Functions Can Reduce Overreliance on AI in AI-assisted Decision-making](papers/136-bucinca-cognitive-forcing.md) ([source](https://arxiv.org/abs/2102.09692)) | 2021 | recent | Making users commit to their own guess or ask for the AI answer reduces blind acceptance but is disliked, so SatClip could offer an optional 'check it yourself first' step for high-stakes cards and should keep the default card fast |
+| 137 | [Explanations Can Reduce Overreliance on AI Systems During Decision-Making](papers/137-vasconcelos-explanations-overreliance.md) ([source](https://arxiv.org/abs/2212.06823)) | 2023 | recent | Explanations only cut overreliance when they make checking the AI cheaper than trusting it, so SatClip's evidence (scene chips, before/after thumbnails) must let an official verify the headline number in seconds |
+| 138 | [Global trends in satellite-based emergency mapping](papers/138-voigt-satellite-emergency-mapping.md) ([source](https://doi.org/10.1126/science.aad8728)) | 2016 | historical | Satellite emergency mapping is already routine for Asian disasters, but delivered as expert map products; SatClip's niche is turning the same evidence into a fast, honest answer card that non-experts can act on, with clear limits |
+| 139 | [Eviza: A Natural Language Interface for Visual Analysis](papers/139-setlur-eviza.md) ([source](https://doi.org/10.1145/2984511.2984588)) | 2016 | historical | When a question is ambiguous (which district, which date, what counts as flooded), SatClip should show the default it chose as an editable chip, as Eviza's ambiguity widgets do, rather than silently guessing or refusing |
 
 ### indian-context
 
@@ -237,6 +254,14 @@ Total papers: **125**
 | 031 | [Enabling Calibration In The Zero-Shot Inference of Large Vision-Language Models](papers/031-clip-zero-shot-calibration.md) ([source](https://arxiv.org/abs/2303.12748)) | 2023 | recent | CLIP zero-shot scores are miscalibrated; one temperature learned per CLIP model on an auxiliary set transfers across prompts and datasets, so calibrate RemoteCLIP once and reuse |
 | 032 | [Spatial-Aware Conformal Prediction for Trustworthy Hyperspectral Image Classification](papers/032-sacp-hyperspectral-conformal.md) ([source](https://arxiv.org/abs/2409.01236)) | 2024 | recent | Conformal prediction works for per-pixel RS classification, and smoothing non-conformity scores over spatial neighbours gives smaller sets at the same guaranteed coverage; apply it to SatClip masks |
 | 033 | [RSHallu: Dual-Mode Hallucination Evaluation for Remote-Sensing Multimodal Large Language Models with Domain-Tailored Mitigation](papers/033-rshallu.md) ([source](https://arxiv.org/abs/2602.10799)) | 2026 | upcoming | RS VLMs answer hallucination-free only about 36% to 69% of the time on RSHalluEval, including errors about modality and resolution; strong evidence that SatClip's VLM must not produce measurements |
+| 126 | [Probabilities for SV Machines](papers/126-platt-sigmoid-scaling.md) ([source](https://doi.org/10.7551/mitpress/1113.003.0008)) | 2000 | historical | Platt scaling is the simplest way to turn a raw SatClip score (for example a backscatter margin below the Otsu threshold) into a probability, and is the baseline any fancier calibrator must beat |
+| 127 | [Transforming classifier scores into accurate multiclass probability estimates](papers/127-zadrozny-elkan-isotonic.md) ([source](https://doi.org/10.1145/775047.775151)) | 2002 | historical | Isotonic regression is SatClip's default non-parametric calibrator for instrument scores once there are enough labelled tiles, since it assumes only that a higher score should never mean a lower flood probability |
+| 128 | [Obtaining Well Calibrated Probabilities Using Bayesian Binning](papers/128-naeini-bbq-ece.md) ([source](https://doi.org/10.1609/aaai.v29i1.9602)) | 2015 | historical | Gives SatClip the ECE and MCE metrics for checking that a stated 0.80 confidence is right about 80 percent of the time, plus a binning calibrator that averages over bin choices |
+| 129 | [Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles](papers/129-deep-ensembles.md) ([source](https://arxiv.org/abs/1612.01474)) | 2017 | historical | Running several independently varied instrument settings and reporting their spread is a cheap, model-agnostic way for SatClip to widen confidence when the instruments disagree |
+| 130 | [What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?](papers/130-kendall-gal-uncertainties.md) ([source](https://arxiv.org/abs/1703.04977)) | 2017 | historical | SatClip should separate uncertainty from the sensor (speckle, cloud, mixed pixels, which more data cannot fix) from uncertainty from the method (thresholds tuned elsewhere, which local labels can fix), and say which one caused an abstention |
+| 131 | [Local Temperature Scaling for Probability Calibration](papers/131-local-temperature-scaling.md) ([source](https://arxiv.org/abs/2008.05105)) | 2021 | recent | Calibration for SatClip's flood masks should be allowed to vary across the tile (river channels, hill shadow, urban areas), not a single global temperature, and must leave the mask itself unchanged |
+| 132 | [Can You Trust Your Model's Uncertainty? Evaluating Predictive Uncertainty Under Dataset Shift](papers/132-ovadia-uncertainty-shift.md) ([source](https://arxiv.org/abs/1906.02530)) | 2019 | historical | A calibration fitted on one region or season will drift when SatClip meets a new district or an unusual monsoon, so calibration must be re-checked per region and season, and confidence should fall as inputs move away from the calibration data |
+| 133 | [Conformal Risk Control](papers/133-conformal-risk-control.md) ([source](https://arxiv.org/abs/2208.02814)) | 2024 | recent | Lets SatClip pick its flood-mask threshold from labelled Indian events so that the expected share of truly flooded area it misses stays below a stated level, with a finite-sample guarantee |
 
 ### upcoming
 
