@@ -6,10 +6,10 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 
 | Item | Value |
 |---|---|
-| Papers archived | 175 (IDs 001 to 175) |
-| Next paper ID | 176 |
-| Milestones done | M1, M2, M3, M4, M5 (finished run 7) |
-| Deck | not yet created (M7) |
+| Papers archived | 200 (IDs 001 to 200); 200-paper target reached in run 8 |
+| Next paper ID | 201 |
+| Milestones done | M1 to M6 (M6 in run 8) |
+| Deck | not yet created (M7, next run) |
 
 ## Conventions and decisions
 
@@ -39,6 +39,8 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 - **Calibration conventions (run 6).** Instrument physics tests use the `identity_calibration` fixture (conftest) so they do not depend on fitted files; `test_calibration_files` checks the shipped maps. `"method": "inherit"` borrows another instrument's fitted map (used by `sar_logratio_change`). Refit water with `python training/calibration/fit_water.py` (streams about 1.4 GB from the public Sen1Floods11 bucket, about 5 minutes with 8 workers) or `--rows training/calibration/reports/sar_water_otsu_chips.csv` to refit without downloading.
 - **Sen1Floods11 does include India (run 6).** A022 originally said India was absent; the bucket's split files show 68 Indian hand-labelled chips. A022 and SOLUTION risk 2 were corrected.
 
+- **Run 8 conventions.** (1) COG reads (`data/cog.py`) always read whole native pixels and resize in numpy; do not reintroduce `out_shape` decimation in GDAL (non-deterministic under concurrent reads). Only `nearest` and `average` are supported. (2) Receipt tiles now include `reason`, so receipt IDs from before run 8 will not match re-runs. (3) After any change to instruments or the data layer, run `python ../tools/demo.py` then `python ../tools/reproduce.py` from `backend/` (each about 6 to 10 minutes live; run `reproduce.py` with `nohup ... &` because the Bash tool times out at 10 minutes). (4) `tools/loadtest.py` needs `redis-server` on PATH for the multi-process part (present in the sandbox) and `psutil`. (5) Sandbox installs needed this run: `pip install --break-system-packages fastapi pytest httpx fakeredis redis rasterio scipy uvicorn shapely pillow`. (6) Research agents: WebFetch permission prompts timed out again for all three agents; they used curl to export.arxiv.org, arxiv.org/html, api.crossref.org, api.openalex.org and raw GitHub READMEs, noted in each `verified` field. One agent (A197) also used api.datacite.org and source.coop; recheck that entry with WebFetch when it works.
+
 ## Open questions and items to verify
 
 - The deck reference "unified multimodal LLM for cross-sensor EO evaluated on SAR and BigEarthNet" is assumed to be EarthGPT (A002). This needs confirming with the team.
@@ -50,7 +52,7 @@ This file is the shared memory between scheduled runs. Read it first, append a r
   - RS-LLaVA base LLM (A025);
   - EarthGPT DOI (A002).
 - Run 2 entries with flagged details: A031 and A032 are arXiv-only; A033 (RSHallu) per-model rates came from a tool-assisted HTML read, recheck against the PDF before citing on slides; A039 (xBD) venue unconfirmed; A043 methods paywalled (no threshold or accuracy); A046 headline totals and sensors unconfirmed; A042 authors as initials only.
-- Verified but not yet archived (good candidates for later IDs): Deep Ensembles (Lakshminarayanan et al., NIPS 2017, arXiv 1612.01474); Twele et al. 2016, Sentinel-1 automated flood processing chain (IJRS 37(13):2990-3004).
+- Deep Ensembles is archived as A129 and Twele et al. 2016 is archived as A083; the earlier "verified but not archived" note is out of date.
 - Run 3 entries with flagged details: A052 (Prithvi-EO-2.0), A056 (DOFA) and A063 (SmolVLM) are arXiv-only; A057 (Clay) has no paper, performance claims unverified; A058 TPAMI acceptance from arXiv comment only; A062 MobileCLIP weights are under Apple research terms, check before any public deployment; A065, A066, A069 written from abstracts and metadata (publisher pages returned 403); A070 participant count for Experiment 2 looks small, recheck; A075 NeurIPS 2022 track unconfirmed; A072 is arXiv only.
 - Venues confirmed only from READMEs:
   - GEOBench-VLM, ICCV 2025 (A014);
@@ -58,6 +60,8 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 
 - Run 4 entries with flagged details: A077, A079, A080 have no peer-reviewed venue; A081 author list differs between arXiv and the journal record; A079 training set size given as 20K and 30K in different places; A082 test-set size is the agent's estimate; A083, A085, A086 written from abstracts and GFM documentation (paywalled); A086 volume unknown and Ashman D numbers from ESA training slides; A087 volume unknown; A092 CVPR 2026 workshop venue only from its README; A095 v1 date and public access unconfirmed; A096 Earth Engine catalogue page not loaded; A098 public STAC for NISAR not confirmed; A099 no scores or dataset link; A100 commissioning date and revisit over India unconfirmed.
 - Run 5 entries with flagged details: A101 has no peer-reviewed paper (usage figures self-reported by OGC); A103 manual hosted by APSAC, not pmfby.gov.in; A104 RMSE values not copied; A105 and A107 written from abstracts (MDPI and PDF not read); A108 to A113 summaries from standard knowledge (bibliographic data checked on Crossref); A114 pages not confirmed; A115 and A117 venue only from arXiv comments; A118 NeurIPS 2025 only from README; A119 track unconfirmed; A121 test cases not confirmed; A122 numeric thresholds not extracted; A123 and A124 years approximate.
+- Run 8 entries with flagged details: A176 Hugging Face dataset link not fetched; A177 no code or data link found; A179 no peer-reviewed venue, test set on request; A180 relative gains as stated by the paper, per-model tables not checked; A181 no leaderboard numbers extracted; A182 no baselines, no venue; A183 flood image source not named, code not released; A186 F1 figures from the authors' EGU 2021 abstract, may differ from the journal paper; A187 MDPI full text not read (abstract only), GFM three-algorithm detail from general knowledge; A185 IoU values not quoted; A189 no Changen2 code found; A190 repository mentions paper corrections, not reviewed; A192 limitations are our reading; A194 and A193 no code; A195 code release not confirmed; A196 benchmark numbers not extracted, labels described as noisy by the authors; A197 verified partly via DataCite and source.coop; A198 ICML volume and pages not confirmed; A199 sampling figures not extracted; A200 repository URL from general knowledge.
+- No verifiable Indian hand-labelled flood dataset beyond those already archived was found in run 8 (FLNet/BFCD-22 labels come from NDVI thresholds; a 2022 Assam change-detection paper is on Springer and was not readable).
 - Planetary Computer `sentinel-1-rtc` metadata says an account is needed for tokens (A123), but anonymous SAS tokens worked in runs 4 and 5. Watch for failures (SOLUTION risk 13).
 - Run 6 entries with flagged details: A126 cited by its Crossref chapter title and year 2000 (the 1999 tech-report form is the usual citation); A126 to A128 give no dataset or numeric results; A130 and A132 dataset names not confirmed; A131 and A132 code repositories not opened (GitHub blocked for agents); A134, A138, A139 written from abstracts; A140 and A141 abstracts only; A142 repo not checked; A146 to A148 venues from arXiv comments only; A149 and A150 have no peer-reviewed venue; A149 licence of the 2B weights not checked (must be before government deployment); bitsandbytes and Outlines repo links from general knowledge. All run 6 research agents fell back to curl (WebFetch permission prompts timed out), as noted in each `verified` field.
 - Live findings to recheck in M6: Barpeta 11 July 2024 water figure (681 sq km) includes permanent water and paddy; compare with NRSC or ASDMA flood reports for early July 2024 before quoting it as flood extent.
@@ -291,3 +295,40 @@ Together these point to an evidence-first design.
 1. Archive papers 176 to 200 filling the remaining gaps (PLAN "Suggested next batches" row 8): rs-benchmark 7, sar-optical-fusion 5, rs-vlm 4, change-detection 2, historical 2, indian-context 2 (Indian labelled flood or crop sets usable for calibration), data-infrastructure 1, efficient-inference 1, upcoming 1. Read the "Not used, but real" leads in this log first: RS-Agent (2406.07089), CangLing-KnowFlow (2512.15231), REMSA (2511.17442), EO-Gym (2605.01250), TerraBench (2606.13148), Agentic AI for RS survey (2604.24919), lightweight VLM adaptation for MS and SAR (2609.02187).
 2. Build M6 (Quality): (a) `tools/demo.py`, a scripted demo of six questions (flood extent published, flood change abstained with the before and after extents shown, crop change, ambiguous district, out of scope, Hindi question) writing `docs/demo/` cards and a short markdown transcript; (b) `docs/QUALITY.md` with sample queries and expected behaviour; (c) a load test (`tools/loadtest.py`) with the inline queue and with fakeredis plus 2 to 4 workers, measuring tiles per second, warm-cache latency and memory, and a note on horizontal scaling; (d) receipt reproducibility check (re-run 10 receipts, compare output hashes). Consider the SOLUTION risk 17 mitigation (show before and after extents for "did the flood spread") as part of M6 if small.
 
+
+### Run 8, 2026-10-08
+
+**Papers: 25 added (IDs 176 to 200). The 200-paper target is reached.**
+- rs-benchmark (7): EO-Gym (2026), TerraBench (2026), CDVQA, QAG-360K/VisTA, SARLANG-1M (TGRS 2026), LRS-VQA, JL1-CC&QA (2026).
+- upcoming (1): FloodReasonBench (2026).
+- sar-optical-fusion (5): GLF-CR, WorldFloods, Konapala et al. S1/S2 diversity with DEM, Bayesian S1 datacube flood mapping (GFM), CNN versus DLR rule chain.
+- change-detection (2): Changen2, UrbanSARFloods.
+- historical (2): Rignot and van Zyl 1993 SAR ratio change, Gal and Ghahramani 2016 MC dropout.
+- rs-vlm (4): lightweight VLM adaptation for MS and SAR (2026), Agentic AI for RS position paper (2026), CangLing-KnowFlow, RS-Agent.
+- indian-context (2): SICKLE (Cauvery Delta paddy), AgriFieldNet (UP, Rajasthan, Odisha, Bihar).
+- data-infrastructure (1): TorchGeo. efficient-inference (1): XGrammar.
+- Verified with curl to arXiv, Crossref, OpenAlex and GitHub READMEs (WebFetch prompts timed out again); see "Run 8 entries with flagged details".
+
+**Milestone M6: done** (PLAN ticked)
+- `tools/demo.py`: six live questions on whole districts plus the offered follow-ups and a warm repeat; writes `docs/demo/TRANSCRIPT.md` and `cards.json`.
+- `tools/reproduce.py`: cold re-run of every demo receipt; `docs/quality/reproducibility.json`.
+- `tools/loadtest.py`: real water core on synthetic tiles, inline threads (1, 4, 8) and real redis-server with 1, 2, 4 worker processes, with 0 and 400 ms simulated reads; `docs/quality/loadtest.json`.
+- `docs/QUALITY.md`: 12 sample questions with expected and measured behaviour, timings, reproducibility, scaling, defects, test inventory, known gaps. ARCHITECTURE 6.4 updated with measured capacity, new 6.10.
+- SOLUTION risk 17 mitigation: `follow_ups` on abstained water-change cards (two extent requests, one per date window), rendered as buttons in the UI; `next_step` explains why.
+- Fixes found by M6: deterministic COG reads (native read plus numpy `average`/`nearest` resize), read retries with a fresh cache key, one worker-level tile retry, `details.tiles_failed_to_read` on the card plus a warning chip, `reason` in receipt tiles.
+- Tests: 73 passing (7 new in `tests/test_run8.py`).
+
+**Measured**
+- Live demo (2 vCPU sandbox, inline queue, 4 threads): Barpeta extent 2024-07-11 published 914 sq km at 0.62, 117 tiles, 77 s cold, 0.5 s warm. Barpeta change 5 June to 11 July abstained at 0.23; follow-ups published 413 sq km (0.73) and 914 sq km (0.62). Darbhanga crop change published 1,544 sq km at 0.89 (placeholder calibration), 128 tiles, 54 s. Ambiguous and out-of-scope: 0.01 s, no tiles. Hindi question with a Latin-script district: same card as the English one.
+- Reproducibility: first run 7 of 8 (crop question 1,108 vs 1,544 sq km); after fixes 8 of 8 receipts (713 tiles) identical.
+- Parallel read test: 64 concurrent reads of one Sentinel-2 window gave a different 3-column strip in up to 5 of 64 reads with GDAL decimation (VSI cache off; with default settings the defect changed 42 of 128 live crop tiles); identical bytes for every successful read after the fix. 1 to 6 of 64 reads fail transiently through the sandbox proxy.
+- Load: compute about 0.1 s per tile; Redis workers 11.8, 21.5, 20.1 tiles/s (1, 2, 4 workers, no I/O, 2 cores); with 400 ms reads 2.0, 4.0, 7.8 tiles/s; inline threads do not scale compute (9.9 at 1 thread, 5.5 at 8). Warm 144-tile job 0.01 s inline, 0.1 to 0.2 s Redis. About 86 MB per worker, 13 MB Redis. Parse-only API 84 req/s, p50 14 ms, p95 26 ms.
+
+**Problems hit:** the determinism fix roughly doubles cold read time (Barpeta 42 s to 77 s); the Bash tool's 10-minute limit killed one combined demo plus reproduce run (use nohup); Devanagari district names are not in the gazetteer (asks for the area instead); no new verifiable Indian hand-labelled flood set found.
+
+**Most important finding:** M6's reproducibility check caught SatClip giving two different answers to the same question on the same scenes (GDAL decimation under concurrency plus silent tile drop-outs). Both are fixed and every receipt now re-runs identically. On the research side, VisTA [A179] already answers change questions with masks and EO-Gym [A176] already switches to SAR with a small tuned model, so SatClip's novelty must rest on the combination of calibrated confidence, abstention, scene receipts and Indian non-expert delivery (NOVELTY run 8).
+
+**Exact next step (run 9)**
+1. Archive papers 201 to 225: newly published 2026 work first, then challengers to NOVELTY.md (calibrated or abstaining RS VLMs and agents; VisTA, EO-Gym and RSure-Agent follow-ups; Google Earth AI updates), terrain and per-pixel SAR posterior methods, urban flood coherence, Indian flood labels.
+2. Build M7 (deck): read the pptx skill first. Retake screenshots with the API running (`tools/screenshots.py`), adding one of the Barpeta flood-change card with its two follow-up buttons and one of a published follow-up. Build `deck/satclip.pptx` in claymorphism style with the story in the task brief, using numbers from `docs/QUALITY.md`, `docs/demo/TRANSCRIPT.md` and NOVELTY run 8; send it to the user.
+3. Small items if time allows: Devanagari aliases for district names (QUALITY question 7); a slope or HAND mask in `sar_water_otsu` (A083, A186).

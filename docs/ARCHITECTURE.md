@@ -195,7 +195,7 @@ flowchart TB
 
 - API and workers scale independently. During a flood event, scale SAR workers; the API tier barely changes.
 - Separate worker pools per instrument family let a GPU pool serve the optional VLM without slowing the CPU instruments.
-- A rough capacity model (to be measured in M6): one CPU worker handles one 550 x 550 tile in a few seconds once pixels are local; network reads dominate. Throughput therefore scales with workers until the catalogue rate limit, which is why the search and header caches matter.
+- Capacity, measured in M6 (`docs/QUALITY.md` section 6): the water core costs about 0.1 s of CPU per tile; live cold reads cost about 0.66 s of wall time per tile with 4 threads; with read latency in the loop, Redis worker processes scale almost linearly (2.0, 4.0, 7.8 tiles per second for 1, 2, 4 workers), while threads in one process do not scale compute. Throughput therefore scales with worker processes until the cores or the catalogue rate limit run out, which is why the search, header and tile caches matter.
 
 ### 6.5 Catalogue failover
 
@@ -331,6 +331,13 @@ flowchart LR
 Measured in runs 6 and 7: see `training/README.md` and the reports in `training/calibration/reports/`. Run 7 live effect: Barpeta flood extent on 11 July 2024 publishes 905 sq km at 0.62 with water v1.1 (abstained at 0.46 under v1.0); Barpeta flood change abstains at 0.23 under its own regime map. Run 6 live effect: the Barpeta flood-extent card for 11 July 2024 moved from published at 0.66 (uncalibrated) to abstained at 0.46 (fitted). The Darbhanga crop-change card is unchanged (its calibration is still a placeholder and says so).
 
 ---
+
+### 6.10 Quality and determinism as built (M6, run 8)
+
+- **Deterministic reads.** `data/cog.py` snaps each window to whole native pixels, reads at native resolution and resizes in numpy (`average` for reflectance and backscatter, `nearest` for class bands). GDAL's own decimation returned different pixels under concurrent reads, which broke receipt reproducibility.
+- **Retries at two levels.** Each COG read retries up to 4 times with a fresh `/vsicurl/` cache key; a tile whose instrument still raises is retried once by the worker after 3 s. A tile that still fails is an `error` result with its reason in the receipt, lowers confidence, and is counted on the card as `details.tiles_failed_to_read`.
+- **Follow-ups for change questions.** `aggregate.extent_follow_ups` attaches two ready-made water-extent requests (one per date window) to an abstained water-change card; the UI shows them as buttons (SOLUTION risk 17).
+- **Tools.** `tools/demo.py` (scripted six-question demo, writes `docs/demo/`), `tools/reproduce.py` (re-runs demo receipts from a cold start and compares hashes), `tools/loadtest.py` (inline and real-Redis multi-process scaling with the real water core on synthetic tiles). Results and sample questions are in `docs/QUALITY.md`.
 
 ## 7. Deployment modes
 

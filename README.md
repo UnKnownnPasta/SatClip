@@ -56,15 +56,16 @@ See [SOLUTION.md](SOLUTION.md) for the full thesis and evidence.
 
 | Part | Where | Status |
 |---|---|---|
-| Solution thesis | [SOLUTION.md](SOLUTION.md) | v1.6 (run 7) |
-| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v7 (run 7) |
-| Research archive (target about 200 papers) | [archive/](archive/README.md) | 175 papers |
+| Solution thesis | [SOLUTION.md](SOLUTION.md) | v1.7 (run 8) |
+| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v8 (run 8) |
+| Research archive (target about 200 papers) | [archive/](archive/README.md) | 200 papers (target reached run 8) |
 | Problem evidence brief | [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md) | v1 |
 | Idea deck summary | [docs/reference/deck-notes.md](docs/reference/deck-notes.md) | done |
-| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | M1 to M5 done (section 6.9 for training) |
+| Architecture | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | M1 to M6 done (6.9 training, 6.10 quality) |
 | Prototype (FastAPI backend and claymorphism frontend) | [backend/](backend/), [frontend/](frontend/), [config/satclip.yaml](config/satclip.yaml), [docker-compose.yml](docker-compose.yml) | Working end to end on live Sentinel data: data layer (M2), five instruments with confidence, abstention and map overlays (M3); mobile-first claymorphism UI with district picker, two-date compare, evidence chips, confidence meter and map overlays (M4) |
 | Training code (LoRA, Colab notebook, evaluation, calibration) | [training/](training/README.md) | M5 done (run 7): water extent calibrated on Sen1Floods11 (v1.1, VV or VH), water change on Kuro Siwo; LoRA pipeline, Colab notebook, Indian Q&A builder (WorldCover labels) and evaluation harness with measured baselines, including a hand-written intent test set |
-| Pitch deck (.pptx) | `deck/` | M7, planned |
+| Quality: tests, scripted demo, reproducibility, load test | [docs/QUALITY.md](docs/QUALITY.md), [docs/demo/TRANSCRIPT.md](docs/demo/TRANSCRIPT.md) | M6 done (run 8): 73 tests, six-question live demo, cold re-runs of receipts, Redis multi-process scaling |
+| Pitch deck (.pptx) | `deck/` | M7, next |
 | Plan and progress | [PLAN.md](PLAN.md), [STATE.md](STATE.md) | live |
 
 ## Team Stardust (RVITM)

@@ -16,7 +16,7 @@ def digest(obj: Any) -> str:
 
 def build_receipt(parsed: dict, results: list[dict], card: dict) -> dict:
     tiles = sorted(
-        ({k: r.get(k) for k in ("tile_id", "status", "value", "unit", "confidence", "scenes", "params")} for r in results),
+        ({k: r.get(k) for k in ("tile_id", "status", "value", "unit", "confidence", "scenes", "params", "reason")} for r in results),
         key=lambda r: r["tile_id"],
     )
     output = {k: card.get(k) for k in ("value", "unit", "confidence", "abstained")}

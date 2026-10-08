@@ -1,0 +1,89 @@
+{
+ "generated": "2026-10-08 23:04 UTC",
+ "source": "cards.json",
+ "checked": 8,
+ "output_hash_matches": 8,
+ "receipt_matches": 8,
+ "rows": [
+  {
+   "step": "Flood extent, published",
+   "tiles": 117,
+   "receipt_id": "5d27fcc87150f848",
+   "rerun_receipt_id": "5d27fcc87150f848",
+   "output_hash_match": true,
+   "receipt_match": true,
+   "seconds": 97.77,
+   "difference": "none"
+  },
+  {
+   "step": "Did the flood spread",
+   "tiles": 117,
+   "receipt_id": "4b761f62146d6e6d",
+   "rerun_receipt_id": "4b761f62146d6e6d",
+   "output_hash_match": true,
+   "receipt_match": true,
+   "seconds": 122.93,
+   "difference": "none"
+  },
+  {
+   "step": "Did the flood spread, follow-up: Water before: 2024-06-05",
+   "tiles": 117,
+   "receipt_id": "3af7eb6ef03ed33a",
+   "rerun_receipt_id": "3af7eb6ef03ed33a",
+   "output_hash_match": true,
+   "receipt_match": true,
+   "seconds": 57.06,
+   "difference": "none"
+  },
+  {
+   "step": "Did the flood spread, follow-up: Water after: 2024-07-11",
+   "tiles": 117,
+   "receipt_id": "066c86bc6262dd46",
+   "rerun_receipt_id": "066c86bc6262dd46",
+   "output_hash_match": true,
+   "receipt_match": true,
+   "seconds": 87.02,
+   "difference": "none"
+  },
+  {
+   "step": "Crop change",
+   "tiles": 128,
+   "receipt_id": "09ece4ffefbcb19f",
+   "rerun_receipt_id": "09ece4ffefbcb19f",
+   "output_hash_match": true,
+   "receipt_match": true,
+   "seconds": 68.24,
+   "difference": "none"
+  },
+  {
+   "step": "Ambiguous district",
+   "tiles": 0,
+   "receipt_id": "26894ed78153a997",
+   "rerun_receipt_id": "26894ed78153a997",
+   "output_hash_match": true,
+   "receipt_match": true,
+   "seconds": 0.01,
+   "difference": "none"
+  },
+  {
+   "step": "Out of scope",
+   "tiles": 0,
+   "receipt_id": "d4ebf61c83e8dfaa",
+   "rerun_receipt_id": "d4ebf61c83e8dfaa",
+   "output_hash_match": true,
+   "receipt_match": true,
+   "seconds": 0.01,
+   "difference": "none"
+  },
+  {
+   "step": "Hindi question",
+   "tiles": 117,
+   "receipt_id": "a956e4c3744b8e11",
+   "rerun_receipt_id": "a956e4c3744b8e11",
+   "output_hash_match": true,
+   "receipt_match": true,
+   "seconds": 124.56,
+   "difference": "none"
+  }
+ ]
+}

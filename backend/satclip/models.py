@@ -107,6 +107,7 @@ class EvidenceCard(BaseModel):
     details: dict[str, Any] = {}             # secondary numbers, e.g. water before and after
     masks: list[dict[str, Any]] = []         # per-tile overlays for the map
     region_name: Optional[str] = None
+    follow_ups: list[dict[str, Any]] = []    # ready-made requests the UI offers as buttons {label, request}
 
 
 class JobState(str, Enum):

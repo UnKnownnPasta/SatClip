@@ -1,0 +1,189 @@
+{
+ "generated": "2026-10-08 22:15 UTC",
+ "tiles_per_job": 144,
+ "tile_pixels": "280x280",
+ "cpu_count": 2,
+ "cpu_model": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+ "runs": {
+  "io_0ms": {
+   "inline": {
+    "concurrency_1": {
+     "cold": {
+      "seconds": 14.48,
+      "tiles_per_s": 9.9,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.013,
+      "tiles_per_s": 10892.9,
+      "cache_hits": 144
+     },
+     "rss_mb": 77.5
+    },
+    "concurrency_4": {
+     "cold": {
+      "seconds": 27.349,
+      "tiles_per_s": 5.3,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.014,
+      "tiles_per_s": 10365.4,
+      "cache_hits": 144
+     },
+     "rss_mb": 92.6
+    },
+    "concurrency_8": {
+     "cold": {
+      "seconds": 26.201,
+      "tiles_per_s": 5.5,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.014,
+      "tiles_per_s": 10095.7,
+      "cache_hits": 144
+     },
+     "rss_mb": 118.3
+    }
+   },
+   "redis": {
+    "1_workers": {
+     "cold": {
+      "seconds": 12.163,
+      "tiles_per_s": 11.8,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.172,
+      "tiles_per_s": 836.5,
+      "cache_hits": 144
+     },
+     "worker_rss_mb_total": 85.7,
+     "redis_rss_mb": 13.2
+    },
+    "2_workers": {
+     "cold": {
+      "seconds": 6.713,
+      "tiles_per_s": 21.5,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.11,
+      "tiles_per_s": 1307.0,
+      "cache_hits": 144
+     },
+     "worker_rss_mb_total": 171.8,
+     "redis_rss_mb": 13.2
+    },
+    "4_workers": {
+     "cold": {
+      "seconds": 7.16,
+      "tiles_per_s": 20.1,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.089,
+      "tiles_per_s": 1613.5,
+      "cache_hits": 144
+     },
+     "worker_rss_mb_total": 343.4,
+     "redis_rss_mb": 13.3
+    }
+   }
+  },
+  "io_400ms": {
+   "inline": {
+    "concurrency_1": {
+     "cold": {
+      "seconds": 71.492,
+      "tiles_per_s": 2.0,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.013,
+      "tiles_per_s": 10813.3,
+      "cache_hits": 144
+     },
+     "rss_mb": 119.7
+    },
+    "concurrency_4": {
+     "cold": {
+      "seconds": 28.643,
+      "tiles_per_s": 5.0,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.013,
+      "tiles_per_s": 10772.7,
+      "cache_hits": 144
+     },
+     "rss_mb": 113.9
+    },
+    "concurrency_8": {
+     "cold": {
+      "seconds": 25.907,
+      "tiles_per_s": 5.6,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.013,
+      "tiles_per_s": 10868.8,
+      "cache_hits": 144
+     },
+     "rss_mb": 123.6
+    }
+   },
+   "redis": {
+    "1_workers": {
+     "cold": {
+      "seconds": 71.412,
+      "tiles_per_s": 2.0,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.194,
+      "tiles_per_s": 743.2,
+      "cache_hits": 144
+     },
+     "worker_rss_mb_total": 85.9,
+     "redis_rss_mb": 13.2
+    },
+    "2_workers": {
+     "cold": {
+      "seconds": 35.763,
+      "tiles_per_s": 4.0,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.109,
+      "tiles_per_s": 1320.8,
+      "cache_hits": 144
+     },
+     "worker_rss_mb_total": 171.8,
+     "redis_rss_mb": 13.3
+    },
+    "4_workers": {
+     "cold": {
+      "seconds": 18.581,
+      "tiles_per_s": 7.8,
+      "cache_hits": 0
+     },
+     "warm": {
+      "seconds": 0.11,
+      "tiles_per_s": 1309.4,
+      "cache_hits": 144
+     },
+     "worker_rss_mb_total": 343.0,
+     "redis_rss_mb": 13.4
+    }
+   }
+  }
+ },
+ "api": {
+  "requests": 400,
+  "requests_per_s_single_client": 83.9,
+  "p50_ms": 14.3,
+  "p95_ms": 25.65
+ }
+}

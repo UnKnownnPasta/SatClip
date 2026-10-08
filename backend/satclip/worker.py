@@ -1,9 +1,17 @@
 """Worker: take a tile job, check the cache, run the instrument, return the result."""
 from __future__ import annotations
 
+import time
+
 from .cache import Cache, cache_key
 from .instruments import get
 from .models import TileJob, TileResult, TileStatus
+
+
+# Run 8: transient read failures made the same question give different answers (a few tiles dropped
+# out). A failed tile is retried once after a pause, outside the per-read retries in data/cog.py.
+TILE_ATTEMPTS = 2
+RETRY_DELAY_S = 3.0
 
 
 def process(job: TileJob, cache: Cache) -> TileResult:
@@ -14,10 +22,14 @@ def process(job: TileJob, cache: Cache) -> TileResult:
     if hit:
         res = TileResult(**hit)
         return res.model_copy(update={"job_id": job.job_id, "cache_hit": True})
-    try:
-        res = fn(job)
-    except Exception as exc:  # a broken tile must never break the job
-        return TileResult(job_id=job.job_id, tile_id=job.tile_id, status=TileStatus.error, reason=repr(exc)[:300])
+    for attempt in range(TILE_ATTEMPTS):
+        try:
+            res = fn(job)
+            break
+        except Exception as exc:  # a broken tile must never break the job
+            if attempt + 1 == TILE_ATTEMPTS:
+                return TileResult(job_id=job.job_id, tile_id=job.tile_id, status=TileStatus.error, reason=repr(exc)[:300])
+            time.sleep(RETRY_DELAY_S * (attempt + 1))
     res.params = {**res.params, "instrument": job.instrument, "instrument_version": version}
     if res.status != TileStatus.error:
         cache.set(key, res.model_dump(mode="json"))

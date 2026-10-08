@@ -1,6 +1,6 @@
 # SatClip: the solution thesis
 
-Version 1.6 (run 7, 2026-10-07): water instrument v1.1 with VH, the change instrument's own calibration, and a harder test of the question parser (sections 4, 6 and 9). Version 1.5 (run 6) added the first fitted calibration.
+Version 1.7 (run 8, 2026-10-08): measured quality (docs/QUALITY.md), the extent follow-ups that answer "did the flood spread" (risk 17), reproducible receipts, and 25 more papers (sections 9 and 10). Version 1.6 (run 7, 2026-10-07): water instrument v1.1 with VH, the change instrument's own calibration, and a harder test of the question parser (sections 4, 6 and 9). Version 1.5 (run 6) added the first fitted calibration.
 
 > **In one line:** SatClip answers plain-language "what happened here, and when" questions about Indian land with an **evidence card**: a measurement taken from the actual Sentinel scene by a transparent instrument, a map of where it applies, the scene IDs and dates used, a calibrated confidence, and a receipt that lets anyone re-run it. When the evidence is not good enough, it says so and tells you what would fix it.
 
@@ -243,10 +243,10 @@ SatClip's contribution is the combination, packaged for a non-expert: an evidenc
 
 | Metric | Target |
 |---|---|
-| Time from question to first tile result | Under 2 minutes for a district-sized AOI on CPU (to be measured) |
+| Time from question to first tile result | Under 2 minutes for a district-sized AOI on CPU. **Measured run 8:** whole-district answers in 54 to 98 s cold on a 2 vCPU sandbox (117 to 128 tiles), 0.5 s when cached |
 | Flood extent agreement with a reference map on historical Indian events | Report IoU and its uncertainty; no target until we have the reference set |
 | Selective risk at a published coverage | Wrong answers among non-abstained answers, reported per sensor and per instrument |
-| Receipt reproducibility | 100% of sampled receipts re-run to the same output hash |
+| Receipt reproducibility | 100% of sampled receipts re-run to the same output hash. **Measured run 8:** 8 of 8 demo receipts (713 tiles) reproduced exactly from a cold start, after two defects were found and fixed (docs/QUALITY.md section 4) |
 
 ## Run 7 additions to the risk table
 
@@ -255,3 +255,17 @@ SatClip's contribution is the combination, packaged for a non-expert: an evidenc
 | 17 | **Positive flood-change answers are usually wrong (measured run 7).** On Kuro Siwo, "X sq km of new water" answers are within 20% only 27% of the time, and 75% of chips with labelled flood are undercounted by more than 20%. With its regime map, the change card now abstains on almost every positive change answer, including live Barpeta June to July 2024 (0.23). | Show "water before" and "water after" extents (each from the better-calibrated extent instrument) as the default answer to "did the flood spread", with the change map as a secondary view; investigate the undercount (likely flooded vegetation and the 3 dB drop rule) before claiming change areas. |
 | 18 | **Self-generated test sets flatter the system.** Template-generated intent questions gave 0.90 full match to a keyword parser; hand-written ones gave 0.68. The same trap applies to auto-generated image Q&A (`build_india_qa.py`). | Keep small hand-written test sets that are never used for tuning, collect real questions from users, and report both numbers side by side. |
 
+
+## Run 8 additions (M6 quality and 25 more papers)
+
+**Risk 17 status (mitigated in the product).** An abstained "did the flood spread" card now offers "water before" and "water after" as one-tap follow-ups, each measured by the better-calibrated extent instrument. Live for Barpeta, the change card abstains at 0.23 while both extents publish: 413 sq km on 5 June 2024 (0.73) and 914 sq km on 11 July 2024 (0.62). The official gets a usable, honest answer (water more than doubled between the two passes) without SatClip claiming a change area it cannot measure well. Caveat: both extents include permanent water (risk 12).
+
+**Risk 15, concrete next steps from the literature.** The Copernicus GFM Bayesian method [A187] classifies each pixel against its own seasonal backscatter history and returns a posterior probability plus a no-sensitivity mask; adding a DEM raised Sen1Floods11 flood F1 from 0.63 to 0.74 in one study (figures from the authors' conference abstract) [A186]; a VV+VH CNN beat an operational rule chain by about 5 IoU points [A188]. The next water instrument should add a HAND or slope mask and a per-pixel posterior, and keep the threshold chain as the baseline it must beat.
+
+**Crop calibration is now possible in principle.** SICKLE [A196] has ground-surveyed paddy plots in four Cauvery Delta districts with sowing, transplanting and harvest dates and Sentinel-1/2 data, and AgriFieldNet [A197] has field-level crop labels in Uttar Pradesh, Rajasthan, Odisha and Bihar. Harvest dates give a natural "greenness fell" label for fitting `ndvi_difference`, which still ships a placeholder calibration.
+
+| # | Risk | Mitigation |
+|---|---|---|
+| 19 | **Same question, different answer (found and fixed run 8).** GDAL decimation under concurrent reads returned different pixels for the same window, and transient read failures silently dropped tiles, so a Darbhanga crop question gave 1,108 and 1,544 sq km on the same scenes. A trust product cannot ship that. | Reads at native resolution with a numpy resize, read and tile retries, failed tiles counted on the card and in the receipt, and `tools/reproduce.py` re-run on every release. |
+| 20 | **Flooded towns are invisible to the water instrument.** UrbanSARFloods [A190] shows urban floods are largely missed by intensity-based SAR mapping. | Mask built-up areas and say they are not covered; a coherence-change instrument is the later route. |
+| 21 | **Grounded change answers are no longer unique.** VisTA [A179] returns a change mask with each answer, and EO-Gym [A176] switches sensors with a small tuned model. | Rest the claim on the combination (calibrated confidence, abstention, scene receipts, SAR-first monsoon handling, Indian districts, non-expert delivery), as NOVELTY.md run 8 states. |

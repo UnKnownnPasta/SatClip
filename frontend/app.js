@@ -164,6 +164,8 @@ function evidenceChips(card) {
     const fitted = /^fitted/.test(card.calibration);
     items.push(el("li", { class: fitted ? "meta" : "warnchip", text: fitted ? "Confidence calibrated" : "Confidence not yet calibrated" }));
   }
+  const failed = card.details?.tiles_failed_to_read;
+  if (failed) items.push(el("li", { class: "warnchip", text: `${failed} map ${failed === 1 ? "tile" : "tiles"} could not be read` }));
   if (card.observed_vs_inferred && card.observed_vs_inferred !== "observed") items.push(el("li", { class: "warnchip", text: card.observed_vs_inferred }));
   return items;
 }
@@ -220,6 +222,10 @@ function renderCard(card, parsed) {
       const b = el("button", { type: "button", class: "chip clay-sm", text: `Use ${labels[i]}` });
       b.addEventListener("click", () => { const [name, st] = labels[i].split(", "); pick({ key: k, name, state: st }); submit(); });
       return b;
+    }), ...(card.follow_ups || []).map((f) => {
+      const b = el("button", { type: "button", class: "chip clay-sm", text: f.label });
+      b.addEventListener("click", () => submit(f.request));
+      return b;
     }));
   }
   $("evidence").replaceChildren(...evidenceChips(card));
@@ -258,9 +264,10 @@ function buildRequest() {
   else if (!two && d1) body.windows = [windowFor(d1)];
   return body;
 }
-async function submit() {
+async function submit(override) {
   const err = $("q-err");
-  const body = buildRequest();
+  if (override) $("q").value = override.text;
+  const body = override || buildRequest();
   if (body.text.length < 3) { err.textContent = "Type a question first, or tap an example."; err.classList.remove("hidden"); $("q").focus(); return; }
   err.classList.add("hidden");
   if (state.source) state.source.close();

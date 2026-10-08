@@ -99,6 +99,29 @@ def _area_confidence(ok) -> float | None:
     return load_cal(str(ok[0].params.get("instrument", ""))) (p * factor)
 
 
+def extent_follow_ups(job: Job) -> list[dict[str, Any]]:
+    """SOLUTION risk 17: change areas are poorly calibrated, so an abstained "did the flood spread" card
+    offers the water extent on each date instead, each measured by the better-calibrated extent instrument."""
+    if job.parsed.intent != Intent.water_change or len(job.parsed.windows) != 2:
+        return []
+    out = []
+    for tag, w in zip(("before", "after"), job.parsed.windows):
+        mid = w.start + (w.end - w.start) / 2
+        where = f" of {job.parsed.place_name}" if job.parsed.place_name else ""
+        req: dict[str, Any] = {"text": f"How much{where} was under water on {mid.isoformat()}?",
+                               "windows": [{"start": w.start.isoformat(), "end": w.end.isoformat()}]}
+        if job.parsed.region:
+            req["region"] = job.parsed.region
+        elif job.parsed.bbox:
+            req["bbox"] = list(job.parsed.bbox)
+        out.append({"label": f"Water {tag}: {mid.isoformat()}", "request": req})
+    return out
+
+
+EXTENT_NEXT = ("Change areas are the least reliable number SatClip measures. Check the water extent on each "
+               "date instead (buttons below); each is measured and calibrated on its own.")
+
+
 def aggregate(job: Job, trust: dict[str, Any]) -> EvidenceCard:
     ok = [r for r in job.results if r.status == TileStatus.ok and r.confidence is not None]
     total = max(job.tiles_total, 1)
@@ -116,8 +139,9 @@ def aggregate(job: Job, trust: dict[str, Any]) -> EvidenceCard:
                    "or ask about water instead, which radar can measure through cloud.")
         else:
             nxt = "Widen the date window, or try again after the next Sentinel-1 pass (every 6 to 12 days)."
+        fu = extent_follow_ups(job)
         return EvidenceCard(**base, abstained=True, answer_text="Insufficient evidence for this area and date.",
-                            reason=reason, scenes=_scenes(ok), next_step=nxt)
+                            reason=reason, scenes=_scenes(ok), next_step=EXTENT_NEXT if fu else nxt, follow_ups=fu)
     conf = _area_confidence(ok)
     if conf is None:  # instruments without an area-error model: area-weighted mean of tile confidences
         weights = [max(float(r.params.get("measured_km2") or 1.0), 1e-6) for r in ok]
@@ -139,15 +163,20 @@ def aggregate(job: Job, trust: dict[str, Any]) -> EvidenceCard:
         details.update(vegetated_before_km2=_sum(ok, "vegetated_before_km2"), gain_km2=_sum(ok, "gain_km2"))
     elif intent in (Intent.land_cover, Intent.describe):
         breakdown = _breakdown(ok)
+    failed = sum(1 for r in job.results if r.status == TileStatus.error)
+    if failed:
+        details["tiles_failed_to_read"] = failed  # shown so a partial answer is never mistaken for a full one
     fallback = sum(1 for r in ok if r.params.get("fallback_used"))
     if fallback:
         details["tiles_on_fallback_sensor"] = fallback
     common = dict(**base, value=value, unit=unit, confidence=round(conf, 3), confidence_band=label, scenes=_scenes(ok),
                   masks=masks, breakdown=breakdown, details=details)
     if conf < float(trust.get("abstain_below", 0.6)):
+        fu = extent_follow_ups(job)
         return EvidenceCard(**common, abstained=True,
                             answer_text="Insufficient evidence: confidence is below the publication threshold.",
-                            reason="low_confidence", next_step="Try a narrower area or a date closer to a satellite pass.")
+                            reason="low_confidence", follow_ups=fu,
+                            next_step=EXTENT_NEXT if fu else "Try a narrower area or a date closer to a satellite pass.")
     where = f" of {job.parsed.place_name}" if job.parsed.place_name else ""
     def km(x: float) -> str:
         return f"{x:,.0f}" if x >= 100 else (f"{x:.1f}" if x >= 1 else f"{x:.2f}")

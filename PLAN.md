@@ -27,9 +27,10 @@
   - Calibration fitting.
   - As built (run 6): `training/calibration/fit_water.py` (Sen1Floods11, 446 chips, Platt chosen on valid, fitted map shipped, report with reliability and risk-coverage); `training/lora/` (intent JSON schema and resolver, intent data builder with unseen-district split, RSVQA-LR and BigEarthNet v2 builders, S1 false colour, `train_lora.py` with LoRA, QLoRA, DoRA, smoke-tested on CPU); `training/eval/` (intent and VQA harnesses, measured rule and majority baselines); `training/colab/satclip_lora.ipynb`. See `training/README.md` and ARCHITECTURE 6.9.
   - Finished in run 7: water instrument v1.1 (VV or VH; `tune_water_vh.py`, `cache_sen1floods11.py`, refit with v1.0 kept for comparison); `fit_change.py` (Kuro Siwo streamed by HTTP range, cross-validated by event, `regimes` calibration method); `build_india_qa.py` (ESA WorldCover labels over Sentinel-2 and Sentinel-1 chips in Indian districts; OSM rejected for land-use labels and kept for positive-only named-water questions; Bhuvan not used, terms unclear); multi-format date parser and Hindi/Hinglish keywords in `parser.py`; hand-written intent test set (`training/eval/data/intents_handwritten.jsonl`); VRSBench converter verified on the real file with an answer-prior report. `ndvi_difference` calibration not fitted by decision: no open labelled crop-decline set for India (recorded in `training/README.md`).
-- [ ] **M6. Quality.**
+- [x] **M6. Quality.** (run 8)
   - Tests, sample queries and a scripted demo.
   - Load and scalability notes with measured numbers where possible.
+  - As built: `tools/demo.py` (six live questions on whole districts, writes `docs/demo/`), `tools/reproduce.py` (cold re-runs of receipts), `tools/loadtest.py` (inline threads and real Redis with 1, 2, 4 worker processes), `docs/QUALITY.md` (sample questions with expected and measured behaviour, timings, scaling, defects found). Fixed on the way: deterministic COG reads, read and tile retries, failed tiles shown on the card; added extent follow-ups for abstained flood-change cards (SOLUTION risk 17). 73 tests. See ARCHITECTURE 6.10.
 - [ ] **M7. Deck.**
   - SatClip pitch and demo deck as .pptx, claymorphism style, UX-focused, with real prototype screenshots, saved in `deck/`.
   - Refreshed in later runs when the project changes.
@@ -43,21 +44,21 @@ Each run adds 25 papers, choosing the categories with the largest remaining gap.
 
 | Category key | Scope | Target | Current |
 |---|---|---|---|
-| rs-vlm | RS vision-language models and assistants | 25 | 21 |
-| rs-benchmark | RS VQA, captioning, grounding datasets and benchmarks | 20 | 13 |
+| rs-vlm | RS vision-language models and assistants | 25 | 25 |
+| rs-benchmark | RS VQA, captioning, grounding datasets and benchmarks | 20 | 20 |
 | eo-foundation | Scene classification and EO foundation models (SatMAE, Prithvi, SkySense, SSL4EO, CLIP-style) | 18 | 18 |
-| change-detection | Optical and SAR change detection | 16 | 14 |
-| sar-optical-fusion | SAR-optical fusion, SAR analytics, cloud removal | 15 | 10 |
+| change-detection | Optical and SAR change detection | 16 | 16 |
+| sar-optical-fusion | SAR-optical fusion, SAR analytics, cloud removal | 15 | 15 |
 | object-detection | Object detection in RS | 10 | 10 |
 | trust-calibration | Hallucination, calibration, uncertainty, selective prediction and abstention | 16 | 16 |
 | eo-agents | Retrieval-augmented and tool-using agents for EO | 12 | 12 |
-| data-infrastructure | STAC, COG, Copernicus, tiling, job queues | 10 | 9 |
-| efficient-inference | LoRA, quantization, edge and offline inference | 12 | 11 |
-| indian-context | ISRO, Bhuvan, monsoon, disaster management, agriculture | 14 | 12 |
+| data-infrastructure | STAC, COG, Copernicus, tiling, job queues | 10 | 10 |
+| efficient-inference | LoRA, quantization, edge and offline inference | 12 | 12 |
+| indian-context | ISRO, Bhuvan, monsoon, disaster management, agriculture | 14 | 14 |
 | human-factors | UX of GIS, conversational analytics, decision support | 12 | 12 |
-| historical | Foundations before 2020 | 10 | 8 |
-| upcoming | 2026 preprints, challenges, announced datasets | 10 | 9 |
-| **Total** | | **200** | **175** |
+| historical | Foundations before 2020 | 10 | 10 |
+| upcoming | 2026 preprints, challenges, announced datasets | 10 | 10 |
+| **Total** | | **200** | **200** |
 
 ### Suggested next batches
 
@@ -70,3 +71,4 @@ Each run adds 25 papers, choosing the categories with the largest remaining gap.
 | 6 | trust-calibration (about 8), human-factors (about 6), change-detection (about 6), efficient-inference (about 5) |
 | 7 | eo-foundation (about 8), object-detection (about 5), rs-vlm (about 5, newest 2026 models and any calibrated RS VLM), eo-agents (about 4), upcoming (about 3) |
 | 8 | Remaining gaps: sar-optical-fusion (5), rs-benchmark (7), indian-context (2: Indian labelled flood and crop datasets for calibration), change-detection (2), historical (2), data-infrastructure (1), efficient-inference (1), rs-vlm (4), upcoming (1) = 25; then newly published work and anything that challenges NOVELTY.md |
+| 9 onward | Target reached in run 8. Each run adds about 25: newly published work (2026 arXiv, CVPR/ICCV/NeurIPS/IGARSS 2026), anything that challenges NOVELTY.md (calibrated or abstaining RS VLMs and agents, VisTA and EO-Gym follow-ups, Google Earth AI), Indian flood labels, and methods for the open risks (terrain masks, per-pixel SAR posteriors, urban flood coherence, crop calibration) |
