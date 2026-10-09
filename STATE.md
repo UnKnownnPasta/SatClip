@@ -6,10 +6,10 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 
 | Item | Value |
 |---|---|
-| Papers archived | 200 (IDs 001 to 200); 200-paper target reached in run 8 |
-| Next paper ID | 201 |
-| Milestones done | M1 to M6 (M6 in run 8) |
-| Deck | not yet created (M7, next run) |
+| Papers archived | 225 (IDs 001 to 225); 200-paper target reached in run 8 |
+| Next paper ID | 226 |
+| Milestones done | M1 to M7 (M7 in run 9) |
+| Deck | `deck/satclip.pptx`, 14 slides (run 9); rebuild per `deck/README.md` |
 
 ## Conventions and decisions
 
@@ -40,6 +40,8 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 - **Sen1Floods11 does include India (run 6).** A022 originally said India was absent; the bucket's split files show 68 Indian hand-labelled chips. A022 and SOLUTION risk 2 were corrected.
 
 - **Run 8 conventions.** (1) COG reads (`data/cog.py`) always read whole native pixels and resize in numpy; do not reintroduce `out_shape` decimation in GDAL (non-deterministic under concurrent reads). Only `nearest` and `average` are supported. (2) Receipt tiles now include `reason`, so receipt IDs from before run 8 will not match re-runs. (3) After any change to instruments or the data layer, run `python ../tools/demo.py` then `python ../tools/reproduce.py` from `backend/` (each about 6 to 10 minutes live; run `reproduce.py` with `nohup ... &` because the Bash tool times out at 10 minutes). (4) `tools/loadtest.py` needs `redis-server` on PATH for the multi-process part (present in the sandbox) and `psutil`. (5) Sandbox installs needed this run: `pip install --break-system-packages fastapi pytest httpx fakeredis redis rasterio scipy uvicorn shapely pillow`. (6) Research agents: WebFetch permission prompts timed out again for all three agents; they used curl to export.arxiv.org, arxiv.org/html, api.crossref.org, api.openalex.org and raw GitHub READMEs, noted in each `verified` field. One agent (A197) also used api.datacite.org and source.coop; recheck that entry with WebFetch when it works.
+
+- **Run 9 conventions.** (1) Deck: `deck/build_deck.js` (pptxgenjs) builds `deck/satclip.pptx`; it post-processes slide XML because pptxgenjs closes inner shadows with `</a:outerShdw>` (invalid XML). Run the pptx skill's `validate.py` after every rebuild. Assets come from `deck/capture_assets.py` against the running API; run `tools/screenshots.py` first to warm the cache. (2) The deck's archive chart reads `archive/index.csv` at build time, so rebuild the deck after adding papers. (3) Research agents: WebFetch worked partly this run but arxiv.org returned HTTP 429 mid-run and OpenAlex hit its daily limit; IEEE Xplore and ScienceDirect do not render. Crossref and Semantic Scholar via curl worked.
 
 ## Open questions and items to verify
 
@@ -332,3 +334,28 @@ Together these point to an evidence-first design.
 1. Archive papers 201 to 225: newly published 2026 work first, then challengers to NOVELTY.md (calibrated or abstaining RS VLMs and agents; VisTA, EO-Gym and RSure-Agent follow-ups; Google Earth AI updates), terrain and per-pixel SAR posterior methods, urban flood coherence, Indian flood labels.
 2. Build M7 (deck): read the pptx skill first. Retake screenshots with the API running (`tools/screenshots.py`), adding one of the Barpeta flood-change card with its two follow-up buttons and one of a published follow-up. Build `deck/satclip.pptx` in claymorphism style with the story in the task brief, using numbers from `docs/QUALITY.md`, `docs/demo/TRANSCRIPT.md` and NOVELTY run 8; send it to the user.
 3. Small items if time allows: Devanagari aliases for district names (QUALITY question 7); a slope or HAND mask in `sar_water_otsu` (A083, A186).
+
+
+### Run 9, 2026-10-09
+
+**Papers: 25 added (IDs 201 to 225), total 225.**
+- 2026 competitors and challengers (9): TerraScope (CVPR 2026), SHRUG-FM (CVPR EarthVision 2026), RSHBench and RADAR, UnivEARTH (ACL 2026 Findings), OpenEarthAgent (ECCV 2026), RSThinker Geo-CoT (ICLR 2026), ANASSA, onboard multi-agent EO crisis response (ESA 4S 2026), RS reasoning survey.
+- Water instrument methods (8): Nobre HAND 2011, Zhao SAR exclusion maps 2021, Giustarini probabilistic SAR flood mapping 2016, Krullikowski GFM ensemble likelihood 2023, Pulvirenti coherence for urban and agricultural floods 2016, Chini Houston coherence 2019, Vekaria Assam Brahmaputra change detection 2023, Jalem Mumbai urban floods 2026.
+- Trust and human factors (8): RCPS (Bates et al. JACM 2021), conformal semantic segmentation (Mossina et al. 2024), Kim et al. FAccT 2024 uncertainty expression, Jean et al. HESS 2023 probabilistic flood maps, W3C PROV-O, Model Cards, Mirage of calibrated VLM confidence (2026), ToolChain-CRC (2026).
+- Flagged details: venues for A201, A202, A204, A205, A208 from arXiv comments only; A206 ICLR from ML Anthology only; A208 speed-up numbers not extracted; A209 sections 7 and 8 not read; A204 text miscounts a gain as 79 points (it is about 26 points, 79% relative), noted in the entry; A210, A212, A213, A214, A216 written from abstracts (paywalled); A211 agreement figure from the 2020 conference version; GFM numbers (HAND 10 m, likelihood cut 50) from the GFM documentation wiki; A217 has internal inconsistencies listed in the entry; A224 one ECE value ambiguous between model sizes; A225 experiments not read; no code links opened.
+
+**Milestone M7: done** (PLAN ticked)
+- `deck/satclip.pptx`, 14 slides: title, users, why it lasts, solution, demo 1 (Barpeta extent published), demo 2 (change abstained plus follow-ups), UX states (mobile, out of scope, ambiguity, accessibility, Indian formats), innovation (ease), trust (water v1.0 vs v1.1 chart, change ECE, 8 of 8 receipts), architecture and measured scaling chart, research landscape (archive chart plus five closest 2026 rivals), limits and roadmap, team, close. Claymorphism via paired outer and inner shadows on rounded shapes; pastel accents with dark ink text; Arial headings, Calibri body; speaker notes cite sources.
+- `deck/build_deck.js`, `deck/capture_assets.py`, `deck/README.md`; `tools/screenshots.py` gains `09-flood-change-followup` (clicks the first follow-up). All screenshots retaken live; validation passed.
+- SOLUTION v1.8 (run 9 additions: water v1.2 plan with HAND, exclusion map and per-pixel probability; urban caveat; conformal and provenance upgrades; risks 22 and 23). NOVELTY v9 (four new comparison rows, run 9 evidence, watch list, combination summary).
+
+**Measured (live, this run):** Barpeta extent 2024-07-11 914 sq km at 0.62; change 5 June to 11 July abstained at 0.23; follow-up "water before" 413 sq km at 0.73. Same as run 8, so the receipts remain stable across runs. 73 tests pass.
+
+**Problems hit:** pptxgenjs writes invalid XML for inner shadows (fixed in a post-process step); arXiv rate limits during research.
+
+**Most important finding:** every individual SatClip ingredient now exists somewhere in 2026 work (flood-map rejection in SHRUG-FM, live retrieval in UnivEARTH, deterministic replay in OpenEarthAgent, pixel-grounded area answers in TerraScope), but none combines more than two of calibrated confidence, threshold abstention with a next step, measured-reproducible scene receipts, SAR-first monsoon handling, CPU or offline deployment and non-expert Indian delivery. The novelty claim is a combination claim and has to be argued that way in M8.
+
+**Exact next step (run 10)**
+1. Archive papers 226 to 250 (PLAN row 10): the agent systems named by the A209 survey (TerraAgent, GeoMMAgent, MAP-Agent, VRA, RemoteAgent, VagueEO) checked for confidence or abstention, Chow et al. 2016 HAND threshold study, new 2026 calibrated or abstaining RS models, Indian flood labels.
+2. Build M8: final NOVELTY.md pass over all 225+ papers with each claim tied to evidence (one table: claim, closest prior art, what differs, evidence in the prototype), and `docs/VERIFICATION.md` showing how the prototype demonstrates each claim, with commands and measured outputs (demo transcript, calibration reports, reproducibility JSON, load test, keyboard check).
+3. Refresh the deck if M8 changes the claim wording (slide 11 and the trust slide). Small items: Devanagari district aliases; start water v1.2 (HAND mask) if time allows.

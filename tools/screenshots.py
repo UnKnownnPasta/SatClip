@@ -23,7 +23,10 @@ SHOTS = [  # name, question, viewport, colour scheme
     ("06-crop-change-desktop", "Did the crop decline in Darbhanga between 2024-03-01 and 2024-04-25?", (1366, 1000), "light"),
     ("08-flood-change-abstain", "Did the flood spread in Barpeta between 2024-06-05 and 2024-07-11?", (1366, 1000), "light"),
     ("07-flood-extent-dark", "How much of Barpeta was under water on 2024-07-11?", (1366, 1000), "dark"),
+    # Clicks the first follow-up button on the abstained change card (the "before" extent) and captures the result.
+    ("09-flood-change-followup", "Did the flood spread in Barpeta between 2024-06-05 and 2024-07-11?", (1366, 1000), "light"),
 ]
+FOLLOW_UP = {"09-flood-change-followup"}
 
 
 def main():
@@ -44,6 +47,11 @@ def main():
                 page.click("#go")
                 page.wait_for_selector("#card:not(.hidden)", timeout=180_000)
                 page.wait_for_timeout(2500)  # let overlays and base map tiles load
+                if name in FOLLOW_UP:
+                    old = page.inner_text("#answer")
+                    page.click("#choices button >> nth=0")
+                    page.wait_for_function("(o) => !document.querySelector('#card').classList.contains('hidden') && document.querySelector('#answer').innerText !== o", arg=old, timeout=180_000)
+                    page.wait_for_timeout(2500)
                 page.evaluate("window.scrollTo(0, 0)")  # sticky map: capture from the top
                 page.wait_for_timeout(500)
             path = os.path.join(OUT, f"{name}.png")

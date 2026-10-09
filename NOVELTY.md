@@ -1,6 +1,6 @@
 # What is new in SatClip, and what would have to be true
 
-This document is an honest comparison against the closest existing systems. It is checked against the archive as it grows: version 8 (run 8) covers 200 papers plus the competitor evidence in [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md). A final pass against the whole archive is milestone M8.
+This document is an honest comparison against the closest existing systems. It is checked against the archive as it grows: version 9 (run 9) covers 225 papers plus the competitor evidence in [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md). A final pass against the whole archive is milestone M8.
 
 Citation keys: `[A001]` is an archive entry and `[E49]` is an evidence-brief claim.
 
@@ -35,7 +35,11 @@ The dimensions are the ones that matter to a district official, extension office
 | Earth-Agent-Pro [A166] (2026 preprint) | Yes | Via tools | Partial | No | Via tools | No | No | Evidence log for self-repair only | No | Preprint |
 | QAG-360K / VisTA [A179] (2024 preprint) | Yes, change questions | No (bitemporal optical pairs supplied) | No | No | **Yes: a change mask with every answer, empty when nothing changed** | No | No | No | No | Test set on request |
 | EO-Gym agent [A176] (2026 preprint) | Yes | Yes, inside its environment (fetches older scenes, switches optical to SAR) | **Yes, learned** | No | Via tools | No | No | No | Small (4B LoRA) | Preprint |
-| **SatClip (built, run 8)** | Yes, a fixed set of question types and 735 named districts; Indian date formats and common Hindi and Hinglish words | **Yes, live** (three public STAC catalogues, tested end to end) | **Yes** (monsoon rule, tested on live data; water uses VV and VH since run 7) | **Yes** | **Yes** (per-tile PNG overlays clipped to the district) | **Fitted for water extent (Sen1Floods11) and water change (Kuro Siwo, one map per answer regime); crop change still a labelled placeholder** | **Yes, with a next step** | **Yes** | **Yes** (a whole district in about 40 to 60 s on CPU) | **Yes, open source, free data** |
+| TerraScope [A201] (CVPR 2026) | Yes | No | Reads optical or SAR, no automatic choice | No | **Yes, pixel masks behind area answers** | No | No | No | No (GPU) | Open per paper |
+| SHRUG-FM [A202] (CVPR EarthVision 2026) | No (segmentation model) | No | No (Sentinel-2 optical) | No | Flood masks | **Reliability scores, stated as not calibrated** | **Rejects unreliable flood maps; no next step** | No | Not stated | Research code |
+| UnivEARTH agents [A204] (ACL 2026 Findings) | Yes | **Yes, via Earth Engine code the agent writes** | Not automatic | No | Via code | No | No | No | No (cloud LLM) | Needs Earth Engine |
+| OpenEarthAgent [A205] (ECCV 2026) | Yes | No | No | No | Via tools | No | No | **Deterministic replay of tool traces** | No | Open |
+| **SatClip (built, run 9)** | Yes, a fixed set of question types and 735 named districts; Indian date formats and common Hindi and Hinglish words | **Yes, live** (three public STAC catalogues, tested end to end) | **Yes** (monsoon rule, tested on live data; water uses VV and VH since run 7) | **Yes** | **Yes** (per-tile PNG overlays clipped to the district) | **Fitted for water extent (Sen1Floods11) and water change (Kuro Siwo, one map per answer regime); crop change still a labelled placeholder** | **Yes, with a next step** | **Yes** | **Yes** (a whole district in about 40 to 60 s on CPU) | **Yes, open source, free data** |
 
 "Unknown" means we found no public evidence either way. These cells will be revisited as the archive grows.
 
@@ -139,7 +143,22 @@ The claim is novelty of **combination and packaging for a specific user**, which
 - **Better physics exists for the weak instrument.** The Copernicus GFM Bayesian datacube method [A187] gives a per-pixel posterior water probability against each pixel's own seasonal history, plus a no-sensitivity mask, and a DEM input lifts flood F1 [A186]. Both are the concrete next steps for SOLUTION risk 15; neither is a question-answering system.
 - **Reproducibility is now demonstrated, not only designed.** M6 re-ran every demo receipt from a cold start and found two defects (non-deterministic decimated reads and silent tile drop-outs) before fixing them (docs/QUALITY.md). The receipt claim is the only one in the comparison table that no other system even attempts, so its being measured matters.
 
+### Run 9 evidence that strengthens or tests the claim
+
+- **Abstention for flood maps now has published prior art.** SHRUG-FM [A202] (CVPR EarthVision 2026) flags unreliable foundation-model flood predictions (Sentinel-2, optical) using input out-of-distribution scores and prediction uncertainty, and rejects them. Its scores are explicitly not calibrated, it answers no questions and gives no next step. SatClip's abstention claim is therefore narrowed again: "abstention over a calibrated measurement of a user's question, with a next step and a receipt", not "the first EO system that rejects outputs".
+- **Live retrieval by an LLM agent is not new on its own.** UnivEARTH [A204] (ACL 2026 Findings) has agents write Google Earth Engine code that fetches real imagery; the best agent reaches about 40% zero-shot and 64.5% with self-debugging, with no abstention or calibration. This supports SatClip's fixed instrument recipes and removes "fetches live data" as a standalone differentiator.
+- **Deterministic re-runs of tool traces exist.** OpenEarthAgent [A205] (ECCV 2026) replays tool traces and computes NDVI, NBR and NDBI change. It overlaps SatClip's receipt and index-change ideas, but carries no confidence, no abstention, no scene search and no SAR. The receipt claim becomes "a receipt tied to Sentinel scene IDs whose re-run is measured to reproduce the same output hash", which M6 demonstrated.
+- **Pixel-grounded area answers exist.** TerraScope [A201] (CVPR 2026) answers area and change questions backed by masks from optical or SAR. It needs a GPU and has no calibration, provenance or abstention. Masks on their own are not a SatClip novelty.
+- **Faithful, step-grounded reasoning exists.** RSThinker [A206] (ICLR 2026) ties each reasoning step to an image box. SatClip should not claim auditable reasoning in general, only auditable measurement.
+- **The research agenda names SatClip's features but does not build them.** ANASSA [A207] lists provenance, uncertainty and an "insufficient evidence" outcome as requirements without an implementation; the 2026 reasoning survey [A209] finds no RS reasoning system that evaluates calibration or abstention and no validated operational deployment. Being a working, measured system is part of the claim.
+- **VLM self-reported confidence cannot replace instrument calibration.** A 2026 study [A224] finds VLM verbal confidence barely changes when the evidence changes. RSHBench [A203] measures 47% to 61% hallucination in RS VLM answers. Both support keeping the confidence meter tied to fitted instrument calibration, never to the language model.
+- **Stronger trust tools are available to adopt.** Risk-controlling prediction sets [A218], conformal segmentation [A219] and conformal risk control over tool chains [A225] give finite-sample guarantees that SatClip's Platt maps do not. They are an upgrade path, not a threat: none is packaged with Sentinel provenance for non-experts.
+
 ## 4. Closest threats to the claim (watch list)
+
+- **SHRUG-FM [A202] plus a question interface.** It already rejects unreliable flood maps; calibrated scores and a plain-language front end would make it a direct competitor for flood extent.
+- **UnivEARTH-style agents [A204] with abstention.** Live retrieval through Earth Engine plus a refusal rule would overlap; watch for follow-ups.
+- **TerraScope [A201] or OpenEarthAgent [A205] adding confidence.** Either has most of the plumbing.
 
 - **VisTA / QAG-360K [A179] with confidence.** It already returns a change mask with each answer; adding a calibrated score, abstention and Sentinel provenance would make it a direct competitor for change questions.
 - **EO-Gym [A176] with calibrated answers.** It already does the sensor switching and scene fetching; a reliability head would overlap strongly.
@@ -157,3 +176,7 @@ The claim is novelty of **combination and packaging for a specific user**, which
 - **NRSC's multilingual Bhuvan chatbot** [E29] targets the same users inside ISRO. If deployed, SatClip should position as its open, evidence-first engine rather than a rival.
 - **Open EO foundation models with fine-tune recipes** [A052, A055, A057] could be wrapped by someone else into a non-expert assistant. Watch for a Prithvi or Clay based flood or crop chat tool with confidence output.
 - **Google Earth AI** [E49] has the data and the distribution. Its India availability must be tracked.
+
+## Run 9 summary of the claim
+
+After 225 papers, every single ingredient of SatClip exists somewhere: masks with answers [A179, A201], SAR switching [A176], live retrieval [A204], deterministic replays [A205], flood-map rejection [A202]. No archived system combines more than two of: calibrated per-answer confidence, threshold abstention with a next step, Sentinel scene receipts that are measured to reproduce, SAR-first monsoon handling, CPU or offline deployment, and plain-language delivery for Indian districts. The claim stands as a combination claim, and as the only one shown working end to end on live data with measured calibration.
