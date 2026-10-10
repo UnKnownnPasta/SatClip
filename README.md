@@ -68,6 +68,7 @@ See [SOLUTION.md](SOLUTION.md) for the full thesis and evidence.
 | Pitch deck (.pptx) | [deck/satclip.pptx](deck/satclip.pptx), [deck/README.md](deck/README.md) | M7 done (run 9): 14 slides, claymorphism, live screenshots, sourced speaker notes |
 | Innovation verification | NOVELTY.md, docs/VERIFICATION.md | M8, next |
 | Plan and progress | [PLAN.md](PLAN.md), [STATE.md](STATE.md) | live |
+| Local handoff (start here) | [HANDOFF.md](HANDOFF.md) | 2026-10-10 |
 
 ## Team Stardust (RVITM)
 

@@ -359,3 +359,7 @@ Together these point to an evidence-first design.
 1. Archive papers 226 to 250 (PLAN row 10): the agent systems named by the A209 survey (TerraAgent, GeoMMAgent, MAP-Agent, VRA, RemoteAgent, VagueEO) checked for confidence or abstention, Chow et al. 2016 HAND threshold study, new 2026 calibrated or abstaining RS models, Indian flood labels.
 2. Build M8: final NOVELTY.md pass over all 225+ papers with each claim tied to evidence (one table: claim, closest prior art, what differs, evidence in the prototype), and `docs/VERIFICATION.md` showing how the prototype demonstrates each claim, with commands and measured outputs (demo transcript, calibration reports, reproducibility JSON, load test, keyboard check).
 3. Refresh the deck if M8 changes the claim wording (slide 11 and the trust slide). Small items: Devanagari district aliases; start water v1.2 (HAND mask) if time allows.
+
+### Handoff, 2026-10-10
+
+The scheduled-run series ends here at the owner's request; work continues locally. Added `HANDOFF.md` (full context, setup, conventions, measured numbers, open items and the ordered next steps). No papers or milestone work this run. Next step unchanged: M8 (HANDOFF section 9).
