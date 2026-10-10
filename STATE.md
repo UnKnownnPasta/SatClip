@@ -8,7 +8,7 @@ This file is the shared memory between scheduled runs. Read it first, append a r
 |---|---|
 | Papers archived | 225 (IDs 001 to 225); 200-paper target reached in run 8 |
 | Next paper ID | 226 |
-| Milestones done | M1 to M7 (M7 in run 9) |
+| Milestones done | M1 to M8 (all; M8 on 2026-10-10) |
 | Deck | `deck/satclip.pptx`, 14 slides (run 9); rebuild per `deck/README.md` |
 
 ## Conventions and decisions
@@ -363,3 +363,18 @@ Together these point to an evidence-first design.
 ### Handoff, 2026-10-10
 
 The scheduled-run series ends here at the owner's request; work continues locally. Added `HANDOFF.md` (full context, setup, conventions, measured numbers, open items and the ordered next steps). No papers or milestone work this run. Next step unchanged: M8 (HANDOFF section 9).
+
+### M8, 2026-10-10 (local handoff session)
+
+**Milestone M8: done** (PLAN ticked). No papers added (total stays 225).
+- `tools/novelty_scan.py` scans all 225 entries for six ingredients (calibrated per-answer confidence, threshold abstention with a next step, reproducible scene receipts, automatic SAR under cloud, CPU or offline, plain language for non-experts); 81 shortlisted and judged by hand. Output `docs/verification/archive_scan.csv`.
+- NOVELTY.md v10 section 5: strict definitions, ingredient matrix (no archived system has more than two in full; EO-Gym, NRSC products and FloodReasonBench have two), eight claims N1 to N8 in final wording with closest prior art and status, conditions final status, what is not claimed.
+- `docs/VERIFICATION.md`: per-claim commands and outputs.
+
+**Re-measured 2026-10-10:** 73 tests pass; water and change calibration refits from committed rows identical to the shipped reports except the date; out-of-scope and ambiguous questions answered in 0.01 to 0.03 s with next steps (`docs/verification/api_checks.json`); all 8 run 8 receipts re-ran cold with identical output hashes two days later (`docs/quality/reproducibility_m8.json`, Barpeta extent 88.9 s); hand-written intent test 0.682 (unchanged); keyboard walkthrough OK. Live catalogues and Planetary Computer anonymous signing worked.
+
+**Problems hit:** a short web search found no evidence of Google Earth AI in India or a deployed Bhuvan chatbot, but it was not exhaustive. `pkill -f "uvicorn satclip.api"` killed the tool shell again (known issue).
+
+**Most important finding:** the combination claim survives the whole-archive pass, and the evidence gap is now clearly on the user side: NOVELTY condition 4 (non-GIS users understand cards faster than maps) is untested, and Indian flood usefulness (condition 2) depends on water v1.2.
+
+**Next step:** see HANDOFF.md section 9 (deck wording check, water v1.2, a small usability study, papers 226 onward).

@@ -1,0 +1,29 @@
+[
+ {
+  "question": "How many cars are parked in Barpeta on 2024-07-11?",
+  "seconds": 0.03,
+  "status": null,
+  "headline": null,
+  "abstain_reason": "out_of_scope",
+  "next_step": "Try a supported question, for example: 'How much of Barpeta was under water on 2024-07-11?'",
+  "choices": null
+ },
+ {
+  "question": "How much of Aurangabad was under water on 2024-07-11?",
+  "seconds": 0.01,
+  "status": null,
+  "headline": null,
+  "abstain_reason": "ambiguous_area",
+  "next_step": "Several districts share this name: Aurangabad, Bihar; Aurangabad, Maharashtra. Add the state to your question.",
+  "choices": null
+ },
+ {
+  "question": "Who will win the next election in Assam?",
+  "seconds": 0.03,
+  "status": null,
+  "headline": null,
+  "abstain_reason": "out_of_scope",
+  "next_step": "Try a supported question, for example: 'How much of Barpeta was under water on 2024-07-11?'",
+  "choices": null
+ }
+]

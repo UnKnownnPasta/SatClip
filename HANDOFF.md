@@ -1,6 +1,6 @@
 # SatClip handoff (local continuation)
 
-Written 2026-10-10 at the end of the scheduled-run series (9 runs, 2026-10-04 to 2026-10-09). From here on, work continues locally. This file holds everything a fresh person or a fresh Claude session needs. Read it top to bottom once, then use STATE.md and PLAN.md as the live logs.
+Written 2026-10-10 at the end of the scheduled-run series (9 runs, 2026-10-04 to 2026-10-09), and updated the same day after M8 was finished. From here on, work continues locally. This file holds everything a fresh person or a fresh Claude session needs. Read it top to bottom once, then use STATE.md and PLAN.md as the live logs.
 
 Style rule for everything in this repo: English, and no em dashes anywhere (docs, slides, code comments).
 
@@ -26,9 +26,9 @@ Style rule for everything in this repo: English, and no em dashes anywhere (docs
 ### The four user goals (the brief the scheduled runs followed)
 
 1. A research archive of about 200 real, verified papers, one entry each saying what it is and what it means for SatClip. **Done: 225.**
-2. A solution that is innovative in ease of solving a lasting problem, answering: whose problem, why real and lasting, how, why easier, how it scales, why trustworthy, verified against the archive. **Done as SOLUTION.md v1.8 and NOVELTY.md v9; final verification pass (M8) open.**
+2. A solution that is innovative in ease of solving a lasting problem, answering: whose problem, why real and lasting, how, why easier, how it scales, why trustworthy, verified against the archive. **Done: SOLUTION.md v1.8, NOVELTY.md v10 with the final whole-archive pass (M8, 2026-10-10), and docs/VERIFICATION.md.**
 3. A working prototype (CPU only, open pretrained models, live Sentinel data from public STAC) plus ready-to-run LoRA training code and a Colab notebook. **Done (M1 to M6).**
-4. A .pptx deck in claymorphism style (soft extruded surfaces, rounded shapes, paired inner and outer shadows, pastel but accessible palette), UX focused, in both app and deck. **Done (M7), refresh after M8.**
+4. A .pptx deck in claymorphism style (soft extruded surfaces, rounded shapes, paired inner and outer shadows, pastel but accessible palette), UX focused, in both app and deck. **Done (M7). M8 kept the claim wording, so the deck still matches; refresh only after water v1.2 or new results.**
 
 ---
 
@@ -58,7 +58,7 @@ Citation keys: `[A###]` = `archive/papers/###-*.md`; `[E##]` = claim in `docs/re
 | M5 Training code | done (runs 6 to 7) | `training/` (+ `training/README.md`) |
 | M6 Quality | done (run 8) | `tools/demo.py`, `tools/reproduce.py`, `tools/loadtest.py`, `docs/QUALITY.md`, `docs/demo/` |
 | M7 Deck | done (run 9) | `deck/satclip.pptx` (14 slides), `deck/build_deck.js`, `deck/README.md` |
-| **M8 Innovation verification** | **open** | NOVELTY.md final pass + `docs/VERIFICATION.md` (to write) |
+| M8 Innovation verification | done (2026-10-10) | NOVELTY.md section 5, `docs/VERIFICATION.md`, `tools/novelty_scan.py`, `docs/verification/` |
 | Archive | 225 papers, IDs 001 to 225, next ID **226** | `archive/papers/`, `archive/index.csv`, `archive/README.md` |
 | Tests | 73 passing | `backend/tests/` |
 
@@ -191,20 +191,19 @@ deck/                 satclip.pptx, build_deck.js, capture_assets.py, assets/
 
 ## 9. What to do next (in order)
 
-1. **M8, innovation verification (the only open milestone).**
-   - Final NOVELTY.md pass over all 225+ papers: one table with columns claim, closest prior art (archive IDs), what differs, evidence in the prototype. Keep the combination framing (section 2 above).
-   - Write `docs/VERIFICATION.md`: for each claim, the command to run and the measured output (demo transcript, calibration reports, reproducibility JSON, load test, keyboard check, abstention screenshots).
-   - Tick M8 in PLAN.md, update README project map.
-2. **Refresh the deck** if M8 changes claim wording (innovation slide and trust slide), then rebuild and validate.
+All eight milestones are done (M8 finished 2026-10-10: NOVELTY.md section 5 and docs/VERIFICATION.md). What remains improves usefulness and evidence:
+
+1. **A small usability test** (NOVELTY condition 4, the largest evidence gap): 10 to 15 non-GIS people (students, or officers if reachable) answer the same three questions with SatClip cards versus EO Browser or a map; time and correctness. Record results in docs/VERIFICATION.md section 9.
+2. **Deck:** M8 kept the claim wording, so no rebuild is required. Optionally add one line on the innovation slide: "No system in our 225-paper archive has more than two of these six" (NOVELTY 5.3).
 3. **Water instrument v1.2** (biggest usefulness gain, SOLUTION run 9 additions): HAND >= 10 m marked "not assessable" (MERIT Hydro, A210), per-district permanent-water and radar-insensitive exclusion map from the S1 archive (A211), per-pixel P(water) from fitted distributions with refusal when not bimodal (A212, A217), agreement score like GFM (A213); show "new water outside river and wetlands"; state unassessed built-up area on flood cards. Refit calibration and re-run demo and reproduce afterwards.
 4. **Research, papers 226 onward** (PLAN row 10): agent systems named by the A209 survey (TerraAgent, GeoMMAgent, MAP-Agent, VRA, RemoteAgent, VagueEO) checked for confidence or abstention; Chow et al. 2016 HAND threshold study; new 2026 calibrated or abstaining RS models; Indian flood labels; conformal methods for area estimates. Leads already seen but not archived are in the STATE.md run logs.
 5. **Small items:** Devanagari aliases for district names (QUALITY question 7); conformal range on area answers written into the receipt (A218, A219); PROV-style receipt and per-instrument model card (A222, A223); a usability test (NOVELTY condition 4).
 
 When working with Claude Code locally, a good opening prompt is:
-> Read HANDOFF.md, then STATE.md and PLAN.md. Continue with section 9 step 1 (M8). Follow the conventions in HANDOFF section 7. No em dashes. Append a dated entry to STATE.md when done.
+> Read HANDOFF.md, then STATE.md and PLAN.md. Continue with section 9 (all milestones are done; start with water v1.2 or the usability test). Follow the conventions in HANDOFF section 7. No em dashes. Append a dated entry to STATE.md when done.
 
 ---
 
 ## 10. The scheduled task
 
-The cloud scheduled task that produced runs 1 to 9 can now be cancelled. Each run reads only the repo, so if it is left on it will keep committing to `main` (next it would do run 10: M8 plus papers 226 to 250), which could conflict with local work. Pause or delete it from the scheduled tasks list in the Claude app before pushing local changes.
+The cloud scheduled task that produced runs 1 to 9 can now be cancelled. Each run reads only the repo, so if it is left on it will keep committing to `main` (next it would add papers 226 to 250 and redo verification work), which could conflict with local work. Pause or delete it from the scheduled tasks list in the Claude app before pushing local changes.

@@ -1,0 +1,226 @@
+id,title,year,category,C1_calibration,C2_abstention,C3_provenance,C4_sar_under_cloud,C5_cpu_offline,C6_plain_language,india,signal_count
+001,GeoChat: Grounded Large Vision-Language Model for Remote Sensing,2024,rs-vlm,1,1,0,0,1,1,0,4
+002,EarthGPT: A Universal Multi-modal Large Language Model for Multi-sensor Image Comprehension in Remote Sensing Domain,2024,rs-vlm,1,1,0,1,1,0,0,4
+003,EarthDial: Turning Multi-sensory Earth Observations to Interactive Dialogues,2025,rs-vlm,1,1,1,0,1,0,1,4
+004,SkyEyeGPT: Unifying Remote Sensing Vision-Language Tasks via Instruction Tuning with Large Language Model,2025,rs-vlm,0,1,0,0,1,0,0,2
+005,LHRS-Bot: Empowering Remote Sensing with VGI-Enhanced Large Multimodal Language Model,2024,rs-vlm,1,1,0,0,1,1,1,4
+006,RSGPT: A Remote Sensing Vision Language Model and Benchmark,2025,rs-vlm,0,0,1,0,0,1,1,2
+007,TEOChat: A Large Vision-Language Assistant for Temporal Earth Observation Data,2025,rs-vlm,1,1,1,1,1,1,1,6
+008,RemoteCLIP: A Vision Language Foundation Model for Remote Sensing,2024,eo-foundation,1,1,0,0,1,0,1,3
+009,RS5M and GeoRSCLIP: A Large Scale Vision-Language Dataset and A Large Vision-Language Model for Remote Sensing,2024,eo-foundation,0,0,1,0,1,1,1,3
+010,SkyScript: A Large and Semantically Diverse Vision-Language Dataset for Remote Sensing,2024,rs-benchmark,1,1,0,0,0,0,1,2
+011,RSVQA: Visual Question Answering for Remote Sensing Data,2020,rs-benchmark,1,1,0,0,0,1,1,3
+012,VRSBench: A Versatile Vision-Language Benchmark Dataset for Remote Sensing Image Understanding,2024,rs-benchmark,0,0,0,0,0,1,1,1
+013,"Good at captioning, bad at counting: Benchmarking GPT-4V on Earth observation data",2024,rs-benchmark,0,1,0,0,0,1,0,2
+014,GEOBench-VLM: Benchmarking Vision-Language Models for Geospatial Tasks,2024,rs-benchmark,1,1,0,0,1,1,1,4
+015,FloodNet: A High Resolution Aerial Imagery Dataset for Post Flood Scene Understanding,2021,rs-benchmark,0,0,0,1,0,1,0,2
+016,Exploring Models and Data for Remote Sensing Image Caption Generation,2018,historical,1,1,0,0,0,0,1,2
+017,BigEarthNet-MM: A Large Scale Multi-Modal Multi-Label Benchmark Archive for Remote Sensing Image Classification and Retrieval,2021,rs-benchmark,1,1,0,1,1,0,1,4
+018,SEN12MS: A Curated Dataset of Georeferenced Multi-Spectral Sentinel-1/2 Imagery for Deep Learning and Data Fusion,2019,sar-optical-fusion,0,0,1,1,1,0,1,3
+019,Multisensor Data Fusion for Cloud Removal in Global and All-Season Sentinel-2 Imagery,2021,sar-optical-fusion,1,1,0,1,0,0,0,3
+020,Cloud removal in Sentinel-2 imagery using a deep residual neural network and SAR-optical data fusion,2020,sar-optical-fusion,0,0,0,1,1,0,0,2
+021,SARChat-Bench-2M: A Multi-Task Vision-Language Benchmark for SAR Image Interpretation,2025,rs-vlm,0,0,0,0,0,0,1,0
+022,Sen1Floods11: A Georeferenced Dataset to Train and Test Deep Learning Flood Algorithms for Sentinel-1,2020,sar-optical-fusion,1,1,1,1,0,0,1,4
+023,Remote Sensing ChatGPT: Solving Remote Sensing Tasks with ChatGPT and Visual Models,2024,eo-agents,0,1,0,0,1,1,0,3
+024,GeoLLM-Engine: A Realistic Environment for Building Geospatial Copilots,2024,eo-agents,1,0,0,0,0,0,1,1
+025,RS-LLaVA: A Large Vision-Language Model for Joint Captioning and Question Answering in Remote Sensing Imagery,2024,rs-vlm,1,1,1,0,1,1,1,5
+026,On Calibration of Modern Neural Networks,2017,trust-calibration,1,0,0,0,0,0,1,1
+027,Selective Classification for Deep Neural Networks,2017,trust-calibration,1,1,0,1,0,0,1,3
+028,Uncertainty Sets for Image Classifiers using Conformal Prediction,2021,trust-calibration,1,1,0,1,1,0,1,4
+029,Evaluating Object Hallucination in Large Vision-Language Models,2023,trust-calibration,1,0,0,0,0,1,1,2
+030,Reliable Visual Question Answering: Abstain Rather Than Answer Incorrectly,2022,trust-calibration,1,1,0,1,0,1,1,4
+031,Enabling Calibration In The Zero-Shot Inference of Large Vision-Language Models,2023,trust-calibration,1,0,0,0,0,0,1,1
+032,Spatial-Aware Conformal Prediction for Trustworthy Hyperspectral Image Classification,2024,trust-calibration,1,0,0,0,1,0,1,2
+033,RSHallu: Dual-Mode Hallucination Evaluation for Remote-Sensing Multimodal Large Language Models with Domain-Tailored Mitigation,2026,trust-calibration,1,0,1,1,0,1,1,4
+034,A Theoretical Framework for Unsupervised Change Detection Based on Change Vector Analysis in the Polar Domain,2007,change-detection,1,1,1,1,0,0,0,4
+035,Urban Change Detection for Multispectral Earth Observation Using Convolutional Neural Networks,2018,change-detection,1,1,0,0,0,1,1,3
+036,An unsupervised approach based on the generalized Gaussian model to automatic change detection in multitemporal SAR images,2005,change-detection,1,1,1,0,0,0,0,3
+037,A Spatial-Temporal Attention-Based Method and a New Dataset for Remote Sensing Image Change Detection,2020,change-detection,1,0,1,0,0,0,1,2
+038,Remote Sensing Image Change Detection with Transformers,2021,change-detection,1,1,0,0,1,0,0,3
+039,xBD: A Dataset for Assessing Building Damage from Satellite Imagery,2019,change-detection,1,1,0,0,0,0,0,2
+040,Remote Sensing Image Change Captioning With Dual-Branch Transformers: A New Method and a Large Scale Dataset,2022,change-detection,0,0,0,0,0,1,0,1
+041,Kuro Siwo: 33 billion m² under the water. A global multi-temporal satellite dataset for rapid flood mapping,2024,change-detection,1,1,0,0,0,0,1,2
+042,"Flood inundation mapping- Kerala 2018; Harnessing the power of SAR, automatic threshold detection method and Google Earth Engine",2020,indian-context,0,1,1,1,0,0,1,3
+043,"Google Earth Engine-Based Identification of Flood Extent and Flood-Affected Paddy Rice Fields Using Sentinel-2 MSI and Sentinel-1 SAR Data in Bihar State, India",2022,indian-context,0,1,1,0,0,1,1,3
+044,High resolution paddy rice maps in cloud-prone Bangladesh and Northeast India using Sentinel-1 data,2019,indian-context,0,1,0,1,0,1,1,3
+045,Radar versus optical: The impact of cloud cover when mapping seasonal surface water for health applications in monsoon-affected India,2025,indian-context,0,1,0,1,0,1,1,3
+046,Flood Affected Area Atlas of India - Satellite based study,2023,indian-context,0,1,1,0,0,1,1,3
+047,Google Earth Engine: Planetary-scale geospatial analysis for everyone,2017,data-infrastructure,1,0,1,1,1,1,1,5
+048,The Australian Geoscience Data Cube - Foundations and lessons learned,2017,data-infrastructure,0,0,1,1,0,0,0,2
+049,OGC Cloud Optimized GeoTIFF Standard,2023,data-infrastructure,0,0,1,1,1,1,0,4
+050,SpatioTemporal Asset Catalog (STAC) Specification,2024,data-infrastructure,0,0,1,1,0,0,0,2
+051,SatMAE: Pre-training Transformers for Temporal and Multi-Spectral Satellite Imagery,2022,eo-foundation,1,0,1,0,1,0,1,3
+052,Prithvi-EO-2.0: A Versatile Multi-Temporal Foundation Model for Earth Observation Applications,2024,eo-foundation,1,1,0,1,1,0,1,4
+053,SkySense: A Multi-Modal Remote Sensing Foundation Model Towards Universal Interpretation for Earth Observation Imagery,2024,eo-foundation,1,0,1,0,1,0,1,3
+054,"SSL4EO-S12: A Large-Scale Multi-Modal, Multi-Temporal Dataset for Self-Supervised Learning in Earth Observation",2023,eo-foundation,1,1,0,0,1,1,1,4
+055,CROMA: Remote Sensing Representations with Contrastive Radar-Optical Masked Autoencoders,2023,eo-foundation,1,1,0,1,1,0,1,4
+056,Neural Plasticity-Inspired Multimodal Foundation Model for Earth Observation,2024,eo-foundation,1,1,1,0,1,0,1,4
+057,Clay Foundation Model,2024,eo-foundation,1,0,0,0,1,1,1,3
+058,SpectralGPT: Spectral Remote Sensing Foundation Model,2024,eo-foundation,0,0,0,0,1,0,1,1
+059,LoRA: Low-Rank Adaptation of Large Language Models,2021,efficient-inference,0,1,1,0,1,1,0,4
+060,QLoRA: Efficient Finetuning of Quantized LLMs,2023,efficient-inference,0,0,0,0,1,1,0,2
+061,AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration,2024,efficient-inference,1,1,0,0,1,1,0,4
+062,MobileCLIP: Fast Image-Text Models through Multi-Modal Reinforced Training,2024,efficient-inference,1,1,0,0,1,0,1,3
+063,SmolVLM: Redefining small and efficient multimodal models,2025,efficient-inference,0,1,0,0,1,1,0,3
+064,Distilling the Knowledge in a Neural Network,2015,efficient-inference,1,1,1,0,1,1,1,5
+065,Trust in Automation: Designing for Appropriate Reliance,2004,human-factors,1,1,0,1,0,0,0,3
+066,Guidelines for Human-AI Interaction,2019,human-factors,1,1,0,1,0,1,0,4
+067,Does the Whole Exceed its Parts? The Effect of AI Explanations on Complementary Team Performance,2021,human-factors,1,1,0,0,0,1,0,3
+068,NL4DV: A Toolkit for Generating Analytic Specifications for Data Visualization from Natural Language Queries,2021,human-factors,0,0,0,0,0,1,1,1
+069,Earth observation tools and services to increase the effectiveness of humanitarian assistance,2019,human-factors,0,1,0,0,0,1,0,2
+070,Effect of Confidence and Explanation on Accuracy and Trust Calibration in AI-Assisted Decision Making,2020,human-factors,1,1,0,0,0,0,1,2
+071,DOTA: A Large-scale Dataset for Object Detection in Aerial Images,2018,object-detection,0,1,0,0,0,1,1,2
+072,xView: Objects in Context in Overhead Imagery,2018,object-detection,0,1,0,0,0,0,0,1
+073,Object Detection in Optical Remote Sensing Images: A Survey and A New Benchmark,2020,object-detection,1,0,1,0,1,1,1,4
+074,Oriented R-CNN for Object Detection,2021,object-detection,1,1,1,0,1,1,0,5
+075,xView3-SAR: Detecting Dark Fishing Activity Using Synthetic Aperture Radar Imagery,2022,object-detection,1,1,0,1,1,0,0,4
+076,GeoPixel: Pixel Grounding Large Multimodal Model in Remote Sensing,2025,rs-vlm,0,1,1,1,0,0,0,3
+077,GeoGround: A Unified Large Vision-Language Model for Remote Sensing Visual Grounding,2024,rs-vlm,0,1,0,0,1,0,0,2
+078,VHM: Versatile and Honest Vision Language Model for Remote Sensing Image Analysis,2025,rs-vlm,1,1,1,1,0,1,0,5
+079,EarthMind: Leveraging Cross-Sensor Data for Advanced Earth Observation Interpretation with a Unified Multimodal LLM,2025,rs-vlm,0,1,1,1,0,1,1,4
+080,Falcon: A Remote Sensing Vision-Language Foundation Model (Technical Report),2025,rs-vlm,1,1,1,0,1,1,1,5
+081,Geo-R1: Improving Few-Shot Geospatial Referring Expression Understanding with Reinforcement Fine-Tuning,2026,rs-vlm,0,1,1,0,0,0,1,2
+082,FUSAR-GPT: A Spatiotemporal Feature-Embedded and Two-Stage Decoupled Visual Language Model for SAR Imagery,2026,rs-vlm,1,1,1,0,0,0,0,3
+083,Sentinel-1-based flood mapping: a fully automated processing chain,2016,sar-optical-fusion,0,1,0,1,0,0,1,2
+084,Towards operational near real-time flood detection using a split-based automatic thresholding procedure on high resolution TerraSAR-X data,2009,sar-optical-fusion,0,0,0,0,0,0,0,0
+085,A fully automated TerraSAR-X based flood service,2015,sar-optical-fusion,0,0,0,0,0,0,1,0
+086,A hierarchical split-based approach for parametric thresholding of SAR images: Flood inundation as a test case,2017,sar-optical-fusion,1,1,0,0,0,0,0,2
+087,SEN12MS-CR-TS: A Remote Sensing Data Set for Multi-modal Multi-temporal Cloud Removal,2022,sar-optical-fusion,0,1,1,1,0,1,0,4
+088,UnCRtainTS: Uncertainty Quantification for Cloud Removal in Optical Satellite Time Series,2023,sar-optical-fusion,1,1,0,1,0,0,0,3
+089,Change-Agent: Towards Interactive Comprehensive Remote Sensing Change Interpretation and Analysis,2024,eo-agents,1,1,1,1,0,1,0,5
+090,GeoGPT: Understanding and Processing Geospatial Tasks through An Autonomous GPT,2023,eo-agents,0,1,0,0,0,1,0,2
+091,Autonomous GIS: the next-generation AI-powered GIS,2023,eo-agents,1,1,1,0,1,1,0,5
+092,ThinkGeo: Evaluating Tool-Augmented Agents for Remote Sensing Tasks,2025,eo-agents,1,1,0,1,0,1,0,4
+093,GeoBenchX: Benchmarking LLMs in Agent Solving Multistep Geospatial Tasks,2025,eo-agents,1,1,1,0,0,1,1,4
+094,Earth-Agent: Unlocking the Full Landscape of Earth Observation with Agents,2025,eo-agents,1,1,1,1,0,1,0,5
+095,Earth AI: Unlocking Geospatial Insights with Foundation Models and Cross-Modal Reasoning,2025,upcoming,1,1,1,1,1,1,1,6
+096,AlphaEarth Foundations: An embedding field model for accurate and efficient global mapping from sparse label data,2025,upcoming,0,1,1,0,1,1,0,4
+097,TerraMind: Large-Scale Generative Multimodality for Earth Observation,2025,upcoming,0,1,1,1,1,1,1,5
+098,NASA-ISRO Synthetic Aperture Radar (NISAR) mission and data products,2025,upcoming,1,1,1,1,0,0,1,4
+099,2026 IEEE GRSS Data Fusion Contest: SAR Temporal Storytelling,2026,upcoming,1,1,1,1,0,1,1,5
+100,Copernicus Sentinel-1D launch and restored two-satellite Sentinel-1 constellation (Sentinel-1C and 1D),2025,upcoming,1,1,1,0,0,1,1,4
+101,Bhuvan: ISRO's Geoportal (Gateway to Indian Earth Observation),2009,indian-context,0,0,1,0,0,1,1,2
+102,National Database for Emergency Management (NDEM): Web enabled Geospatial Portal,2017,indian-context,0,1,1,1,0,1,1,4
+103,Yield Estimation System based on Technology (YES-TECH) under PMFBY: Manual for Implementation,2023,indian-context,0,1,0,0,0,1,1,2
+104,"Analysis of Wheat Crop Forecasts, in India, Generated Using Remote Sensing Data, under FASAL Project",2019,indian-context,0,1,0,1,0,0,1,2
+105,Large-Scale Flood Hazard Monitoring and Impact Assessment on Landscape: Representative Case Study in India,2023,indian-context,0,1,1,1,0,1,1,4
+106,Flood Hazard Zonation Atlas of Assam: Using multi-sensor satellite data (1998-2023),2025,indian-context,0,0,0,0,0,0,1,0
+107,Operational Near Real Time Rice Area Mapping Using Multi-Temporal Sentinel-1 SAR Observations,2018,indian-context,0,1,0,1,0,1,1,3
+108,A Threshold Selection Method from Gray-Level Histograms,1979,historical,0,0,1,0,0,0,0,1
+109,Minimum error thresholding,1986,historical,1,1,1,0,0,0,0,3
+110,The use of the Normalized Difference Water Index (NDWI) in the delineation of open water features,1996,historical,1,1,1,1,0,0,0,4
+111,Red and photographic infrared linear combinations for monitoring vegetation,1979,historical,0,1,0,1,0,0,0,2
+112,On optimum recognition error and reject tradeoff,1970,historical,1,1,0,0,0,0,1,2
+113,Digital Image Enhancement and Noise Filtering by Use of Local Statistics,1980,historical,0,0,1,0,0,0,0,1
+114,Change Vector Analysis: An Approach for Detecting Forest Changes with Landsat,1980,historical,0,1,1,0,0,0,0,2
+115,EarthVQA: Towards Queryable Earth via Relational Reasoning-Based Remote Sensing Visual Question Answering,2024,rs-benchmark,1,1,0,0,0,1,0,3
+116,RSVG: Exploring Data and Models for Visual Grounding on Remote Sensing Data,2023,rs-benchmark,0,1,0,0,0,1,0,2
+117,XLRS-Bench: Could Your Multimodal LLMs Understand Extremely Large Ultra-High-Resolution Remote Sensing Imagery?,2025,rs-benchmark,0,1,0,0,0,1,1,2
+118,DisasterM3: A Remote Sensing Vision-Language Dataset for Disaster Damage Assessment and Response,2025,rs-benchmark,0,1,1,1,0,0,1,3
+119,GEO-Bench: Toward Foundation Models for Earth Monitoring,2023,rs-benchmark,1,0,0,0,0,1,1,2
+120,PANGAEA: A Global and Inclusive Benchmark for Geospatial Foundation Models,2024,rs-benchmark,1,1,0,0,0,1,1,3
+121,The openEO API: Harmonising the Use of Earth Observation Cloud Services Using Virtual Data Cube Functionalities,2021,data-infrastructure,0,1,1,0,1,0,0,3
+122,"CEOS-ARD Product Family Specification: Synthetic Aperture Radar (Normalised Radar Backscatter [NRB], Polarimetric Radar, Ocean Radar Backscatter, Geocoded SLC, Interferometric Radar, Composite Backscatter), Version 1.3.1",2026,data-infrastructure,1,1,1,0,0,0,1,3
+123,"Sentinel 1 Radiometrically Terrain Corrected (RTC), Microsoft Planetary Computer dataset (STAC collection sentinel-1-rtc)",2022,data-infrastructure,1,0,0,1,0,0,1,2
+124,"Copernicus Data Space Ecosystem documentation: STAC product catalogue, OData catalogue and S3 access APIs",2025,data-infrastructure,1,0,1,1,1,0,0,4
+125,odc-stac: Load STAC items into xarray Datasets (Open Data Cube),2021,data-infrastructure,0,1,1,0,0,0,0,2
+126,Probabilities for SV Machines,2000,trust-calibration,1,1,1,0,0,0,1,3
+127,Transforming classifier scores into accurate multiclass probability estimates,2002,trust-calibration,1,1,0,0,0,0,1,2
+128,Obtaining Well Calibrated Probabilities Using Bayesian Binning,2015,trust-calibration,1,1,0,0,0,0,1,2
+129,Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles,2017,trust-calibration,1,1,1,0,0,0,0,3
+130,What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?,2017,trust-calibration,1,1,0,1,0,0,0,3
+131,Local Temperature Scaling for Probability Calibration,2021,trust-calibration,1,1,0,0,0,0,0,2
+132,Can You Trust Your Model's Uncertainty? Evaluating Predictive Uncertainty Under Dataset Shift,2019,trust-calibration,1,1,0,1,0,0,1,3
+133,Conformal Risk Control,2024,trust-calibration,1,1,0,0,0,1,1,3
+134,Visual Semiotics & Uncertainty Visualization: An Empirical Study,2012,human-factors,0,0,0,1,0,0,0,1
+135,"When (ish) is My Bus? User-centered Visualizations of Uncertainty in Everyday, Mobile Predictive Systems",2016,human-factors,0,1,0,0,0,1,0,2
+136,To Trust or to Think: Cognitive Forcing Functions Can Reduce Overreliance on AI in AI-assisted Decision-making,2021,human-factors,0,1,1,0,0,0,0,2
+137,Explanations Can Reduce Overreliance on AI Systems During Decision-Making,2023,human-factors,1,1,1,0,0,0,0,3
+138,Global trends in satellite-based emergency mapping,2016,human-factors,0,1,0,1,0,1,1,3
+139,Eviza: A Natural Language Interface for Visual Analysis,2016,human-factors,0,1,0,0,0,1,1,2
+140,Automatic analysis of the difference image for unsupervised change detection,2000,change-detection,0,1,1,0,0,0,0,2
+141,Change Detection in Synthetic Aperture Radar Images Based on Deep Neural Networks,2016,change-detection,1,1,1,0,0,0,1,3
+142,Fully Convolutional Siamese Networks for Change Detection,2018,change-detection,1,0,0,0,0,0,1,1
+143,A Transformer-Based Siamese Network for Change Detection,2022,change-detection,1,1,1,0,0,0,0,3
+144,Segment Any Change,2024,change-detection,1,0,0,0,0,0,1,1
+145,Detecting trend and seasonal changes in satellite image time series,2010,change-detection,0,1,1,0,1,0,1,3
+146,GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers,2023,efficient-inference,1,1,0,0,1,1,0,4
+147,LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale,2022,efficient-inference,0,0,0,0,1,0,0,1
+148,DoRA: Weight-Decomposed Low-Rank Adaptation,2024,efficient-inference,0,1,0,0,1,1,0,3
+149,Qwen2-VL: Enhancing Vision-Language Model's Perception of the World at Any Resolution,2024,efficient-inference,0,0,0,0,1,1,0,2
+150,Efficient Guided Generation for Large Language Models,2023,efficient-inference,1,1,0,0,1,0,0,3
+151,"Lightweight, Pre-trained Transformers for Remote Sensing Timeseries",2023,eo-foundation,1,1,1,0,1,0,1,4
+152,TESSERA: Temporal Embeddings of Surface Spectra for Earth Representation and Analysis,2025,eo-foundation,1,1,1,1,1,1,1,6
+153,Galileo: Learning Global & Local Features of Many Remote Sensing Modalities,2025,eo-foundation,1,1,1,1,1,1,0,6
+154,"AnySat: One Earth Observation Model for Many Resolutions, Scales, and Modalities",2025,eo-foundation,1,1,0,0,0,1,1,3
+155,Towards a Unified Copernicus Foundation Model for Earth Vision,2025,eo-foundation,1,1,0,0,1,0,0,3
+156,Multi-Label Guided Soft Contrastive Learning for Efficient Earth Observation Pretraining,2024,eo-foundation,1,1,0,1,1,0,1,4
+157,SatlasPretrain: A Large-Scale Dataset for Remote Sensing Image Understanding,2023,eo-foundation,1,0,0,1,0,0,1,2
+158,Scale-MAE: A Scale-Aware Masked Autoencoder for Multiscale Geospatial Representation Learning,2023,eo-foundation,1,0,0,0,0,0,0,1
+159,Continental-Scale Building Detection from High Resolution Satellite Imagery,2021,object-detection,0,0,0,0,0,0,1,0
+160,LS-SSDD-v1.0: A Deep Learning Dataset Dedicated to Small Ship Detection from Large-Scale Sentinel-1 SAR Images,2020,object-detection,1,1,0,0,1,0,1,3
+161,SAR Ship Detection Dataset (SSDD): Official Release and Comprehensive Data Analysis,2021,object-detection,0,0,1,0,0,0,0,1
+162,RTMDet: An Empirical Study of Designing Real-Time Object Detectors,2022,object-detection,1,0,0,0,1,0,0,2
+163,Large Selective Kernel Network for Remote Sensing Object Detection,2023,object-detection,0,0,1,0,1,1,0,3
+164,RSure-Agent: Reliable Use of Tool Observations for Remote Sensing Agents,2026,eo-agents,1,1,1,0,1,1,0,5
+165,Can LLM Agents Respond to Disasters? Benchmarking Heterogeneous Geospatial Reasoning in Emergency Operations,2026,eo-agents,1,1,1,1,0,1,1,5
+166,Earth-Agent-Pro: Towards Real-World Full-Chain Earth Observation with Agents,2026,eo-agents,1,1,1,0,1,1,0,5
+167,GIS Copilot: Towards an Autonomous GIS Agent for Spatial Analysis,2025,eo-agents,1,1,1,0,0,1,0,4
+168,FUSAR-R1: A Large-Scale Reasoning Model for Intelligent Interpretation of SAR Images,2026,rs-vlm,1,1,1,0,0,0,0,3
+169,GeoZero: Incentivizing Reasoning from Scratch on Geospatial Scenes,2025,rs-vlm,1,1,1,0,1,1,1,5
+170,More with Less: a Large Scale Remote Sensing VLM with a Simple Recipe,2026,rs-vlm,1,1,1,0,1,1,0,5
+171,"One Adapter, Every Resolution: Gated Low-Rank Adaptation for Remote Sensing VLMs",2026,rs-vlm,1,1,1,0,1,0,0,4
+172,Selective Tool Use for Agentic Change Visual Question Answering in Remote Sensing,2026,rs-vlm,1,1,1,0,0,1,0,4
+173,GEOID-Flood: A Large-Scale Multi-Modal Benchmark Dataset for Flood Segmentation,2026,upcoming,1,1,0,1,1,0,1,4
+174,GeoDisaster: Benchmarking Orchestrated Agents for Operational Disaster Geo-Intelligence,2026,upcoming,1,1,1,0,0,1,1,4
+175,GSLV-F17/EOS-05 mission: India's first imaging satellite from geosynchronous orbit,2026,upcoming,0,1,0,1,1,1,1,4
+176,"EO-Gym: A Multimodal, Interactive Environment for Earth Observation Agents",2026,rs-benchmark,1,1,1,1,0,1,0,5
+177,TerraBench: Can Agents Reason Over Heterogeneous Earth-System Data?,2026,rs-benchmark,1,1,1,0,1,1,0,5
+178,Change Detection Meets Visual Question Answering,2022,rs-benchmark,1,1,1,0,0,1,0,4
+179,Show Me What and Where has Changed? Question Answering and Grounding for Remote Sensing Change Detection,2024,rs-benchmark,1,1,1,0,0,1,0,4
+180,SARLANG-1M: A Benchmark for Vision-Language Modeling in SAR Image Understanding,2026,rs-benchmark,1,1,0,0,0,1,0,3
+181,When Large Vision-Language Model Meets Large Remote Sensing Imagery: Coarse-to-Fine Text-Guided Token Pruning,2025,rs-benchmark,1,1,0,0,1,1,0,4
+182,JL1-CC&QA: Extending the JL1-CD Benchmark with Change Captioning and Question Answering,2026,rs-benchmark,0,1,0,1,0,1,0,3
+183,FloodReasonBench: Benchmarking VLM Reasoning Segmentation for Embodied Flood Response at the Edge,2026,upcoming,1,1,0,0,1,1,0,4
+184,GLF-CR: SAR-enhanced cloud removal with global-local fusion,2022,sar-optical-fusion,0,1,0,1,0,0,1,2
+185,Towards global flood mapping onboard low cost satellites with machine learning,2021,sar-optical-fusion,1,1,0,1,1,0,1,4
+186,Exploring Sentinel-1 and Sentinel-2 diversity for flood inundation mapping using deep learning,2021,sar-optical-fusion,0,0,0,1,0,0,1,1
+187,Satellite-Based Flood Mapping through Bayesian Inference from a Sentinel-1 SAR Datacube,2022,sar-optical-fusion,1,1,0,0,0,1,1,3
+188,Sentinel-1-Based Water and Flood Mapping: Benchmarking Convolutional Neural Networks Against an Operational Rule-Based Processing Chain,2022,sar-optical-fusion,1,0,0,1,0,0,1,2
+189,Changen2: Multi-Temporal Remote Sensing Generative Change Foundation Model,2025,change-detection,0,1,0,0,0,0,1,1
+190,UrbanSARFloods: Sentinel-1 SLC-Based Benchmark Dataset for Urban and Open-Area Flood Mapping,2024,change-detection,0,1,0,0,0,0,0,1
+191,Change detection techniques for ERS-1 SAR data,1993,historical,0,0,0,0,0,0,0,0
+192,Lightweight Adaptation of General-Purpose VLMs for Multispectral and SAR Image Understanding,2026,rs-vlm,1,1,1,0,1,0,1,4
+193,Agentic AI for Remote Sensing: Technical Challenges and Research Directions,2026,rs-vlm,1,1,1,0,0,0,0,3
+194,CangLing-KnowFlow: A Unified Knowledge-and-Flow-fused Agent for Comprehensive Remote Sensing Applications,2025,rs-vlm,1,1,0,0,1,0,1,3
+195,RS-Agent: Automating Remote Sensing Tasks through Intelligent Agent,2026,rs-vlm,1,1,1,0,1,1,0,5
+196,SICKLE: A Multi-Sensor Satellite Imagery Dataset Annotated with Multiple Key Cropping Parameters,2024,indian-context,1,1,0,1,0,0,1,3
+197,AgriFieldNet Competition Dataset,2022,indian-context,1,0,0,0,0,0,1,1
+198,Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning,2016,historical,1,1,0,0,1,0,0,3
+199,TorchGeo: Deep Learning With Geospatial Data,2022,data-infrastructure,1,0,1,1,1,0,0,4
+200,XGrammar: Flexible and Efficient Structured Generation Engine for Large Language Models,2025,efficient-inference,0,0,0,0,1,1,1,2
+201,TerraScope: Pixel-Grounded Visual Reasoning for Earth Observation,2026,rs-vlm,1,1,1,0,1,1,1,5
+202,SHRUG-FM: Reliability-Aware Foundation Models for Earth Observation,2026,trust-calibration,1,1,1,0,0,1,0,4
+203,Seeing Clearly without Training: Mitigating Hallucinations in Multimodal LLMs for Remote Sensing,2026,rs-benchmark,1,1,1,0,0,1,0,4
+204,Towards LLM Agents for Earth Observation,2026,rs-benchmark,1,1,1,1,0,1,0,5
+205,OpenEarthAgent: A Unified Framework for Tool-Augmented Geospatial Agents,2026,eo-agents,1,1,1,0,1,1,1,5
+206,Towards Faithful Reasoning in Remote Sensing: A Perceptually-Grounded GeoSpatial Chain-of-Thought for Vision-Language Models,2026,rs-vlm,1,1,1,0,0,1,0,4
+207,ANASSA: An Agentic AI Orchestration Framework for Spatial Intelligence,2026,eo-agents,1,1,1,0,0,1,0,4
+208,Beyond detection: cooperative multi-agent reasoning for rapid onboard EO crisis response,2026,eo-agents,1,1,1,1,1,1,0,6
+209,From Perception to Reasoning in Remote Sensing: A Survey and Outlook,2026,rs-vlm,1,1,1,0,0,0,1,3
+210,Height Above the Nearest Drainage – a hydrologically relevant new terrain model,2011,sar-optical-fusion,1,0,0,0,0,0,1,1
+211,Deriving exclusion maps from C-band SAR time-series in support of floodwater mapping,2021,sar-optical-fusion,0,0,0,0,0,1,0,1
+212,Probabilistic Flood Mapping Using Synthetic Aperture Radar Data,2016,trust-calibration,1,1,0,0,0,0,1,2
+213,Estimating Ensemble Likelihoods for the Sentinel-1-Based Global Flood Monitoring Product of the Copernicus Emergency Management Service,2023,trust-calibration,1,0,0,0,0,0,0,1
+214,Use of SAR Data for Detecting Floodwater in Urban and Agricultural Areas: The Role of the Interferometric Coherence,2016,change-detection,0,0,0,0,0,0,0,0
+215,Sentinel-1 InSAR Coherence to Detect Floodwater in Urban Areas: Houston and Hurricane Harvey as A Test Case,2019,change-detection,0,0,0,0,0,0,1,0
+216,"A change detection approach to flood inundation mapping using multi-temporal Sentinel-1 SAR images, the Brahmaputra River, Assam (India): 2015–2020",2023,indian-context,0,0,1,0,0,0,1,1
+217,"Spatio-Temporal Analysis of Urban Floods in Mumbai, India, Using Sentinel-1 SAR Data",2026,indian-context,1,0,0,0,0,0,1,1
+218,"Distribution-Free, Risk-Controlling Prediction Sets",2021,trust-calibration,1,1,1,0,0,0,1,3
+219,Conformal Semantic Image Segmentation: Post-hoc Quantification of Predictive Uncertainty,2024,trust-calibration,1,1,0,1,0,1,1,4
+220,"\""I'm Not Sure, But...\"": Examining the Impact of Large Language Models' Uncertainty Expression on User Reliance and Trust",2024,human-factors,1,1,1,0,0,1,0,4
+221,Uncertainty in three dimensions: the challenges of communicating probabilistic flood forecast maps,2023,human-factors,1,0,0,0,0,0,1,1
+222,PROV-O: The PROV Ontology,2013,data-infrastructure,1,0,1,0,0,0,0,2
+223,Model Cards for Model Reporting,2019,data-infrastructure,1,1,1,1,0,0,1,4
+224,The Mirage of Calibrated Confidence: Trajectory-Independence of Verbalized Confidence in Vision-Language Models,2026,upcoming,1,0,0,1,0,0,0,2
+225,ToolChain-CRC: Conformal Risk Control for Agentic AI Under Retrieval and Tool-Use Drift,2026,upcoming,1,1,1,1,0,0,1,4

@@ -1,6 +1,6 @@
 # What is new in SatClip, and what would have to be true
 
-This document is an honest comparison against the closest existing systems. It is checked against the archive as it grows: version 9 (run 9) covers 225 papers plus the competitor evidence in [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md). A final pass against the whole archive is milestone M8.
+This document is an honest comparison against the closest existing systems. Version 10 (M8, 2026-10-10) is the final pass against the whole archive of 225 papers plus the competitor evidence in [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md). **Start with section 5**, which states each claim in its final wording, ties it to the closest prior art and points to the prototype evidence in [docs/VERIFICATION.md](docs/VERIFICATION.md). Sections 1 to 4 are kept as the run-by-run record that led there.
 
 Citation keys: `[A001]` is an archive entry and `[E49]` is an evidence-brief claim.
 
@@ -180,3 +180,88 @@ The claim is novelty of **combination and packaging for a specific user**, which
 ## Run 9 summary of the claim
 
 After 225 papers, every single ingredient of SatClip exists somewhere: masks with answers [A179, A201], SAR switching [A176], live retrieval [A204], deterministic replays [A205], flood-map rejection [A202]. No archived system combines more than two of: calibrated per-answer confidence, threshold abstention with a next step, Sentinel scene receipts that are measured to reproduce, SAR-first monsoon handling, CPU or offline deployment, and plain-language delivery for Indian districts. The claim stands as a combination claim, and as the only one shown working end to end on live data with measured calibration.
+
+---
+
+## 5. M8 final verification (whole archive, 2026-10-10)
+
+### 5.1 How the pass was done
+
+1. `python tools/novelty_scan.py` searched the full text of all 225 entries for signals of the six ingredients below and wrote [docs/verification/archive_scan.csv](docs/verification/archive_scan.csv). Keyword hits only mean a paper *mentions* a topic (146 mention calibration, 163 abstention or refusal), so they were used to shortlist, not to judge.
+2. 81 papers in system-building categories (rs-vlm, eo-agents, rs-benchmark, upcoming, trust-calibration, change-detection) had signals in three or more ingredients. Each was judged by hand from its entry: does *its own system* deliver the ingredient as SatClip defines it?
+3. Product claims (Google Earth AI, NRSC Bhuvan chatbot) were re-searched on 2026-10-10. No public evidence was found of Google Earth AI's geospatial reasoning being offered in India or of a deployed Bhuvan question-answering chatbot. That search was short and is not proof of absence; re-check before the final pitch.
+4. Every claim below is tied to a prototype check in [docs/VERIFICATION.md](docs/VERIFICATION.md), re-run on 2026-10-10.
+
+### 5.2 The six ingredients, defined strictly
+
+| Key | Ingredient | Counts only if |
+|---|---|---|
+| C1 | Calibrated per-answer confidence | A probability attached to each user-facing answer, fitted on labelled data with a reported calibration error |
+| C2 | Threshold abstention with a next step | The system declines to answer below a stated confidence line and tells the user what would fix it |
+| C3 | Scene receipts that reproduce | Each answer names the exact scene IDs and dates used, and a re-run is shown to give the same output |
+| C4 | SAR chosen automatically under cloud | Sensor choice is made by the system, not the user, and radar is used when optical is blocked |
+| C5 | CPU or offline deployment | The full answer path runs without a GPU or a hosted LLM |
+| C6 | Plain-language questions for non-experts | A non-GIS user types a question in their words (Indian place names and dates for SatClip) |
+
+### 5.3 Ingredient matrix for the closest systems
+
+Yes = has it as defined; part = a weaker form (in brackets); blank = no or not described. "Full" counts only Yes.
+
+| System | C1 | C2 | C3 | C4 | C5 | C6 | Full |
+|---|---|---|---|---|---|---|---|
+| EO-Gym agent [A176] | | | | Yes (learned) | part (4B) | Yes | 2 |
+| NRSC / NDEM flood maps [E3, E5, A046] | | | part (scene and date, no re-run) | Yes | Yes (government infrastructure) | | 2 |
+| FloodReasonBench model [A183] | | | | | Yes (Jetson) | Yes (close-range imagery, not satellite) | 2 |
+| Onboard crisis agents [A208] | part (agreement score, not calibrated) | | | part (routes to a SAR flood tool by hazard, not by cloud) | Yes (quantised, edge board) | | 1 |
+| OpenEarthAgent [A205] | | | part (replays tool traces, no scene IDs) | | part (4B) | Yes | 1 |
+| GeoDisaster agents [A174] | | | part (runnable workflows) | part (SAR subset, not automatic) | | Yes | 1 |
+| RSure-Agent [A164] | part (per-tool reliability, internal) | part (internal reject, not shown to users) | | | | Yes | 1 |
+| SHRUG-FM [A202] | (scores stated as not calibrated) | part (binary reject, no next step) | | | | | 0 |
+| ScaleEarth [A171] | part (only for its resolution guess) | | | | | Yes | 1 |
+| VHM [A078] | | part (learned refusal, no threshold) | | | | Yes | 1 |
+| Google Earth AI [A095] | part (intervals on some model outputs) | | | | | Yes | 1 |
+| Earth-Agent [A094], Earth-Agent-Pro [A166] | | | part (evidence log, A166) | | | Yes | 1 |
+| UnivEARTH agents [A204] | | | | | | Yes (fetches live data via code) | 1 |
+| TerraScope [A201], VisTA [A179] | | | | | | Yes (masks with answers) | 1 |
+| EarthDial [A003] | | | | part (reads S1, user supplies it) | part (4B) | Yes | 1 |
+| Selective tool use [A172], RS-Agent [A195], CangLing-KnowFlow [A194] | | | | | part (4B, A172) | Yes | 1 |
+| GIS Copilot [A167] | | | | | | Yes (non-experts in QGIS) | 1 |
+| ANASSA [A207], agentic RS position paper [A193] | requirement only | requirement only | requirement only | | | | 0 (no implementation) |
+| **SatClip** | **Yes** for water extent (Sen1Floods11) and water change (Kuro Siwo); crop change carries a visible "not yet calibrated" label | **Yes** | **Yes** (8 of 8 receipts identical, re-checked 2026-10-10 against run 8 receipts) | **Yes** (monsoon rule plus cloud fallback) | **Yes** (2 vCPU, no GPU, no hosted LLM) | **Yes** (735 districts, Indian date formats, Hindi and Hinglish keywords) | **6** |
+
+**Result.** No system in the 225-paper archive delivers more than two of the six ingredients in full. The run 9 statement holds after the whole-archive pass. The closest, each at two, are EO-Gym (automatic SAR, plain language), the official NRSC flood products (SAR, government infrastructure) and FloodReasonBench (edge device, plain language, but not satellite data).
+
+### 5.4 Claims in final wording
+
+| # | Claim (final wording) | Closest prior art | What differs | Prototype evidence (VERIFICATION.md) | Status |
+|---|---|---|---|---|---|
+| N1 | **Combination.** SatClip is the only system in the archive that delivers all six ingredients together, and it is shown working end to end on live Sentinel data | EO-Gym [A176], NRSC products [A046], A208 (two each) | The other four ingredients, together | Sections 2 to 7 | **Holds** (section 5.3) |
+| N2 | **Numbers come only from versioned instruments**; the language layer parses and explains, never measures | Earth-Agent [A094], RS-Agent [A195], A172, OpenEarthAgent [A205] route to tools too | Fixed recipe per question type with set parameters (no free-form tool arguments, which agents get right 26% to 35% of the time [A092, A094]); confidence carried from the instrument to the card | V2: every card names `instrument` and `method`; the parser output is a five-key JSON | **Narrowed:** "tool grounding" alone is not new; the fixed, calibrated recipe is |
+| N3 | **Calibrated confidence on each answer**, fitted on hand labels and published with its error | SHRUG-FM [A202] (uncalibrated reliability), RSure-Agent [A164] (internal), ScaleEarth [A171] (resolution only) | User-facing probability with a reported ECE and coverage; refit reproduces exactly | V3: water ECE 0.139 to 0.074 on held-out chips; change ECE 0.041; refit from committed rows gives identical numbers | **Holds for water; crop is labelled placeholder** |
+| N4 | **Threshold abstention with a next step**, including one-tap follow-ups | SHRUG-FM [A202] (rejects, no next step), VHM [A078] (learned refusal), GeoBenchX [A093] (scores refusal) | Abstains over a calibrated measurement at a stated line (0.60), separates "needs one detail" from "not enough evidence", and offers what would help | V4: live change card abstains at 0.23 and offers two published extents; out-of-scope and ambiguous answers in 0.01 to 0.03 s | **Holds** |
+| N5 | **Scene receipts measured to reproduce** | OpenEarthAgent [A205] (replays tool traces), W3C PROV-O [A222] (a model, not a system) | Receipt tied to Sentinel scene IDs whose cold re-run gives the same output hash, checked across days | V5: run 8 receipts re-run on 2026-10-10 with identical outputs | **Holds** |
+| N6 | **SAR-first in monsoon, automatic** | EO-Gym [A176] (learned switch), NRSC practice [E32] | Rule in code (monsoon months, cloud share), stated on the card in plain words | V2: `selection_notes` on the Barpeta card | **Not unique alone**; part of N1 |
+| N7 | **Ease: CPU, free data, no training needed for day-one value** | A208 (edge), openEO and odc-stac [A121, A125] (data layer) | Whole answer path on a 2 vCPU machine with public catalogues; the trained model only improves parsing | V6: whole district in 54 to 98 s cold, 0.5 s warm; linear scaling with workers | **Holds as packaging**, not as a method claim |
+| N8 | **Built for non-expert Indian users** | GIS Copilot [A167], GeoDisaster [A174] (Indian authors, benchmark) | District gazetteer, Indian date formats, Hindi and Hinglish, accessible mobile UI | V7: hand-written intent test 0.682 full match; keyboard walkthrough passes | **Holds as design; usefulness to real officers untested** |
+
+### 5.5 What is not claimed
+
+- A new model architecture, a better flood detector, or better VQA accuracy than RS VLMs.
+- That tool grounding, SAR switching, live retrieval, masks with answers or rejecting bad outputs are new on their own (each has prior art, section 5.4).
+- That the Barpeta 914 sq km figure is flood extent (it includes the river and wetlands; SOLUTION risks 12 and 23).
+- That non-GIS users understand cards faster than maps (condition 4, untested).
+
+### 5.6 Conditions, final status
+
+| # | Condition (section 3) | Final status (2026-10-10) |
+|---|---|---|
+| 1 | No published RS assistant returns scene provenance plus calibrated confidence plus abstention | **Holds** over all 225 papers (section 5.3) |
+| 2 | Instrument answers useful on Indian scenes at a reasonable coverage | **Partly.** Water v1.1 publishes 52% of Indian chips with 55% wrong when the fit never saw India; positive change answers mostly abstain. The card behaves honestly, but usefulness needs water v1.2 and Indian labels |
+| 3 | Calibration transfers to India or Indian labels can be gathered | **Partly.** Degrades on new regions (India ECE 0.227 after fit); per-region refits needed |
+| 4 | Non-GIS users understand cards faster than maps or chat | **Not tested.** The largest open gap in the evidence; a 10 to 15 person task-timing study is the next step |
+| 5 | Public STAC plus COG fast enough for minutes, not hours, on CPU | **Holds.** 54 to 98 s per whole district cold on 2 vCPU, 0.5 s cached |
+| 6 | Big platforms do not already ship this bundle in India | **Holds as far as a short search shows** (section 5.1 step 3) |
+
+### 5.7 Final statement
+
+SatClip's novelty is a combination and delivery claim, verified against the whole archive: it is the only system found that gives a non-expert a plain-language answer about an Indian district with a calibrated confidence, a threshold abstention with a next step, Sentinel scene receipts that re-run identically, automatic SAR under monsoon cloud, and a CPU-only path on free data. Each ingredient exists elsewhere; the combination, built and measured, does not. The claim would weaken if any watch-list system (section 4) adds calibrated, user-facing confidence plus abstention to its existing ingredients, and it is only as useful as the instruments behind it, which for Indian floods still need work (condition 2).

@@ -57,7 +57,7 @@ See [SOLUTION.md](SOLUTION.md) for the full thesis and evidence.
 | Part | Where | Status |
 |---|---|---|
 | Solution thesis | [SOLUTION.md](SOLUTION.md) | v1.8 (run 9) |
-| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v9 (run 9) |
+| Novelty analysis | [NOVELTY.md](NOVELTY.md) | v10, final whole-archive pass (M8) |
 | Research archive (target about 200 papers) | [archive/](archive/README.md) | 225 papers (target of 200 reached run 8; new work added each run) |
 | Problem evidence brief | [docs/reference/problem-evidence.md](docs/reference/problem-evidence.md) | v1 |
 | Idea deck summary | [docs/reference/deck-notes.md](docs/reference/deck-notes.md) | done |
@@ -66,7 +66,7 @@ See [SOLUTION.md](SOLUTION.md) for the full thesis and evidence.
 | Training code (LoRA, Colab notebook, evaluation, calibration) | [training/](training/README.md) | M5 done (run 7): water extent calibrated on Sen1Floods11 (v1.1, VV or VH), water change on Kuro Siwo; LoRA pipeline, Colab notebook, Indian Q&A builder (WorldCover labels) and evaluation harness with measured baselines, including a hand-written intent test set |
 | Quality: tests, scripted demo, reproducibility, load test | [docs/QUALITY.md](docs/QUALITY.md), [docs/demo/TRANSCRIPT.md](docs/demo/TRANSCRIPT.md) | M6 done (run 8): 73 tests, six-question live demo, cold re-runs of receipts, Redis multi-process scaling |
 | Pitch deck (.pptx) | [deck/satclip.pptx](deck/satclip.pptx), [deck/README.md](deck/README.md) | M7 done (run 9): 14 slides, claymorphism, live screenshots, sourced speaker notes |
-| Innovation verification | NOVELTY.md, docs/VERIFICATION.md | M8, next |
+| Innovation verification | [NOVELTY.md](NOVELTY.md) section 5, [docs/VERIFICATION.md](docs/VERIFICATION.md) | M8 done: combination claim holds over all 225 papers; every claim tied to a re-run check |
 | Plan and progress | [PLAN.md](PLAN.md), [STATE.md](STATE.md) | live |
 | Local handoff (start here) | [HANDOFF.md](HANDOFF.md) | 2026-10-10 |
 
