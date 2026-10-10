@@ -4,14 +4,14 @@
 
 SatClip is Team Stardust's Smart India Hackathon 2026 project for problem statement **SIH26167**: "SatQueryAI: an interactive vision-language assistant for multimodal remote sensing image analysis through text queries".
 
-You might ask: *"Was Barpeta flooded after 2 July compared to mid June?"* SatClip finds the right Sentinel-1 radar or Sentinel-2 optical scenes for that area through public STAC catalogues. If clouds block the optical view, it switches to radar on its own. Then it measures the change with a transparent instrument and returns an **evidence card**. The card holds:
+Let's say a question comes to mind: *"Was Barpeta flooded after 2 July compared to mid June?"* SatClip finds the right Sentinel-1 radar or Sentinel-2 optical scenes for that area through public STAC catalogues. If clouds block the optical view, it switches to radar on its own. Then it measures the change with a transparent instrument and returns an **evidence card**. The card holds:
 
 - the measured answer and a map mask;
 - the scene IDs and acquisition dates;
 - a confidence score, fitted on hand-labelled flood maps for water (Sen1Floods11) and labelled as a placeholder where no fit exists yet;
 - a receipt that re-runs the same analysis.
 
-When the evidence is not good enough, it says "insufficient evidence" and tells you when the next useful satellite pass is.
+When the evidence is not good enough to reach a credible inference, it says "insufficient evidence" and tells you when the next useful satellite pass is.
 
 ![SatClip answering a live flood question for Barpeta district](docs/screenshots/02-flood-extent-desktop.png)
 
@@ -29,7 +29,7 @@ docker compose up --build        # UI on http://localhost:8080, API on :8000
 docker compose up --scale worker=8
 ```
 
-Try a question in the UI, or run real questions end to end against the live catalogues:
+You may try entering a question in the UI, or run real questions end to end against the live catalogues:
 
 ```bash
 cd backend && python -m satclip.livecheck "How much of Barpeta was under water on 2024-07-11?"
@@ -43,7 +43,7 @@ The optional land-cover instrument needs `pip install -e ".[ml]"` (CPU torch and
 
 ## Who it is for
 
-The people who must answer "where and how bad" questions without GIS skills:
+The non-technical people who must answer "where and how bad" questions without GIS skills:
 
 - district disaster officials;
 - agriculture and crop-insurance officers;
